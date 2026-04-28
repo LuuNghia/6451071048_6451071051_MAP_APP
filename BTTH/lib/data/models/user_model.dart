@@ -55,3 +55,15 @@ class UserModel {
     );
   }
 }
+String getVietnameseGender(String englishGender) {
+  switch (englishGender.toLowerCase()) {
+    case 'male':
+      return 'Nam';
+    case 'female':
+      return 'Nữ';
+    case 'other':
+      return 'Khác';
+    default:
+      return 'Chưa cập nhật'; // Hoặc trả về englishGender nếu bạn muốn
+  }
+}

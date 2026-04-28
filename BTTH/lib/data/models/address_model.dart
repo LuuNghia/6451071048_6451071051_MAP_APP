@@ -35,7 +35,7 @@ class AddressModel {
   Map<String, dynamic> toMap() { 
     return { 
       'city': city, 
- 'ward': ward, 
+      'ward': ward, 
       'street': street, 
       'number': number, 
       'isDefault': isDefault, 

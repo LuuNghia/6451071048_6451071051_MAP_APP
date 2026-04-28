@@ -18,24 +18,24 @@ class _ChangeGenderScreenState extends State<ChangeGenderScreen> {
   @override 
   Widget build(BuildContext context) { 
     return Scaffold( 
-      appBar: AppBar(title: const Text('Change Gender')), 
+      appBar: AppBar(title: const Text('Đổi giới tính')), 
       body: Padding( 
         padding: const EdgeInsets.all(20), 
         child: Column( 
           crossAxisAlignment: CrossAxisAlignment.start, 
           children: [ 
             const Text( 
-              'Select your gender', 
+              'Chọn giới tính', 
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold), 
             ), 
  
             const SizedBox(height: 20), 
  
-            _buildRadioTile(title: 'Male', value: Gender.male), 
+            _buildRadioTile(title: 'Nam', value: Gender.male), 
  
-            _buildRadioTile(title: 'Female', value: Gender.female), 
+            _buildRadioTile(title: 'Nữ', value: Gender.female), 
  
-            _buildRadioTile(title: 'Other', value: Gender.other), 
+            _buildRadioTile(title: 'Khác', value: Gender.other), 
  
             const Spacer(), 
  
@@ -62,7 +62,7 @@ class _ChangeGenderScreenState extends State<ChangeGenderScreen> {
       }, 
                 child: _isLoading 
                     ? const CircularProgressIndicator(color: Colors.white) 
-                    : const Text('Save'), 
+                    : const Text('Lưu'), 
               ), 
             ), 
           ], 

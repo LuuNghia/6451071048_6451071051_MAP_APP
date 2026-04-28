@@ -5,6 +5,23 @@ import '../models/user_model.dart';
 class AuthService { 
   final FirebaseAuth _auth = FirebaseAuth.instance; 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance; 
+
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        throw Exception('Email không tồn tại');
+      }
+
+      if (e.code == 'invalid-email') {
+        throw Exception('Email không hợp lệ');
+      }
+
+      throw Exception('Gửi email thất bại');
+    }
+  }
+
   Future<UserModel> loginWithEmailPassword( 
     String email, 
     String password, 

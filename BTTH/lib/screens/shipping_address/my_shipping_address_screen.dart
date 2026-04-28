@@ -16,7 +16,7 @@ class MyShippingAddressScreen extends StatelessWidget {
           Colors.grey[50], // Màu nền xám nhạt để nổi bật các Card trắng 
       appBar: AppBar( 
         title: const Text( 
-          'My Addresses', 
+          'Địa chỉ của tôi',
           style: TextStyle(fontWeight: FontWeight.bold), 
  ), 
         centerTitle: true, 
@@ -31,7 +31,7 @@ class MyShippingAddressScreen extends StatelessWidget {
             MaterialPageRoute(builder: (_) => const EditAddressScreen()), 
           ); 
         }, 
-        label: const Text('Add New Address'), 
+        label: const Text('Thêm địa chỉ mới'),
         icon: const Icon(Icons.add), 
         backgroundColor: Colors.blueAccent, 
       ), 
@@ -71,7 +71,7 @@ class MyShippingAddressScreen extends StatelessWidget {
 Colors.grey[300]), 
           const SizedBox(height: 16), 
           Text( 
-            'No address yet', 
+            'Chưa có địa chỉ',
             style: TextStyle( 
               fontSize: 18, 
               color: Colors.grey[600], 
@@ -79,7 +79,7 @@ Colors.grey[300]),
             ), 
           ), 
           const SizedBox(height: 8), 
-          const Text('Please add your shipping address to continue'), 
+          const Text('Vui lòng thêm địa chỉ giao hàng để tiếp tục'),
         ], 
       ), 
     ); 
@@ -125,7 +125,7 @@ Colors.grey[300]),
                   const SizedBox(width: 8), 
                   // Giả sử AddressModel của bạn có thêm trường Name hoặc Type (Home/Office) 
                   const Text( 
-                    "Shipping Address", 
+                    "Địa chỉ giao hàng",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 
 16), 
                   ), 
@@ -141,7 +141,7 @@ Colors.grey[300]),
                         borderRadius: BorderRadius.circular(8), 
                       ), 
                       child: const Text( 
-                        'Default', 
+                        'Mặc định',
                         style: TextStyle( 
                           color: Colors.blueAccent, 
                           fontSize: 12, 
@@ -176,7 +176,7 @@ Colors.grey[300]),
                       ), 
                     ), 
                     icon: const Icon(Icons.edit_outlined, size: 18), 
-                    label: const Text("Edit"), 
+                    label: const Text("Sửa"),
                   ), 
                   PopupMenuButton( 
                     icon: const Icon(Icons.more_vert, color: Colors.grey), 
@@ -191,7 +191,7 @@ Colors.grey[300]),
                             children: [ 
                               Icon(Icons.check_circle_outline, size: 20), 
                               SizedBox(width: 8), 
-                              Text('Set as Default'), 
+                              Text('Đặt làm mặc định'),
                             ], 
                           ), 
                         ), 
@@ -205,7 +205,7 @@ Colors.grey[300]),
                               size: 20, 
                             ), 
                             SizedBox(width: 8), 
-                            Text('Delete', style: TextStyle(color: Colors.red)), 
+                            Text('Xóa', style: TextStyle(color: Colors.red)),
                           ], 
                         ), 
                       ), 
@@ -232,19 +232,19 @@ Colors.grey[300]),
     showDialog( 
       context: context, 
       builder: (context) => AlertDialog( 
-        title: const Text('Delete Address?'), 
-        content: const Text('Are you sure you want to remove this address?'), 
+        title: const Text('Xóa địa chỉ?'),
+        content: const Text('Bạn có chắc muốn xóa địa chỉ này không?'),
         actions: [ 
           TextButton( 
             onPressed: () => Navigator.pop(context), 
-            child: const Text('Cancel'), 
+            child: const Text('Hủy'),
           ), 
           TextButton( 
             onPressed: () { 
               _controller.deleteAddress(addressId); 
               Navigator.pop(context); 
             }, 
-            child: const Text('Delete', style: TextStyle(color: Colors.red)), 
+            child: const Text('Xóa', style: TextStyle(color: Colors.red)),
           ), 
         ], 
       ), 

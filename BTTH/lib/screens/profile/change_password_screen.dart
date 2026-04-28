@@ -31,7 +31,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null || user.email == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui long dang nhap lai.')),
+        const SnackBar(content: Text('Vui lòng đăng nhập lại.')),
       );
       return;
     }
@@ -50,18 +50,18 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Doi mat khau thanh cong.')),
+        const SnackBar(content: Text('Đổi mật khẩu thành công.')),
       );
       Navigator.pop(context, true);
     } on FirebaseAuthException catch (e) {
-      String message = 'Doi mat khau that bai.';
+      String message = 'Đổi mật khẩu thất bại.';
 
       if (e.code == 'wrong-password') {
-        message = 'Mat khau hien tai khong dung.';
+        message = 'Mật khẩu hiện tại không đúng.';
       } else if (e.code == 'weak-password') {
-        message = 'Mat khau moi qua yeu.';
+        message = 'Mật khẩu mới quá yếu.';
       } else if (e.code == 'requires-recent-login') {
-        message = 'Vui long dang nhap lai de doi mat khau.';
+        message = 'Vui lòng đăng nhập lại để đổi mật khẩu.';
       }
 
       if (!mounted) return;
@@ -78,7 +78,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Doi mat khau')),
+      appBar: AppBar(title: const Text('Đổi mật khẩu')),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Form(
@@ -89,7 +89,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 controller: _currentPasswordController,
                 obscureText: _hideCurrent,
                 decoration: InputDecoration(
-                  labelText: 'Mat khau hien tai',
+                  labelText: 'Mật khẩu hiện tại',
                   prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
                     onPressed: () =>
@@ -109,7 +109,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 controller: _newPasswordController,
                 obscureText: _hideNew,
                 decoration: InputDecoration(
-                  labelText: 'Mat khau moi',
+                  labelText: 'Mật khẩu mới',
                   prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
                     onPressed: () => setState(() => _hideNew = !_hideNew),
@@ -128,7 +128,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 controller: _confirmPasswordController,
                 obscureText: _hideConfirm,
                 decoration: InputDecoration(
-                  labelText: 'Xac nhan mat khau moi',
+                  labelText: 'Xác nhận mật khẩu mới',
                   prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
                     onPressed: () =>
@@ -144,7 +144,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   if (message != null) return message;
 
                   if (value != _newPasswordController.text) {
-                    return 'Mat khau xac nhan khong khop.';
+                    return 'Mật khẩu xác nhận không khớp.';
                   }
 
                   return null;
@@ -158,7 +158,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   onPressed: _isLoading ? null : _submit,
                   child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Luu'),
+                      : const Text('Lưu'),
                 ),
               ),
             ],

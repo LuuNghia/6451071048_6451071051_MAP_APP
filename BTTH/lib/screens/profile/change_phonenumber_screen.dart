@@ -19,7 +19,7 @@ class _ChangePhoneNumberScreenState extends State<ChangePhoneNumberScreen> {
   @override 
   Widget build(BuildContext context) { 
     return Scaffold( 
-      appBar: AppBar(title: const Text('Change Phone Number')), 
+      appBar: AppBar(title: const Text('Đổi số điện thoại')),
       body: Padding( 
         padding: const EdgeInsets.all(20), 
         child: Form( 
@@ -31,12 +31,12 @@ class _ChangePhoneNumberScreenState extends State<ChangePhoneNumberScreen> {
                 controller: _phoneController, 
                 keyboardType: TextInputType.phone, 
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly], 
-                decoration: const InputDecoration( 
-                  labelText: 'Phone Number', 
-                  hintText: '0123456789', 
-                  prefixIcon: Icon(Icons.phone), 
+                decoration: const InputDecoration(
+                  labelText: 'Số điện thoại',
+                  hintText: '0123456789',
+                  prefixIcon: Icon(Icons.phone),
                   border: OutlineInputBorder(),
-                   ), 
+                ),
                 validator: (value) { 
                   if (value == null || value.isEmpty) { 
                     return 'Số điện thoại không được để trống'; 
@@ -83,7 +83,7 @@ class _ChangePhoneNumberScreenState extends State<ChangePhoneNumberScreen> {
                         }, 
                   child: _isLoading 
                       ? const CircularProgressIndicator(color: Colors.white) 
-                      : const Text('Save'), 
+                      : const Text('Lưu'),
                 ), 
               ), 
    ], 

@@ -13,11 +13,11 @@ class Validators {
  
   static String? validatePassword(String value) { 
     if (value.isEmpty) { 
-      return 'Password không được để trống'; 
+      return 'Mật khẩu không được để trống';
     } 
  
     if (value.length < 6) { 
-      return 'Password phải >= 6 ký tự'; 
+      return 'Mật khẩu phải >= 6 ký tự';
     }
       return null; 
   } 

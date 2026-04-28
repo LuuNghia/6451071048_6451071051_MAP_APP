@@ -33,7 +33,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
  
     if (!agreePolicy) { 
       ScaffoldMessenger.of(context).showSnackBar( 
-        const SnackBar(content: Text('Bạn phải đồng ý Privacy & Terms')), 
+        const SnackBar(
+          content: Text('Bạn phải đồng ý Chính sách bảo mật và Điều khoản sử dụng'),
+        ), 
       ); 
       return; 
     } 
@@ -96,11 +98,11 @@ FontWeight.bold),
  
                 TextFormField( 
                   controller: firstNameController, 
-                  decoration: _inputDecoration('First Name', Icons.person), 
+                  decoration: _inputDecoration('Họ', Icons.person), 
                   validator: (value) { 
                     return Validators.validateRequired( 
                       value ?? '', 
-                      'First name', 
+                      'Họ', 
                     ); 
                   }, 
                 ), 
@@ -111,13 +113,13 @@ FontWeight.bold),
    TextFormField( 
                   controller: lastNameController, 
                   decoration: _inputDecoration( 
-                    'Last Name', 
+                    'Tên', 
                     Icons.person_outline, 
                   ), 
                   validator: (value) { 
                     return Validators.validateRequired( 
                       value ?? '', 
-                      'Last name', 
+                      'Tên', 
                     ); 
                   }, 
                 ), 
@@ -127,11 +129,14 @@ FontWeight.bold),
                 TextFormField( 
                   controller: usernameController, 
                   decoration: _inputDecoration( 
-                    'Username', 
+                    'Tên người dùng', 
                     Icons.alternate_email, 
                   ), 
                   validator: (value) { 
-                    return Validators.validateRequired(value ?? '', 'Username'); 
+                    return Validators.validateRequired(
+                      value ?? '',
+                      'Tên người dùng',
+                    ); 
                   }, 
                 ), 
  
@@ -151,7 +156,7 @@ FontWeight.bold),
                 TextFormField( 
                   controller: phoneController, 
                   keyboardType: TextInputType.phone, 
-                  decoration: _inputDecoration('Phone Number', Icons.phone), 
+                  decoration: _inputDecoration('Số điện thoại', Icons.phone), 
                   validator: (value) { 
                     return Validators.validatePhone(value ?? ''); 
                   }, 
@@ -162,7 +167,7 @@ FontWeight.bold),
                   controller: passwordController, 
                   obscureText: isPasswordHidden, 
                   decoration: _inputDecoration( 
-                    'Password', 
+                    'Mật khẩu', 
                     Icons.lock, 
                     suffixIcon: IconButton( 
                       icon: Icon( 
@@ -228,7 +233,7 @@ FontWeight.bold),
  
                 const SizedBox(height: 24), 
  
-                const Center(child: Text('OR')), 
+                const Center(child: Text('Hoặc')), 
  
                 const SizedBox(height: 16), 
  

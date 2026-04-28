@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart'; 
 import '../../common/widgets/primary_button.dart'; 
+import '../../data/services/login_auth_service.dart';
 import '../../routes/app_routes.dart'; 
 import '../../utils/validators.dart'; 
  
@@ -8,19 +9,37 @@ class ForgetPasswordScreen extends StatelessWidget {
  
   final GlobalKey<FormState> formKey = GlobalKey<FormState>(); 
   final TextEditingController emailController = TextEditingController(); 
+  final AuthService _authService = AuthService();
  
-  void _submit(BuildContext context) { 
+  Future<void> _submit(BuildContext context) async {
     final bool isValid = formKey.currentState!.validate(); 
  
     if (!isValid) { 
       return; 
     } 
  
-    Navigator.pushNamed( 
-      context, 
-      AppRoutes.resetEmailSent, 
-      arguments: emailController.text, 
-    ); 
+    try {
+      final String email = emailController.text.trim();
+      await _authService.sendPasswordResetEmail(email);
+
+      if (!context.mounted) {
+        return;
+      }
+
+      Navigator.pushNamed(
+        context,
+        AppRoutes.resetEmailSent,
+        arguments: email,
+      );
+    } catch (e) {
+      if (!context.mounted) {
+        return;
+      }
+
+      final message = e.toString().replaceFirst('Exception: ', '');
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(message)));
+    }
   } 
  
   @override 

@@ -37,7 +37,7 @@ super.initState();
             TextField( 
               controller: _controller, 
               decoration: const InputDecoration( 
-                labelText: 'Name', 
+                labelText: 'Họ và tên', 
                 prefixIcon: Icon(Icons.person), 
               ), 
             ), 
