@@ -101,7 +101,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
     } catch (e) { 
       ScaffoldMessenger.of( 
         context, 
-      ).showSnackBar(SnackBar(content: Text('Error: $e'))); 
+      ).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
     } finally { 
       if (mounted) setState(() => _isSaving = false); 
     } 
@@ -119,7 +119,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
       backgroundColor: Colors.grey[50], // Màu nền hơi xám cho nổi bật các card 
       appBar: AppBar( 
         title: Text( 
-          widget.address == null ? 'New Shipping Address' : 'Edit Address', 
+          widget.address == null ? 'Thêm địa chỉ giao hàng' : 'Sửa địa chỉ',
         ), 
         elevation: 0, 
         backgroundColor: Colors.white, 
@@ -134,7 +134,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
             child: Column( 
               crossAxisAlignment: CrossAxisAlignment.start, 
               children: [ 
-                _buildSectionTitle("Location Details"), 
+                _buildSectionTitle("Thông tin vị trí"),
                 const SizedBox(height: 12), 
  
                 // Dropdown Thành phố 
@@ -142,7 +142,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                   child: DropdownButtonFormField<String>( 
                     isExpanded: true, // Chống tràn 
                     value: _selectedCity, 
-                    hint: const Text("Select Province/City"), 
+                    hint: const Text("Chọn tỉnh/thành phố"),
                     decoration: 
 _inputDecoration(Icons.location_city_outlined), 
                     items: _cities 
@@ -157,7 +157,7 @@ _inputDecoration(Icons.location_city_outlined),
    ) 
                         .toList(), 
                     onChanged: _onCityChanged, 
-                    validator: (v) => v == null ? 'Please select a city' : 
+                    validator: (v) => v == null ? 'Vui lòng chọn tỉnh/thành' : 
 null, 
                   ), 
                 ), 
@@ -169,7 +169,7 @@ null,
                   child: DropdownButtonFormField<String>( 
                     isExpanded: true, // Chống tràn 
                     value: _selectedWard, 
-                    hint: const Text("Select Ward/Commune"), 
+                    hint: const Text("Chọn phường/xã"),
                     decoration: _inputDecoration(Icons.map_outlined), 
                     items: _wards 
                         .map( 
@@ -183,13 +183,13 @@ null,
                         ) 
                         .toList(), 
                     onChanged: (v) => setState(() => _selectedWard = v), 
-                    validator: (v) => v == null ? 'Please select a ward' : 
+                    validator: (v) => v == null ? 'Vui lòng chọn phường/xã' : 
 null, 
                   ), 
                 ), 
  
                 const SizedBox(height: 24), 
-                _buildSectionTitle("Address Details"), 
+                _buildSectionTitle("Thông tin địa chỉ"),
                 const SizedBox(height: 12), 
  
                 // Đường 
@@ -197,10 +197,10 @@ null,
                   controller: _streetController, 
                   decoration: _inputDecoration( 
                     Icons.signpost_outlined, 
-                    label: "Street Name", 
+                    label: "Tên đường",
                   ), 
                   validator: (v) => 
-                      (v == null || v.isEmpty) ? 'Enter street name' : null, 
+                      (v == null || v.isEmpty) ? 'Vui lòng nhập tên đường' : null,
                 ), 
  
                 const SizedBox(height: 16), 
@@ -209,10 +209,10 @@ null,
                   controller: _numberController, 
                   decoration: _inputDecoration( 
                     Icons.home_outlined, 
-                    label: "House Number / Building", 
+                    label: "Số nhà / Tòa nhà",
                   ), 
                   validator: (v) => 
-                      (v == null || v.isEmpty) ? 'Enter house number' : null, 
+                      (v == null || v.isEmpty) ? 'Vui lòng nhập số nhà' : null,
                 ), 
  
                 const SizedBox(height: 16), 
@@ -225,7 +225,7 @@ null,
                     value: _isDefault, 
                     activeColor: Colors.blue, 
                     title: const Text( 
-                      'Set as default address', 
+                      'Đặt làm địa chỉ mặc định',
                       style: TextStyle(fontSize: 15), 
                     ), 
                     onChanged: (v) => setState(() => _isDefault = v), 
@@ -257,13 +257,13 @@ null,
                               strokeWidth: 2, 
                             ), 
                           ) 
-                        : const Text( 
-                            'Save Address', 
-                            style: TextStyle( 
-                              fontSize: 16, 
-                              fontWeight: FontWeight.bold, 
-                            ), 
-                          ), 
+                        : const Text(
+                            'Lưu địa chỉ',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                   ), 
                 ), 
               ], 

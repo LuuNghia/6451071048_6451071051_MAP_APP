@@ -61,15 +61,15 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
   Future<void> _save() async { 
     // 1. Kiểm tra tính hợp lệ của dữ liệu (Validation) 
     if (_selectedBank == null) { 
-      _showError('Please select a bank'); 
+      _showError('Vui lòng chọn ngân hàng');
       return; 
     } 
     if (_accountNumber.text.trim().isEmpty) { 
-      _showError('Please enter account number'); 
+      _showError('Vui lòng nhập số tài khoản');
       return; 
     } 
  if (_accountHolderName.text.trim().isEmpty) { 
-      _showError('Please enter account holder name'); 
+      _showError('Vui lòng nhập tên chủ tài khoản');
       return; 
     } 
  
@@ -100,15 +100,15 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
           SnackBar( 
             content: Text( 
               widget.bank == null 
-                  ? 'Bank account added' 
-                  : 'Bank account updated', 
+                  ? 'Đã thêm tài khoản ngân hàng'
+                  : 'Đã cập nhật tài khoản ngân hàng',
             ), 
           ), 
         ); 
         Navigator.pop(context); 
       } 
     } catch (e) { 
-      _showError('Something went wrong: $e'); 
+      _showError('Có lỗi xảy ra: $e');
     } finally { 
       if (mounted) setState(() => _isLoading = false); 
     } 
@@ -141,6 +141,11 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
               height: 40, 
               width: 80, 
               fit: BoxFit.contain, 
+              errorBuilder: (_, __, ___) => const Icon(
+                Icons.account_balance,
+                size: 36,
+                color: Colors.blueGrey,
+              ),
             ), 
             const SizedBox(width: 16), 
             Expanded( 
@@ -155,7 +160,7 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
                     overflow: TextOverflow.ellipsis, 
                   ), 
                   Text( 
-                    'Code: ${_selectedBank['code']} - BIN: ${_selectedBank['bin']}', 
+                    'Mã: ${_selectedBank['code']} - BIN: ${_selectedBank['bin']}',
                     style: TextStyle(color: Colors.grey.shade600, fontSize: 13), 
                   ), 
                 ], 
@@ -171,7 +176,9 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
     return Scaffold( 
       appBar: AppBar( 
         title: Text( 
-          widget.bank == null ? 'Add Bank Account' : 'Edit Bank Account', 
+                  widget.bank == null
+                    ? 'Thêm tài khoản ngân hàng'
+                    : 'Sửa tài khoản ngân hàng',
         ), 
         elevation: 0, 
       ), 
@@ -184,7 +191,7 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
             crossAxisAlignment: CrossAxisAlignment.start, 
             children: [ 
               const Text( 
-                "Select Bank", 
+                "Chọn ngân hàng",
                 style: TextStyle(fontWeight: FontWeight.w600), 
               ), 
               const SizedBox(height: 8), 
@@ -206,7 +213,7 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
                   filled: true, 
                   fillColor: Colors.grey.shade50, 
                 ), 
-                hint: const Text("Choose a bank"), 
+                hint: const Text("Chọn một ngân hàng"),
                 items: _banks.map((bank) { 
                   return DropdownMenuItem( 
                     value: bank, 
@@ -225,7 +232,7 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
  
               const SizedBox(height: 24), 
               const Text( 
-                "Account Details", 
+                "Thông tin tài khoản",
                 style: TextStyle(fontWeight: FontWeight.w600), 
               ), 
               const SizedBox(height: 12), 
@@ -234,7 +241,7 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
                 controller: _accountNumber, 
                 keyboardType: TextInputType.number, 
                 decoration: InputDecoration( 
-                  labelText: 'Account Number', 
+                  labelText: 'Số tài khoản',
                   prefixIcon: const Icon(Icons.numbers), 
                   border: OutlineInputBorder( 
                     borderRadius: BorderRadius.circular(12), 
@@ -249,9 +256,9 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
                 textCapitalization: 
                     TextCapitalization.characters, // Tự động viết hoa 
                 decoration: InputDecoration( 
-                  labelText: 'Account Holder Name', 
+                  labelText: 'Tên chủ tài khoản',
                   prefixIcon: const Icon(Icons.person_outline), 
-                  helperText: "Example: NGUYEN VAN A", 
+                  helperText: "Ví dụ: NGUYEN VAN A",
                   border: OutlineInputBorder( 
                     borderRadius: BorderRadius.circular(12), 
                   ), 
@@ -276,7 +283,7 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
                   child: _isLoading 
                       ? const CircularProgressIndicator(color: Colors.white) 
                       : const Text( 
-                          'Save Bank Account', 
+                          'Lưu tài khoản ngân hàng',
                           style: TextStyle( 
                             fontSize: 16, 
                             fontWeight: FontWeight.bold, 

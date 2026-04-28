@@ -231,11 +231,11 @@ class _MystoreScreenState extends State<MystoreScreen> {
                 Expanded( 
                   child: Container( 
                     color: Colors.grey[300], 
-                    child: const Center(child: Text("Image")), 
+                    child: const Center(child: Text("Hình ảnh")), 
                   ), 
                 ), 
                 const SizedBox(height: 8), 
-                const Text("Product"), 
+                const Text("Sản phẩm"), 
                 const SizedBox(height: 4), 
                 const Text("\$99"), 
               ], 

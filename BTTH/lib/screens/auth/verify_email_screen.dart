@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../common/widgets/primary_button.dart'; 
 import '../../routes/app_routes.dart'; 
 import 'package:firebase_auth/firebase_auth.dart'; 
- 
+
 class VerifyEmailScreen extends StatelessWidget { 
   final String email; 
  
@@ -19,7 +19,7 @@ class VerifyEmailScreen extends StatelessWidget {
             children: [ 
               /// Image 
               Image.asset( 
-                'assets/images/animations/sammy-line-man-receives-amail.png', 
+                'assets/images/animations/sammy-line-man-receives-a-mail.png', 
                 height: 200, 
  ), 
  

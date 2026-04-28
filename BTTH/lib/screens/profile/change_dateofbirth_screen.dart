@@ -21,7 +21,7 @@ class _ChangeDateOfBirthScreenState extends State<ChangeDateOfBirthScreen> {
   @override 
   Widget build(BuildContext context) { 
     return Scaffold( 
-      appBar: AppBar(title: const Text('Change Date of Birth')), 
+      appBar: AppBar(title: const Text('Đổi ngày sinh')), 
       body: Padding( 
         padding: const EdgeInsets.all(20), 
         child: Form( 
@@ -33,7 +33,7 @@ TextFormField(
                 controller: _dateController, 
                 readOnly: true, 
                 decoration: const InputDecoration( 
-                  labelText: 'Date of Birth', 
+                  labelText: 'Ngày sinh', 
                   hintText: 'dd/MM/yyyy', 
                   prefixIcon: Icon(Icons.calendar_today), 
                   border: OutlineInputBorder(), 
@@ -73,7 +73,7 @@ TextFormField(
                         }, 
                   child: _isLoading 
                       ? const CircularProgressIndicator(color: Colors.white) 
-                      : const Text('Save'), 
+                      : const Text('Lưu'), 
                 ), 
               ), 
             ], 

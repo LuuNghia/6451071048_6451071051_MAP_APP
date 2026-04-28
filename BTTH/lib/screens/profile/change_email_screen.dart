@@ -16,7 +16,7 @@ class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
     @override 
   Widget build(BuildContext context) { 
     return Scaffold( 
-      appBar: AppBar(title: const Text('Change Email')), 
+      appBar: AppBar(title: const Text('Đổi email')), 
       body: Padding( 
         padding: const EdgeInsets.all(20), 
         child: Form( 
@@ -86,7 +86,7 @@ class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
                         }, 
                   child: _isLoading 
                       ? const CircularProgressIndicator(color: Colors.white) 
-                      : const Text('Save'), 
+                      : const Text('Lưu'), 
                 ), 
               ), 
             ], 

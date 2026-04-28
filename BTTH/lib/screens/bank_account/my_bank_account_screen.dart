@@ -14,7 +14,7 @@ class MyBankAccountScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFF8F9FE), // Nền xám nhạt cực sang 
       appBar: AppBar( 
         title: const Text( 
-          'My Bank Accounts', 
+          'Tài khoản ngân hàng',
           style: TextStyle(fontWeight: FontWeight.bold, color: 
 Colors.black87), 
         ), 
@@ -36,7 +36,7 @@ Colors.black87),
           ); 
         }, 
         label: const Text( 
-          'Add Bank', 
+          'Thêm tài khoản', 
           style: TextStyle(fontWeight: FontWeight.bold), 
         ), 
         icon: const Icon(Icons.add), 
@@ -184,7 +184,7 @@ Colors.black87),
           ), 
           const SizedBox(height: 16), 
           const Text( 
-            'No bank account linked yet', 
+            'Chưa có tài khoản ngân hàng', 
             style: TextStyle( 
               fontSize: 18, 
               fontWeight: FontWeight.w500, 
@@ -198,7 +198,7 @@ Colors.black87),
               MaterialPageRoute(builder: (_) => const 
 EditBankAccountScreen()), 
             ), 
-            child: const Text('Add your first account'), 
+            child: const Text('Thêm tài khoản đầu tiên'), 
           ), 
         ], 
       ), 
@@ -215,14 +215,14 @@ EditBankAccountScreen()),
       builder: (_) => AlertDialog( 
         shape: RoundedRectangleBorder(borderRadius: 
 BorderRadius.circular(20)), 
-        title: const Text('Delete account?'), 
+        title: const Text('Xóa tài khoản?'), 
         content: Text( 
-          'Do you really want to remove ${bank.shortName} from your list?', 
+          'Bạn có chắc muốn xóa ${bank.shortName} khỏi danh sách?', 
         ), 
         actions: [ 
           TextButton( 
             onPressed: () => Navigator.pop(context, false), 
-            child: const Text('Cancel', style: TextStyle(color: 
+            child: const Text('Hủy', style: TextStyle(color: 
 Colors.grey)), 
           ), 
           ElevatedButton( 
@@ -233,7 +233,7 @@ Colors.grey)),
               ), 
             ), 
             onPressed: () => Navigator.pop(context, true), 
-            child: const Text('Delete', style: TextStyle(color: 
+            child: const Text('Xóa', style: TextStyle(color: 
 Colors.white)), 
           ), 
         ], 
@@ -245,7 +245,7 @@ Colors.white)),
       if (context.mounted) { 
         ScaffoldMessenger.of(context).showSnackBar( 
           SnackBar( 
-            content: Text('Removed ${bank.shortName}'), 
+            content: Text('Đã xóa ${bank.shortName}'), 
             behavior: SnackBarBehavior.floating, 
           ), 
         ); 

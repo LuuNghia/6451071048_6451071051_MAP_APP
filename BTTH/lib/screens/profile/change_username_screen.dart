@@ -17,7 +17,7 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
   @override 
   Widget build(BuildContext context) { 
     return Scaffold( 
-      appBar: AppBar(title: const Text('Change Username')), 
+      appBar: AppBar(title: const Text('Đổi tên người dùng')), 
       body: Padding( 
         padding: const EdgeInsets.all(20), 
         child: Form( 
@@ -29,24 +29,24 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
                 controller: _usernameController, 
                 keyboardType: TextInputType.text, 
                 decoration: const InputDecoration( 
-                  labelText: 'Username', 
- hintText: 'Enter your username', 
+                  labelText: 'Tên người dùng', 
+                  hintText: 'Nhập tên người dùng', 
                   prefixIcon: Icon(Icons.person), 
                   border: OutlineInputBorder(), 
                 ), 
                 validator: (value) { 
                   if (value == null || value.isEmpty) { 
-                    return 'Username không được để trống'; 
+                    return 'Tên người dùng không được để trống'; 
                   } 
  
                   if (value.length < 4) { 
-                    return 'Username phải có ít nhất 4 ký tự'; 
+                    return 'Tên người dùng phải có ít nhất 4 ký tự'; 
                   } 
  
                   final RegExp usernameRegex = RegExp(r'^[a-zA-Z0-9._]+$'); 
  
                   if (!usernameRegex.hasMatch(value)) { 
-                    return 'Username chỉ gồm chữ, số, dấu . và _'; 
+                    return 'Tên người dùng chỉ gồm chữ, số, dấu . và _'; 
                   } 
  
                   return null; 
@@ -77,7 +77,7 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
                         }, 
                   child: _isLoading 
                       ? const CircularProgressIndicator(color: Colors.white) 
-                      : const Text('Save'), 
+                      : const Text('Lưu'), 
                 ), 
               ), 
      ], 

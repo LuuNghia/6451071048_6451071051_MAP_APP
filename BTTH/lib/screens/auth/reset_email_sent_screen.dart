@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart'; 
 import '../../common/widgets/primary_button.dart'; 
+import '../../data/services/login_auth_service.dart';
 import '../../routes/app_routes.dart'; 
  
 class ResetEmailSentScreen extends StatelessWidget { 
   final String email; 
+  static final AuthService _authService = AuthService();
  
   const ResetEmailSentScreen({super.key, required this.email}); 
  
@@ -46,7 +48,30 @@ FontWeight.bold)),
                 }, 
               ), 
  
-              TextButton(onPressed: () {}, child: const Text('Gửi lại email')), 
+              TextButton(
+                onPressed: () async {
+                  try {
+                    await _authService.sendPasswordResetEmail(email);
+                    if (!context.mounted) {
+                      return;
+                    }
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Email đã được gửi lại')),
+                    );
+                  } catch (e) {
+                    if (!context.mounted) {
+                      return;
+                    }
+
+                    final message =
+                        e.toString().replaceFirst('Exception: ', '');
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text(message)));
+                  }
+                },
+                child: const Text('Gửi lại email'),
+              ),
             ], 
           ), 
         ), 

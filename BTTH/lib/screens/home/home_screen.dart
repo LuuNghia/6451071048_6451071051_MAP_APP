@@ -5,7 +5,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String fullName = "Guest User";
+    String fullName = "Khách";
     return Scaffold(
       body: Column(
         children: [
@@ -30,7 +30,7 @@ class HomeScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Good day for shopping',
+                            'Chúc bạn mua sắm vui vẻ',
                             style: TextStyle(color: Colors.white70),
                           ),
                           const SizedBox(height: 4),
@@ -135,7 +135,7 @@ class HomeScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                "Category ${index + 1}",
+                                "Danh mục ${index + 1}",
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,
@@ -166,7 +166,7 @@ class HomeScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                       color: Colors.grey[300],
                     ),
-                    child: const Center(child: Text("Banner Slider")),
+                    child: const Center(child: Text("Ảnh quảng cáo")),
                   ),
 
                   const SizedBox(height: 24),
@@ -214,11 +214,11 @@ class HomeScreen extends StatelessWidget {
                             Expanded(
                               child: Container(
                                 color: Colors.grey[300],
-                                child: const Center(child: Text("Image")),
+                                child: const Center(child: Text("Hình ảnh")),
                               ),
                             ),
                             const SizedBox(height: 8),
-                            const Text("Product Name"),
+                            const Text("Tên sản phẩm"),
                             const SizedBox(height: 4),
                             const Text(
                               "\$99",
