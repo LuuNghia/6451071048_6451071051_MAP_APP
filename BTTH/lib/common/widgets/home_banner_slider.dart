@@ -15,14 +15,14 @@ class _HomeBannerSliderState extends State<HomeBannerSlider> {
   int currentIndex = 0; 
  
   final List<String> bannerImages = [ 
-    'assets/images/banners/banner_1.jpg', 
-    'assets/images/banners/banner_2.jpg', 
-    'assets/images/banners/banner_3.jpg', 
-    'assets/images/banners/banner_4.jpg', 
-    'assets/images/banners/banner_5.jpg', 
-    'assets/images/banners/banner_6.jpg', 
-    'assets/images/banners/banner_7.jpg', 
-    'assets/images/banners/banner_8.jpg', 
+    'assets/images/foods/Hai_San/Sieu_Topping_Xot_Mayonnaise.jpg',
+    'assets/images/foods/Hai_San/Xot_Doi_Pho_Mai_Cay.jpg',
+    'assets/images/foods/Bo/Bo_My_Xot_Pho_Mai.jpg',
+    'assets/images/foods/Bo/bo_tom_nuong_kieu_my.jpg',
+    'assets/images/foods/Ga/Ga_Pho_Mai.png',
+    'assets/images/foods/Heo/Sieu_Topping_Xuc_Xich.jpg',
+    'assets/images/foods/Heo/Sieu_Topping_Dam_Bong.jpg',
+    'assets/images/foods/Rau_Cu/Rau_Cu_Thap_Cam.jpg',
   ]; 
  
   @override 

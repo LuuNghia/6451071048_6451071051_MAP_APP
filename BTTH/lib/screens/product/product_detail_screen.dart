@@ -28,6 +28,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   String? selectedImage; 
  
   Map<String, int> selectedAttributes = {}; 
+
+  ImageProvider _imageProvider(String imageUrl) {
+    if (imageUrl.startsWith('assets/')) {
+      return AssetImage(imageUrl);
+    }
+    return NetworkImage(imageUrl);
+  }
  
   @override 
   void initState() { 
@@ -82,9 +89,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     background: Stack( 
                       children: [ 
                         Positioned.fill( 
-                          child: Image.network( 
-                            selectedImage ?? product.thumbnail, 
-                            fit: BoxFit.cover, 
+                          child: Image(
+                            image: _imageProvider(
+                              selectedImage ?? product.thumbnail,
+                            ),
+                            fit: BoxFit.cover,
                           ), 
                         ), 
                         if (isOutOfStock) 
@@ -255,7 +264,7 @@ Colors.grey.shade200,
                   width: 2, 
                 ), 
                 image: DecorationImage( 
-                  image: NetworkImage(imageUrl), 
+                  image: _imageProvider(imageUrl), 
                   fit: BoxFit.cover, 
                 ), 
               ), 

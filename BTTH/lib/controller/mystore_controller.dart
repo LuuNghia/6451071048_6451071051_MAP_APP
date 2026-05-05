@@ -31,6 +31,16 @@ class MyStoreController extends GetxController {
   Future<void> selectCategory(int index) async {
     selectedCategoryIndex.value = index;
     final categoryId = categories[index].id;
+    if (categoryId == 'all') {
+      final brandIds = featuredBrands.map((brand) => brand.id).toList();
+      categoryBrands.value = featuredBrands.toList();
+      products.value = await _service.getProductsByCategoryAndBrands(
+        categoryId,
+        brandIds,
+      );
+      return;
+    }
+
     final brandIds = await _service.getBrandIdsByCategory(categoryId);
     categoryBrands.value = featuredBrands
         .where((brand) => brandIds.contains(brand.id))
