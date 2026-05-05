@@ -1,7 +1,6 @@
-import 'package:draf_project/controller/cart_controller.dart'; 
-import 'package:draf_project/controller/notification_controller.dart'; 
-import 
-'package:draf_project/screens/notifications/my_notifications.dart'; 
+import 'package:btl/controller/cart_controller.dart'; 
+import 'package:btl/controller/notification_controller.dart'; 
+import 'package:btl/screens/notifications/my_notifications.dart'; 
 import 'package:flutter/material.dart'; 
 import 'package:get/get.dart'; // Đảm bảo đã thêm GetX 
 import '../../common/widgets/home_banner_slider.dart'; 
@@ -11,9 +10,9 @@ import '../../common/widgets/product_card.dart';
 import '/screens/product/product_by_subcategory_screen.dart'; 
 import '../cart/cart_overview_screen.dart'; 
 import '../product/popular_product_screen.dart'; 
-import 'package:draf_project/controller/login_controller.dart'; 
-import 'package:draf_project/controller/category_controller.dart'; 
-import 'package:draf_project/controller/product_controller.dart'; 
+import 'package:btl/controller/login_controller.dart'; 
+import 'package:btl/controller/category_controller.dart'; 
+import 'package:btl/controller/product_controller.dart'; 
  
 class HomeScreen extends StatelessWidget { 
   HomeScreen({super.key}); 

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart'; 
-import 'package:draf_project/data/models/order_model.dart'; 
-import 'package:draf_project/screens/order/ordered_detail_screen.dart'; 
+import 'package:btl/data/models/order_model.dart'; 
+import 'package:btl/screens/order/ordered_detail_screen.dart'; 
 import 'package:flutter/material.dart'; 
 import 'package:get/get.dart'; 
 import '../../controller/notification_controller.dart'; 
@@ -28,15 +28,13 @@ class MyNotificationScreen extends StatelessWidget {
       return {'icon': Icons.keyboard_return, 'color': Colors.blueGrey}; 
     if (msg.contains('refunded')) 
       return {'icon': Icons.monetization_on, 'color': Colors.teal}; 
- return {'icon': Icons.notifications, 'color': Colors.grey}; // Mặc 
-định 
+ return {'icon': Icons.notifications, 'color': Colors.grey}; // Mặc định 
   } 
  
   @override 
   Widget build(BuildContext context) { 
     return Scaffold( 
-      backgroundColor: Colors.grey[100], // Nền xám nhạt cho chuyên 
-nghiệp 
+      backgroundColor: Colors.grey[100], // Nền xám nhạt cho chuyên nghiệp 
       appBar: AppBar( 
         elevation: 0, 
         centerTitle: true, 
@@ -150,11 +148,8 @@ style['color']),
                                 ), 
                                 const SizedBox(width: 5), 
                                 Text( 
-                                  // Hiển thị thời gian (Bạn có thể dùng 
-intl để format đẹp hơn) 
-                                  "${noti.createdAt.hour}:${noti.created
-At.minute} - 
-${noti.createdAt.day}/${noti.createdAt.month}/${noti.createdAt.year}", 
+                                  // Hiển thị thời gian (Bạn có thể dùng intl để format đẹp hơn) 
+                                  "${noti.createdAt.hour}:${noti.createdAt.minute} - ${noti.createdAt.day}/${noti.createdAt.month}/${noti.createdAt.year}", 
                                   style: const TextStyle( 
                                     fontSize: 12, 
                                     color: Colors.grey, 
