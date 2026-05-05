@@ -1,78 +1,34 @@
-import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class BrandCard extends StatelessWidget {
-  final String imageUrl;
-  final String brandName;
-  final int productCount;
-  final VoidCallback? onTap;
-  const BrandCard({
-    Key? key,
-    required this.imageUrl,
-    required this.brandName,
-    required this.productCount,
-    this.onTap,
-  }) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            /// Brand Image
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                imageUrl,
-                height: 60,
-                width: 60,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(height: 12),
+import '../models/brand_model.dart';
 
-            /// Brand Name + Verified Icon
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Flexible(
-                  child: Text(
-                    brandName,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                const Icon(Icons.verified, color: Colors.blue, size: 18),
-              ],
-            ),
-            const SizedBox(height: 6),
+class BrandService {
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-            /// Product Count
-            Text(
-              '$productCount products',
-              style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
-            ),
-          ],
-        ),
-      ),
-    );
+  Future<List<BrandModel>> getAllBrands() async {
+    final snapshot = await _db.collection('brands').get();
+    return snapshot.docs.map((doc) => BrandModel.fromSnapshot(doc)).toList();
+  }
+
+  Future<List<BrandModel>> getAllFeaturedBrands() async {
+    final snapshot = await _db
+        .collection('brands')
+        .where('isActive', isEqualTo: true)
+        .where('isFeatured', isEqualTo: true)
+        .get();
+
+    final brands = snapshot.docs
+        .map((doc) => BrandModel.fromSnapshot(doc))
+        .toList();
+
+    brands.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    return brands;
+  }
+
+  Future<BrandModel?> getBrandById(String brandId) async {
+    final doc = await _db.collection('brands').doc(brandId).get();
+
+    if (!doc.exists) return null;
+    return BrandModel.fromSnapshot(doc);
   }
 }

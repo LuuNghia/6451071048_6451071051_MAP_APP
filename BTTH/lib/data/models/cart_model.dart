@@ -1,4 +1,4 @@
-  import 'package:btl/data/models/cart_item_model.dart'; 
+import 'package:btl/data/models/cart_item_model.dart'; 
  
 class CartModel { 
   String cartId; 
@@ -7,4 +7,4 @@ class CartModel {
   CartModel({required this.cartId, required this.items}); 
  
   static CartModel empty() => CartModel(cartId: '', items: []); 
-} 
+}

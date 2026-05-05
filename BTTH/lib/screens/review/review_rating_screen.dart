@@ -39,7 +39,7 @@ class ReviewRatingScreen extends StatelessWidget {
           ), 
         ), 
       ),
-       body: SingleChildScrollView( 
+        body: SingleChildScrollView( 
         physics: const BouncingScrollPhysics(), 
         child: Column( 
           crossAxisAlignment: CrossAxisAlignment.start, 
@@ -63,7 +63,8 @@ class ReviewRatingScreen extends StatelessWidget {
             ), 
  
             const Padding( 
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8), 
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 
+8), 
               child: Text( 
                 "Nhận xét từ khách hàng", 
                 style: TextStyle( 
@@ -87,8 +88,8 @@ class ReviewRatingScreen extends StatelessWidget {
     ); 
   } 
  
-  // ================= OVERVIEW SECTION ================= 
-  Widget _buildRatingOverview() { 
+  // ================= OVERVIEW SECTION =================
+   Widget _buildRatingOverview() { 
     return Row( 
       children: [ 
         // Cột trái: Điểm trung bình 
@@ -138,57 +139,58 @@ class ReviewRatingScreen extends StatelessWidget {
           width: 1, 
           color: Colors.grey.shade100, 
           margin: const EdgeInsets.symmetric(horizontal: 15),
-            Widget _buildRatingOverview() { 
-return Row( 
-      children: [ 
-        // Cột trái: Điểm trung bình 
+           ), 
+ 
+        // Cột phải: Tiến trình sao 
         Expanded( 
-          flex: 2, 
-          child: Column( 
-            mainAxisAlignment: MainAxisAlignment.center, 
-            children: [ 
-              Text( 
-                rating.toStringAsFixed(1), 
-                style: const TextStyle( 
-                  fontSize: 52, 
-                  fontWeight: FontWeight.w800, 
-                  color: Color(0xFF2D3436), 
-                  letterSpacing: -1, 
-                ), 
-              ), 
-              Row( 
-                mainAxisAlignment: MainAxisAlignment.center, 
-                children: List.generate( 
-                  5, 
-                  (index) => Icon( 
-                    index < rating.round() 
-                        ? Icons.star_rounded 
-                        : Icons.star_outline_rounded, 
-                    size: 20, 
-                    color: Colors.amber, 
-                  ), 
-                ), 
-              ), 
-              const SizedBox(height: 8), 
-              Text( 
-                '$reviewCount đánh giá', 
-                style: TextStyle( 
-                  color: Colors.grey.shade500, 
-                  fontSize: 13, 
-                  fontWeight: FontWeight.w500, 
-                ), 
-              ), 
-            ], 
+          flex: 3, 
+          child: StreamBuilder<QuerySnapshot>( 
+            stream: FirebaseFirestore.instance 
+                .collection('reviews') 
+                .where('productId', isEqualTo: productId) 
+                .where('isDeleted', isEqualTo: false) 
+                .snapshots(), 
+            builder: (context, snapshot) { 
+              if (!snapshot.hasData) return const SizedBox(); 
+ 
+              final docs = snapshot.data!.docs; 
+              final total = docs.length; 
+              Map<int, int> counts = {5: 0, 4: 0, 3: 0, 2: 0, 1: 0}; 
+ 
+              for (var doc in docs) { 
+                int r = (doc['rating'] ?? 0).toInt(); 
+                if (r >= 1 && r <= 5) counts[r] = (counts[r] ?? 0) + 1; 
+              } 
+ 
+              return Column( 
+                children: [5, 4, 3, 2, 1].map((star) { 
+                  return Padding( 
+                    padding: const EdgeInsets.symmetric(vertical: 2), 
+                    child: _StarProgressRow( 
+                      star: star, 
+                      value: total == 0 ? 0 : (counts[star]! / total), 
+                    ), 
+                  ); 
+                }).toList(), 
+              ); 
+            }, 
           ), 
         ), 
+      ], 
+    ); 
+  } 
  
-        // Đường kẻ dọc 
-        Container( 
-          height: 80, 
-          width: 1, 
-          color: Colors.grey.shade100, 
-          margin: const EdgeInsets.symmetric(horizontal: 15),
-            .orderBy('createdAt', descending: true) 
+  // ================= REVIEW LIST SECTION ================= 
+  Widget _buildReviewList() { 
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid; 
+ 
+    return StreamBuilder<QuerySnapshot>( 
+      stream: FirebaseFirestore.instance 
+          .collection('reviews') 
+          .where('productId', isEqualTo: productId) 
+          .where('isDeleted', isEqualTo: false) 
+
+ .orderBy('createdAt', descending: true) 
           .snapshots(), 
       builder: (context, snapshot) { 
         if (snapshot.connectionState == ConnectionState.waiting) { 
@@ -229,60 +231,64 @@ return Row(
                 Text( 
                   "Chưa có đánh giá nào.\nHãy là người đầu tiên nhận xét!", 
                   textAlign: TextAlign.center, 
-                  style: TextStyle(color: Colors.grey.shade500, height: 1.5), 
+                  style: TextStyle(color: Colors.grey.shade500, height: 
+1.5), 
                 ), 
               ], 
             ), 
           ); 
         }
-          .orderBy('createdAt', descending: true) 
-          .snapshots(), 
-      builder: (context, snapshot) { 
-        if (snapshot.connectionState == ConnectionState.waiting) { 
-          return const Center( 
-            child: Padding( 
-              padding: EdgeInsets.all(40), 
-              child: CircularProgressIndicator(), 
-            ), 
-          ); 
-        } 
+         return ListView.separated( 
+          shrinkWrap: true, 
+          padding: const EdgeInsets.only(top: 10), 
+          physics: const NeverScrollableScrollPhysics(), 
+          itemCount: docs.length, 
+          separatorBuilder: (context, index) => const SizedBox(height: 
+16), 
+          itemBuilder: (context, index) { 
+            final data = docs[index].data() as Map<String, dynamic>; 
+            final isApproved = data['isApproved'] ?? false; 
+            final userId = data['userId']; 
+            final isOwner = userId == currentUserId; 
  
-        final docs = snapshot.data?.docs ?? []; 
+            if (!isApproved && !isOwner) { 
+              return const SizedBox.shrink(); 
+            } 
  
-        if (docs.isEmpty) { 
-          return Center( 
-            child: Column( 
-              children: [ 
-                const SizedBox(height: 60), 
-                Container( 
-                  padding: const EdgeInsets.all(20), 
-                  decoration: BoxDecoration( 
-                    color: Colors.white, 
-                    shape: BoxShape.circle, 
-                    boxShadow: [ 
-                      BoxShadow( 
-                        color: Colors.black.withOpacity(0.03), 
-                        blurRadius: 10, 
-                      ), 
-                    ], 
-                  ), 
-                  child: Icon( 
-                    Icons.rate_review_outlined, 
-                    size: 50, 
-                    color: Colors.grey.shade300, 
-                  ), 
-                ), 
-                const SizedBox(height: 16), 
-                Text( 
-                  "Chưa có đánh giá nào.\nHãy là người đầu tiên nhận xét!", 
-                  textAlign: TextAlign.center, 
-                  style: TextStyle(color: Colors.grey.shade500, height: 1.5), 
-                ), 
-              ], 
-            ), 
-          ); 
-        }
-         '$star', 
+            return _ReviewItem( 
+              reviewId: docs[index].id, 
+              isOwner: isOwner, 
+              isApproved: isApproved, 
+              userName: data['userName'] ?? 'Người dùng', 
+              title: data['title'] ?? '', 
+              rating: (data['rating'] ?? 0).toDouble(), 
+              reviewText: data['reviewText'] ?? '', 
+              mediaUrls: List<String>.from(data['mediaUrls'] ?? []), 
+              createdAt: (data['createdAt'] as Timestamp).toDate(), 
+              userImage: data['userProfileImage'], 
+            ); 
+          }, 
+        ); 
+      }, 
+    ); 
+  } 
+} 
+ 
+// ================= COMPONENT: STAR PROGRESS ROW ================= 
+class _StarProgressRow extends StatelessWidget { 
+  final int star; 
+  final double value; 
+ 
+  const _StarProgressRow({required this.star, required this.value}); 
+ 
+  @override 
+  Widget build(BuildContext context) { 
+    return Row( 
+      children: [ 
+        SizedBox( 
+          width: 10, 
+          child: Text( 
+ '$star', 
             style: const TextStyle( 
               fontSize: 11, 
               fontWeight: FontWeight.bold, 
@@ -331,7 +337,7 @@ class _ReviewItem extends StatelessWidget {
   final List<String> mediaUrls; 
   final DateTime createdAt; 
   final String? userImage; 
-   const _ReviewItem({ 
+  const _ReviewItem({ 
     required this.reviewId, 
     required this.isOwner, 
     required this.isApproved, 
@@ -380,9 +386,8 @@ class _ReviewItem extends StatelessWidget {
                   child: userImage == null 
                       ? Icon(Icons.person, color: Colors.blue.shade200) 
                       : null, 
-                ), 
-
-), 
+                ),
+                  ), 
               const SizedBox(width: 12), 
               Expanded( 
                 child: Column( 
@@ -431,8 +436,9 @@ class _ReviewItem extends StatelessWidget {
                 color: Colors.amber, 
               ), 
             ), 
-          ),
-           const SizedBox(height: 12), 
+          ), 
+
+ const SizedBox(height: 12), 
  
           /// CONTENT 
           if (title.isNotEmpty) 
@@ -479,8 +485,8 @@ class _ReviewItem extends StatelessWidget {
                   ); 
                 }, 
               ), 
-            ),
-             /// FOOTER 
+            ), 
+                 /// FOOTER 
           const SizedBox(height: 16), 
           Row( 
             mainAxisAlignment: MainAxisAlignment.spaceBetween, 
@@ -529,7 +535,8 @@ class _ReviewItem extends StatelessWidget {
                           "Hữu ích", 
                           style: TextStyle( 
                             color: Colors.grey.shade500, 
-                            fontSize: 13, fontWeight: FontWeight.w500, 
+                            fontSize: 13,
+                                fontWeight: FontWeight.w500, 
                           ), 
                         ), 
                       ], 
@@ -548,20 +555,23 @@ class _ReviewItem extends StatelessWidget {
     showDialog( 
       context: context, 
       builder: (context) => AlertDialog( 
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), 
+        shape: RoundedRectangleBorder(borderRadius: 
+BorderRadius.circular(20)), 
         title: const Text("Xóa đánh giá?"), 
         content: const Text("Bạn có chắc chắn muốn xóa phản hồi này không?"), 
         actions: [ 
           TextButton( 
             onPressed: () => Navigator.pop(context), 
-            child: const Text("Hủy", style: TextStyle(color: Colors.grey)), 
+            child: const Text("Hủy", style: TextStyle(color: 
+Colors.grey)), 
           ), 
           ElevatedButton( 
             onPressed: () async { 
               await FirebaseFirestore.instance 
                   .collection('reviews') 
                   .doc(reviewId) 
-                  .update({'isDeleted': true, 'updatedAt': Timestamp.now()}); 
+                  .update({'isDeleted': true, 'updatedAt': 
+Timestamp.now()}); 
               Navigator.pop(context); 
             }, 
             style: ElevatedButton.styleFrom( 
@@ -574,7 +584,7 @@ class _ReviewItem extends StatelessWidget {
             child: const Text("Xác nhận xóa"), 
           ), 
         ], 
-      ), 
-   ); 
+      ),
+          ); 
   } 
 } 

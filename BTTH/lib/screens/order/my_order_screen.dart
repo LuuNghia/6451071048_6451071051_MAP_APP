@@ -1,4 +1,4 @@
-import 'package:draf_project/screens/order/ordered_detail_screen.dart';
+import 'package:btl/screens/order/ordered_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controller/order_controller.dart';
