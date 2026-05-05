@@ -72,6 +72,14 @@ flutter:
     - assets/images/on_boarding_images/
     - assets/images/animations/
     - assets/images/banners/
+    - assets/images/foods/
+    - assets/images/foods/icon/
+    - assets/images/foods/Bo/
+    - assets/images/foods/Ga/
+    - assets/images/foods/Hai_San/
+    - assets/images/foods/Heo/
+    - assets/images/foods/Rau_Cu/
+    
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

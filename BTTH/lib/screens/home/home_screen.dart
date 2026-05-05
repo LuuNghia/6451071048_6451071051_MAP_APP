@@ -20,6 +20,13 @@ class HomeScreen extends StatelessWidget {
   final ProductController productController = Get.put(ProductController()); 
  
   final cartController = Get.find<CartController>(); 
+
+  ImageProvider _categoryImageProvider(String imageUrl) {
+    if (imageUrl.startsWith('assets/')) {
+      return AssetImage(imageUrl);
+    }
+    return NetworkImage(imageUrl);
+  }
   @override 
   Widget build(BuildContext context) { 
     // Sử dụng GetBuilder để bọc bên ngoài Scaffold 
@@ -226,13 +233,28 @@ category.name,
                                   }, 
                                   child: Column( 
                                     children: [ 
-                                      CircleAvatar( 
-                                        radius: 30, 
-
-  backgroundImage: NetworkImage( 
-                                          category.imageURL, 
+                                      if (category.id == 'all')
+                                        CircleAvatar(
+                                          radius: 30,
+                                          backgroundColor: Colors.white,
+                                          child: const Text(
+                                            'Tất cả',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              color: Colors.blue,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        )
+                                      else
+                                        CircleAvatar( 
+                                          radius: 30, 
+                                          backgroundImage: 
+                                              _categoryImageProvider(
+                                            category.imageURL,
+                                          ),
                                         ), 
-                                      ), 
                                       const SizedBox(height: 6), 
                                       Text( 
                                         category.name, 

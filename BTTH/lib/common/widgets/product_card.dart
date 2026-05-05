@@ -10,6 +10,52 @@ class ProductCard extends StatelessWidget {
   final ProductModel product; 
  
   const ProductCard({super.key, required this.product}); 
+
+  ImageProvider _productImageProvider(String imageUrl) {
+    if (imageUrl.startsWith('assets/')) {
+      return AssetImage(imageUrl);
+    }
+    return NetworkImage(imageUrl);
+  }
+
+  String _fallbackProductImage() {
+    const fallbackMap = {
+      'seafood': 'assets/images/foods/Hai_San/Sieu_Topping_Xot_Mayonnaise.jpg',
+      'beef': 'assets/images/foods/Bo/Bo_My_Xot_Pho_Mai.jpg',
+      'chicken': 'assets/images/foods/Ga/Ga_Pho_Mai.png',
+      'pork': 'assets/images/foods/Heo/Sieu_Topping_Xuc_Xich.jpg',
+      'veggie': 'assets/images/foods/Rau_Cu/Rau_Cu_Thap_Cam.jpg',
+      'all': 'assets/images/foods/Rau_Cu/Pho_Mai_Truyen_Thong.jpg',
+    };
+
+    for (final categoryId in product.categoryIds) {
+      if (fallbackMap.containsKey(categoryId)) {
+        return fallbackMap[categoryId]!;
+      }
+    }
+
+    return fallbackMap['all']!;
+  }
+
+  String _resolveThumbnail() {
+    final value = product.thumbnail.trim();
+    if (value.isEmpty || value.contains('/foods/icon/')) {
+      return _fallbackProductImage();
+    }
+    return value;
+  }
+
+  String? _getSizeLabel() {
+    for (final attribute in product.attributes) {
+      final name = attribute.name.toLowerCase();
+      if (name.contains('size') || name.contains('kich')) {
+        if (attribute.values.isNotEmpty) {
+          return attribute.values.first;
+        }
+      }
+    }
+    return null;
+  }
  
   @override 
   Widget build(BuildContext context) { 
@@ -58,8 +104,8 @@ class ProductCard extends StatelessWidget {
                   ), 
                   child: AspectRatio( 
                     aspectRatio: 1.1, // Cố định tỉ lệ ảnh để tránh nhảy layout 
-                    child: Image.network( 
-                      product.thumbnail, 
+                    child: Image(
+                      image: _productImageProvider(_resolveThumbnail()),
                       width: double.infinity, 
                       fit: BoxFit.cover, 
                       errorBuilder: (_, __, ___) => Container( 
@@ -193,6 +239,17 @@ wishlistController.toggleWishlist(product);
                         height: 1.2, 
                       ), 
                     ), 
+                    const SizedBox(height: 4),
+                    if (_getSizeLabel() != null)
+                      Text(
+                        'Size: ${_getSizeLabel()}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey[600],
+                        ),
+                      ),
  
                     const Spacer(), // Đẩy phần giá và rating xuống đáy 
                     /// Giá sản phẩm 

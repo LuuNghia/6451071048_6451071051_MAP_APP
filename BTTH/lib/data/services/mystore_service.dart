@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/brand_model.dart';
 import '../models/category_model.dart';
 import '../models/product_model.dart';
+import '../local/pizza_categories.dart';
 
 class MyStoreService {
   final _db = FirebaseFirestore.instance;
@@ -18,12 +19,22 @@ class MyStoreService {
 
   /// 2. Categories
   Future<List<CategoryModel>> getCategories() async {
-    final snapshot = await _db
-        .collection('categories')
-        .where('isActive', isEqualTo: true)
-        .orderBy('priority')
-        .get();
-    return snapshot.docs.map((e) => CategoryModel.fromSnapshot(e)).toList();
+    try {
+      final snapshot = await _db
+          .collection('categories')
+          .where('isActive', isEqualTo: true)
+          .orderBy('priority')
+          .get();
+      if (snapshot.docs.isNotEmpty) {
+        return snapshot.docs
+            .map((e) => CategoryModel.fromSnapshot(e))
+            .toList();
+      }
+    } catch (_) {
+      // Fall back to local pizza categories when Firestore is unavailable.
+    }
+
+    return PizzaCategories.defaults();
   }
 
   /// 3. Brand by Category (N-N table)
@@ -41,11 +52,15 @@ class MyStoreService {
     List<String> brandIds,
   ) async {
     if (brandIds.isEmpty) return [];
-    final snapshot = await _db
+    Query<Map<String, dynamic>> query = _db
         .collection('products')
-        .where('categoryIds', arrayContains: categoryId)
-        .where('brandId', whereIn: brandIds)
-        .get();
+        .where('brandId', whereIn: brandIds);
+
+    if (categoryId != 'all') {
+      query = query.where('categoryIds', arrayContains: categoryId);
+    }
+
+    final snapshot = await query.get();
     return snapshot.docs.map((e) {
       return ProductModel.fromSnapshot(e, null);
     }).toList();
