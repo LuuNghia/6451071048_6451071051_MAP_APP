@@ -327,6 +327,12 @@ wishlistController.toggleWishlist(product);
                             onPressed: isOutOfStock
                                 ? null
                                 : () {
+                                    final authController =
+                                        Get.find<AuthController>();
+                                    if (authController.currentUser == null) {
+                                      _showLoginDialog();
+                                      return;
+                                    }
                                     cartController.addToCart(
                                       CartItemModel(
                                         productId: product.id,

@@ -15,16 +15,6 @@ class CartController extends GetxController {
     ///QUAN TRỌNG: phải assign lại list 
     cartItems.assignAll(_service.cart.items); 
 
-    Get.closeAllSnackbars();
-    Get.rawSnackbar(
-      title: 'Success',
-      message: 'Added to cart',
-      snackPosition: SnackPosition.TOP,
-      margin: EdgeInsets.all(12),
-      backgroundColor: Color(0xFF2196F3),
-      borderRadius: 10,
-      duration: const Duration(seconds: 2),
-    );
   } 
  
   /// REMOVE 

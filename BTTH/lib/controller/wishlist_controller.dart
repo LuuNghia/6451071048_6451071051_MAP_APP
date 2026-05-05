@@ -1,6 +1,7 @@
 import 'package:btl/controller/login_controller.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../data/local/pizza_products.dart';
 import '../data/models/product_model.dart';
 
 class WishlistController extends GetxController {
@@ -29,6 +30,12 @@ class WishlistController extends GetxController {
           .get();
       if (productDoc.exists) {
         items.add(ProductModel.fromSnapshot(productDoc, null));
+      } else {
+        final local = PizzaProducts.defaults()
+            .firstWhereOrNull((product) => product.id == productId);
+        if (local != null) {
+          items.add(local);
+        }
       }
     }
     update();
@@ -50,9 +57,13 @@ class WishlistController extends GetxController {
     if (wishlistIds.contains(product.id)) {
       await docRef.delete();
       wishlistIds.remove(product.id);
+      items.removeWhere((e) => e.id == product.id);
     } else {
       await docRef.set({'productId': product.id});
       wishlistIds.add(product.id);
+      if (!items.any((e) => e.id == product.id)) {
+        items.add(product);
+      }
     }
     update();
   }

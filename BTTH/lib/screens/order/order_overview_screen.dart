@@ -14,6 +14,18 @@ class _OrderReviewScreenState extends State<OrderReviewScreen> {
   final OrderController controller = Get.put(OrderController());
   final CartController cart = Get.find<CartController>();
   final TextEditingController couponController = TextEditingController();
+
+  ImageProvider? _imageProvider(String imageUrl) {
+    if (imageUrl.isEmpty) return null;
+    if (imageUrl.startsWith('assets/')) {
+      return AssetImage(imageUrl);
+    }
+    return NetworkImage(imageUrl);
+  }
+
+  String _formatVnd(double value) {
+    return "₫${value.toStringAsFixed(0)}";
+  }
   @override
   void initState() {
     super.initState();
@@ -61,6 +73,19 @@ class _OrderReviewScreenState extends State<OrderReviewScreen> {
                 padding: const EdgeInsets.all(16),
                 physics: const BouncingScrollPhysics(),
                 children: [
+                  if (controller.items.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 24),
+                      child: Center(
+                        child: Text(
+                          "Chưa có sản phẩm trong đơn hàng",
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    ),
                   /// 1. DANH SÁCH SẢN PHẨM
                   _buildSectionTitle("Sản phẩm trong đơn"),
                   Container(
@@ -96,18 +121,26 @@ class _OrderReviewScreenState extends State<OrderReviewScreen> {
                                 ),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(12),
-                                  child: Image.network(
-                                    item.image ?? "",
-                                    width: 60,
-                                    height: 60,
-                                    fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            const Icon(
-                                              Icons.image_not_supported,
-                                              size: 30,
-                                            ),
-                                  ),
+                                  child: _imageProvider(item.image ?? "") ==
+                                          null
+                                      ? const Icon(
+                                          Icons.image_not_supported,
+                                          size: 30,
+                                        )
+                                      : Image(
+                                          image: _imageProvider(
+                                            item.image ?? "",
+                                          )!,
+                                          width: 60,
+                                          height: 60,
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  const Icon(
+                                                    Icons.image_not_supported,
+                                                    size: 30,
+                                                  ),
+                                        ),
                                 ),
                               ),
                               title: Row(
@@ -499,6 +532,7 @@ class _OrderReviewScreenState extends State<OrderReviewScreen> {
     double fontSize = 14,
     Color? color,
   }) {
+    final formatted = _formatVnd(value.abs());
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -511,9 +545,7 @@ class _OrderReviewScreenState extends State<OrderReviewScreen> {
           ),
         ),
         Text(
-          value < 0
-              ? "- \$${(value.abs()).toStringAsFixed(0)}"
-              : "\$${value.toStringAsFixed(0)}",
+          value < 0 ? "- $formatted" : formatted,
           style: TextStyle(
             fontSize: fontSize,
             color: color ?? (bold ? Colors.black : Colors.black),

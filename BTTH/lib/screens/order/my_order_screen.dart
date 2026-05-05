@@ -165,12 +165,10 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
   Widget _buildFilterBar() {
     final filters = {
       "all": "Tất cả",
-      "created": "Chờ xem xét",
+      "created": "Chờ xác nhận",
       "processing": "Đang xử lý",
-      "shipped": "Vận chuyển",
       "delivered": "Đã giao",
       "cancelled": "Đã hủy",
-      "returned": "Hoàn trả",
     };
     return Container(
       height: 60,
@@ -273,7 +271,7 @@ class _OrderHistoryCard extends StatelessWidget {
       case 'created':
         statusColor = Colors.amber.shade700;
         statusIcon = Icons.pending_actions;
-        statusText = "Chờ duyệt";
+        statusText = "Chờ xác nhận";
         break;
       case 'cancelled':
         statusColor = Colors.red;
@@ -390,7 +388,7 @@ class _OrderHistoryCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '\$${total.toStringAsFixed(0)}',
+                        '₫${total.toStringAsFixed(0)}',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w900,
