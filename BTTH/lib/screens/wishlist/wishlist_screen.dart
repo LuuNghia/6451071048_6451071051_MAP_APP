@@ -126,7 +126,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
           SizedBox(
             width: 200,
             child: ElevatedButton(
-              onPressed: () => Get.back(),
+              onPressed: () => Get.offAllNamed(AppRoutes.home),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue.shade700,
                 foregroundColor: Colors.white,

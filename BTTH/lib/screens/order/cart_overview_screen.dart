@@ -8,6 +8,10 @@ import '../order/order_overview_screen.dart';
  
 class CartOverviewScreen extends StatelessWidget { 
   const CartOverviewScreen({super.key}); 
+
+  String _formatVnd(double value) {
+    return "₫${value.toStringAsFixed(0)}";
+  }
   @override 
   Widget build(BuildContext context) { 
     final cartController = Get.find<CartController>(); 
@@ -54,7 +58,7 @@ class CartOverviewScreen extends StatelessWidget {
                       ), 
                       const SizedBox(height: 24), 
                       ElevatedButton( 
-                        onPressed: () => Get.back(), 
+                        onPressed: () => Get.offAllNamed('/home'), 
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue.shade600, 
                           foregroundColor: Colors.white, 
@@ -117,7 +121,7 @@ class CartOverviewScreen extends StatelessWidget {
                           style: TextStyle(color: Colors.grey, fontSize: 14), 
                         ), 
                         Text( 
-                          '\$${cartController.totalPrice.toStringAsFixed(2)}', 
+                          _formatVnd(cartController.totalPrice), 
                           style: TextStyle( 
                             fontSize: 22, 
                             fontWeight: FontWeight.bold, 
@@ -201,6 +205,17 @@ class _CartItem extends StatelessWidget {
     required this.onDecrease, 
     required this.onRemove, 
   }); 
+
+  ImageProvider _imageProvider(String imageUrl) {
+    if (imageUrl.startsWith('assets/')) {
+      return AssetImage(imageUrl);
+    }
+    return NetworkImage(imageUrl);
+  }
+
+  String _formatVnd(double value) {
+    return "₫${value.toStringAsFixed(0)}";
+  }
   @override 
   Widget build(BuildContext context) { 
     final total = item.finalPrice * item.quantity; 
@@ -237,8 +252,12 @@ class _CartItem extends StatelessWidget {
                     height: 90, 
                     width: 90, 
                     fit: BoxFit.cover, 
-                    errorBuilder: (_, __, ___) => 
-                        const Icon(Icons.image_not_supported, size: 40), 
+                    errorBuilder: (_, __, ___) => Image(
+                      image: _imageProvider(item.image ?? ''),
+                      height: 90,
+                      width: 90,
+                      fit: BoxFit.cover,
+                    ),
                   ), 
                 ), 
               ), 
@@ -345,7 +364,7 @@ onIncrease),
                       ), 
                     ), 
                     Text( 
-                      '\$${total.toStringAsFixed(2)}', 
+                      _formatVnd(total), 
                       style: TextStyle( 
                         fontWeight: FontWeight.bold, 
                         fontSize: 16, 

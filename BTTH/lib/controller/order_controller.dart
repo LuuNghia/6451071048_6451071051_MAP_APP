@@ -40,6 +40,9 @@ class OrderController extends GetxController {
     subTotal.value = items.fold(0, (sum, e) => sum + (e.price * e.quantity)); 
  
     _calculateTax(); 
+    if (shippingFee.value == 0 && items.isNotEmpty) {
+      shippingFee.value = 30000;
+    }
   } 
  
   void _calculateTax() { 
@@ -141,7 +144,12 @@ class OrderController extends GetxController {
  
   /// ================= CREATE ORDER ================= 
   Future<void> createOrder() async { 
-    final int shipping = cart.cartItems.length; 
+    if (items.isEmpty) {
+      Get.snackbar("Error", "Giỏ hàng đang trống");
+      return;
+    }
+
+    final int shipping = shippingFee.value.toInt(); 
     if (selectedAddress.value == null) { 
       Get.snackbar("Error", "Vui lòng chọn địa chỉ"); 
       return; 
@@ -262,12 +270,16 @@ FirebaseFirestore.instance.collection('coupons').doc(docId).update({
   Future<void> fetchMyOrders() async { 
     try { 
       isLoadingOrders.value = true; 
- 
+      if (auth.currentUser == null) {
+        myOrders.clear();
+        return;
+      }
+
       final userId = auth.currentUser!.id; 
- 
+
       final orders = await orderService.getOrdersByUser(userId); 
- 
-      myOrders.assignAll(orders); 
+
+      myOrders.assignAll(orders);
     } catch (e) { 
       Get.snackbar("Error", "Không load được orders: $e"); 
     } finally { 
