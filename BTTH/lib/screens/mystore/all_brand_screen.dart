@@ -1,6 +1,6 @@
+import 'package:btl/common/widgets/brand_cart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../common/widgets/brand_card.dart';
 import '../../controller/brand_controller.dart';
 import '../../data/models/brand_model.dart';
 import 'brand_detail_screen.dart';

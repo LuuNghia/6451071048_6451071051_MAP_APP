@@ -1,6 +1,6 @@
-import 'package:draf_project/controller/cart_controller.dart'; 
-import 'package:draf_project/controller/login_controller.dart'; 
-import 'package:draf_project/controller/wishlist_controller.dart'; 
+import 'package:btl/controller/cart_controller.dart'; 
+import 'package:btl/controller/login_controller.dart'; 
+import 'package:btl/controller/wishlist_controller.dart'; 
 import 'package:flutter/material.dart'; 
 import 'package:get/get.dart'; 
 import '../../data/models/product_model.dart'; 
@@ -49,8 +49,7 @@ class ProductCard extends StatelessWidget {
         child: Column( 
           crossAxisAlignment: CrossAxisAlignment.start, 
           children: [ 
-            /// ================= PHẦN HÌNH ẢNH (Sử dụng LayoutBuilder 
-để tránh tràn) ================= 
+            /// ================= PHẦN HÌNH ẢNH (Sử dụng LayoutBuilder để tránh tràn) ================= 
             Stack( 
               children: [ 
                 ClipRRect( 
@@ -58,8 +57,7 @@ class ProductCard extends StatelessWidget {
                     top: Radius.circular(16), 
                   ), 
                   child: AspectRatio( 
-                    aspectRatio: 1.1, // Cố định tỉ lệ ảnh để tránh nhảy 
-layout 
+                    aspectRatio: 1.1, // Cố định tỉ lệ ảnh để tránh nhảy layout 
                     child: Image.network( 
                       product.thumbnail, 
                       width: double.infinity, 
@@ -133,8 +131,7 @@ layout
                     ), 
                   ), 
  
-                /// NÚT YÊU THÍCH (Đặt trên ảnh để tiết kiệm diện tích 
-bên dưới) 
+                /// NÚT YÊU THÍCH (Đặt trên ảnh để tiết kiệm diện tích bên dưới) 
                 Positioned( 
                   top: 4, 
 right: 4, 
@@ -165,8 +162,7 @@ wishlistController.toggleWishlist(product);
               ], 
             ), 
  
-            /// ================= PHẦN NỘI DUNG (Sử dụng padding hợp lý) 
-================= 
+            /// ================= PHẦN NỘI DUNG (Sử dụng padding hợp lý) ================= 
             Expanded( 
               child: Padding( 
                 padding: const EdgeInsets.fromLTRB(10, 8, 10, 8), 
