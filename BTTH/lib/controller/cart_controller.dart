@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart'; 
 import '../data/models/cart_item_model.dart'; 
 import '../data/services/cart_service.dart'; 
@@ -13,9 +14,18 @@ class CartController extends GetxController {
  
     ///QUAN TRỌNG: phải assign lại list 
     cartItems.assignAll(_service.cart.items); 
- 
-    Get.snackbar("Success", "Added to cart");
-    } 
+
+    Get.closeAllSnackbars();
+    Get.rawSnackbar(
+      title: 'Success',
+      message: 'Added to cart',
+      snackPosition: SnackPosition.TOP,
+      margin: EdgeInsets.all(12),
+      backgroundColor: Color(0xFF2196F3),
+      borderRadius: 10,
+      duration: const Duration(seconds: 2),
+    );
+  } 
  
   /// REMOVE 
   void removeItem(CartItemModel item) { 
