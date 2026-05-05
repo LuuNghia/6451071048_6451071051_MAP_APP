@@ -3,6 +3,7 @@ import 'package:btl/controller/login_controller.dart';
 import 'package:btl/controller/wishlist_controller.dart'; 
 import 'package:flutter/material.dart'; 
 import 'package:get/get.dart'; 
+import '../../data/models/cart_item_model.dart';
 import '../../data/models/product_model.dart'; 
 import '../../screens/product/product_detail_screen.dart'; 
  
@@ -55,6 +56,18 @@ class ProductCard extends StatelessWidget {
       }
     }
     return null;
+  }
+
+  Map<String, String>? _defaultVariation() {
+    if (product.attributes.isEmpty) return null;
+
+    final variation = <String, String>{};
+    for (final attribute in product.attributes) {
+      if (attribute.values.isNotEmpty) {
+        variation[attribute.name] = attribute.values.first;
+      }
+    }
+    return variation.isEmpty ? null : variation;
   }
  
   @override 
@@ -280,7 +293,7 @@ wishlistController.toggleWishlist(product);
  
                     const SizedBox(height: 4), 
  
-                    /// Đánh giá và Trạng thái giỏ hàng 
+                    /// Đánh giá và nút thêm giỏ hàng 
                     Row( 
                       mainAxisAlignment: MainAxisAlignment.spaceBetween, 
                       children: [ 
@@ -302,19 +315,41 @@ wishlistController.toggleWishlist(product);
                           ], 
                         ), 
  
-                        /// Icon Giỏ hàng nhỏ gọn 
-                        Obx(() { 
-                          final isAdded = cartController.isInCart( 
-                            product.id, 
-                            null, 
-                          ); 
-                          return isAdded 
-                              ? const Icon( 
-                                  Icons.check_circle, 
-                                  size: 16, 
-                                  color: Colors.green, 
-                                ) 
-                              : const SizedBox.shrink(); 
+                        /// Nút cộng để thêm vào giỏ hàng
+                        Obx(() {
+                          final variation = _defaultVariation();
+                          final isAdded = cartController.isInCart(
+                            product.id,
+                            variation,
+                          );
+
+                          return IconButton(
+                            onPressed: isOutOfStock
+                                ? null
+                                : () {
+                                    cartController.addToCart(
+                                      CartItemModel(
+                                        productId: product.id,
+                                        quantity: 1,
+                                        image: _resolveThumbnail(),
+                                        price: product.price,
+                                        title: product.title,
+                                        brandName: product.brandName,
+                                        selectedVariation: variation,
+                                      ),
+                                    );
+                                  },
+                            icon: Icon(
+                              Icons.add_circle,
+                              size: 18,
+                              color: isAdded
+                                  ? Colors.green
+                                  : Colors.blue.shade600,
+                            ),
+                            tooltip: 'Thêm vào giỏ hàng',
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          );
                         }), 
                       ], 
                     ), 
