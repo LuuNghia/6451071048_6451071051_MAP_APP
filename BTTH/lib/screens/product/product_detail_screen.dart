@@ -248,7 +248,7 @@ _buildAttributeSection(attribute),
       child: ListView( 
         scrollDirection: Axis.horizontal, 
         physics: const BouncingScrollPhysics(), 
-        children: [product.thumbnail, ...product.images].map((imageUrl) 
+        children: [product.thumbnail, ...product.images].toSet().map((imageUrl) 
 { 
           final isSelected = selectedImage == imageUrl; 
           return GestureDetector( 
@@ -555,7 +555,9 @@ null),
   // Các hàm xử lý dữ liệu Review giữ nguyên logic của bạn 
   Future<Map<String, dynamic>> getReviewState(String productId) async { 
     final orderController = Get.find<OrderController>(); 
-    final userId = Get.find<AuthController>().currentUser!.id; 
+    final authController = Get.find<AuthController>();
+    if (authController.currentUser == null) return {"state": "not_allowed"};
+    final userId = authController.currentUser!.id; 
     final purchased = await orderController.orderService 
         .hasUserPurchasedProduct(userId: userId, productId: productId); 
     if (!purchased) return {"state": "not_allowed"}; 

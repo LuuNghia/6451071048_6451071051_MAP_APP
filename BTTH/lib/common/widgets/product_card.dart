@@ -228,19 +228,7 @@ wishlistController.toggleWishlist(product);
                 child: Column( 
                   crossAxisAlignment: CrossAxisAlignment.start, 
                   children: [ 
-                    /// Thương hiệu 
-                    Text( 
-                      product.brandName?.toUpperCase() ?? 'BRAND', 
-                      style: const TextStyle( 
-                        fontSize: 9, 
-                        fontWeight: FontWeight.bold, 
-                        color: Colors.blueAccent, 
-                        letterSpacing: 0.5, 
-                      ), 
-                      maxLines: 1, 
-                      overflow: TextOverflow.ellipsis, 
-                    ), 
-                    const SizedBox(height: 2),
+                    /// Tiêu đề sản phẩm
                      /// Tiêu đề sản phẩm 
                     Text( 
                       product.title, 
