@@ -1,15 +1,18 @@
 import 
-'package:btl/screens/shipping_address/my_shipping_address_screen.dart'; 
+'package:draf_project/screens/shipping_address/my_shipping_address_screen.dar
+t'; 
 import 'package:flutter/material.dart'; 
 import '../../common/styles/app_colors.dart'; 
 import '../../common/styles/app_text_styles.dart'; 
 import '../../common/widgets/profile_menu_item.dart'; 
 import '../../routes/app_routes.dart'; 
- 
+import '../order/my_order_screen.dart'; 
 import '../bank_account/my_bank_account_screen.dart'; 
- 
+import '../notifications/my_notifications.dart'; 
 import 'package:get/get.dart'; 
-import 'package:btl/controller/login_controller.dart';
+import 'package:draf_project/controller/login_controller.dart'; 
+import 'package:draf_project/controller/settings_controller.dart'; 
+ 
 class ProfileScreen extends StatelessWidget { 
   const ProfileScreen({super.key}); 
  
@@ -28,7 +31,7 @@ class ProfileScreen extends StatelessWidget {
     ); 
   } 
  
-  /// ===== Header xanh ===== 
+  /// ===== Header ===== 
   Widget _buildHeader(BuildContext context, AuthController authController) { 
     final user = authController.currentUser; 
  
@@ -38,9 +41,8 @@ class ProfileScreen extends StatelessWidget {
     if (user != null) { 
       fullName = '${user.firstName} ${user.lastName}'; 
       email = user.email; 
-    } 
- 
-    return Container( 
+    }
+     return Container( 
       width: double.infinity, 
       padding: const EdgeInsets.fromLTRB(20, 60, 20, 30), 
       color: AppColors.primaryBlue, 
@@ -48,27 +50,16 @@ class ProfileScreen extends StatelessWidget {
         children: [ 
           const CircleAvatar( 
             radius: 32, 
-            backgroundImage: NetworkImage('https://vn.images.search.yahoo.com/images/view;_ylt=AwrPoZuCt_BpKi07zBhtUwx.;_ylu=c2VjA3NyBHNsawNpbWcEb2lkA2U0YmM3NGI4NWM4MTAyYTk4N2MyYzYxODM1MjU1MmU2BGdwb3MDMgRpdANiaW5n?back=https%3A%2F%2Fvn.images.search.yahoo.com%2Fsearch%2Fimages%3Fp%3Davt%2B%25C4%2591%25E1%25BA%25B9p%26type%3DE210VN1589G0%26fr%3Dmcafee%26fr2%3Dpiv-web%26tab%3Dorganic%26ri%3D2&w=1082&h=1082&imgurl=antimatter.vn%2Fwp-content%2Fuploads%2F2022%2F11%2Fhinh-anh-avatar-cute.jpg&rurl=https%3A%2F%2Ff5fashion.vn%2Ftop-hon-52-ve-avatar-dep-nhat-hinh-nen-facebook-cute-hay-nhat%2F&size=367KB&p=avt+%C4%91%E1%BA%B9p&oid=e4bc74b85c8102a987c2c618352552e6&fr2=piv-web&fr=mcafee&tt=Top+h%C6%A1n+52+v%E1%BB%81+avatar+%C4%91%E1%BA%B9p+nh%E1%BA%A5t+h%C3%ACnh+n%E1%BB%81n+facebook+cute+hay+nh%E1%BA%A5t+-+f5+fashion&b=0&ni=21&no=2&ts=&tab=organic&sigr=btKpCqWdwvDt&sigb=C7GqimJStts_&sigi=WcbzIILaRm7A&sigt=QaeSlmwZwDZ8&.crumb=QS9/zjKtRR2&fr=mcafee&fr2=piv-web&type=E210VN1589G0'), 
+            backgroundImage: NetworkImage('https://i.pravatar.cc/300'), 
           ), 
           const SizedBox(width: 16), 
           Expanded( 
             child: Column( 
               crossAxisAlignment: CrossAxisAlignment.start, 
               children: [ 
-                Text( 
-                  fullName, 
-                  style: const TextStyle( 
-                    fontSize: 20,
-                       fontWeight: FontWeight.bold, 
-                    color: Colors.white, 
-                  ), 
-                ), 
+                Text(fullName, style: AppTextStyle.whiteTitle), 
                 const SizedBox(height: 4), 
-                Text( 
-                  email, 
-                  style: const TextStyle(fontSize: 14, color: 
-Colors.white70), 
-                ), 
+                Text(email, style: AppTextStyle.whiteSubtitle), 
               ], 
             ), 
           ), 
@@ -99,8 +90,8 @@ Colors.white70),
               child: Container( 
                 padding: const EdgeInsets.all(20), 
                 decoration: const BoxDecoration( 
-                  color: AppColors.white, 
-                  borderRadius: BorderRadius.only( 
+                  color: AppColors.white,
+                   borderRadius: BorderRadius.only( 
                     topLeft: Radius.circular(24), 
                     topRight: Radius.circular(24), 
                   ), 
@@ -108,9 +99,15 @@ Colors.white70),
                 child: Column( 
                   crossAxisAlignment: CrossAxisAlignment.start, 
                   children: [ 
-                    _buildAccountSetting(context),
-                      const SizedBox(height: 24), 
+                    _buildAccountSetting(context), 
+                    const SizedBox(height: 24), 
+ 
+                    ///  APP SETTINGS HERE 
                     _buildAppSettingLabel(), 
+                    const SizedBox(height: 16), 
+                    _buildAppSettings(), 
+ 
+                    const SizedBox(height: 24), 
                     _buildLogoutButton(context), 
                   ], 
                 ), 
@@ -143,11 +140,23 @@ Colors.white70),
         ), 
  
         ProfileMenuItem( 
-          icon: Icons.shopping_cart, 
-          title: 'Giỏ hàng của tôi', 
+          icon: Icons.shopping_cart,
+              title: 'Giỏ hàng của tôi', 
           subtitle: 'Xem các mặt hàng trong giỏ hàng', 
           onTap: () { 
             Navigator.pushNamed(context, AppRoutes.cartOverview); 
+          }, 
+        ), 
+ 
+        ProfileMenuItem( 
+          icon: Icons.receipt_long, 
+          title: 'Đơn hàng của tôi', 
+          subtitle: 'Theo dõi đơn hàng của bạn', 
+          onTap: () { 
+            Navigator.push( 
+              context, 
+              MaterialPageRoute(builder: (_) => const MyOrderScreen()), 
+            ); 
           }, 
         ), 
  
@@ -159,32 +168,60 @@ Colors.white70),
             Navigator.push( 
               context, 
               MaterialPageRoute(builder: (_) => MyBankAccountScreen()), 
-  ); 
+            ); 
           }, 
         ), 
  
         ProfileMenuItem( 
-          icon: Icons.discount, 
-          title: 'Mã giảm giá', 
-          subtitle: 'Xem các mã giảm giá có sẵn', 
-          onTap: () {}, 
-        ), 
- 
-        ProfileMenuItem( 
-          icon: Icons.lock, 
-          title: 'Bảo mật tài khoản', 
-          subtitle: 'Cài đặt bảo mật và quyền riêng tư', 
-          onTap: () {}, 
+          icon: Icons.notifications, 
+          title: 'Thông báo', 
+          subtitle: 'Cài đặt thông báo', 
+          onTap: () { 
+            Navigator.push( 
+              context, 
+              MaterialPageRoute(builder: (_) => MyNotificationScreen()), 
+            ); 
+          }, 
         ), 
       ], 
     ); 
   } 
  
-  /// ===== App Setting label ===== 
+  /// ===== LABEL ===== 
   Widget _buildAppSettingLabel() { 
     return Text('Cài đặt ứng dụng', style: AppTextStyle.title); 
   } 
+ /// ===== SETTINGS ===== 
+  Widget _buildAppSettings() { 
+    final controller = Get.find<SettingsController>(); 
  
+    return Obx( 
+      () => Column( 
+        children: [ 
+          ProfileMenuItem( 
+            icon: Icons.dark_mode, 
+            title: 'Giao diện', 
+            subtitle: controller.themeMode.value.name, 
+            onTap: () => _showThemeDialog(controller), 
+          ), 
+          ProfileMenuItem( 
+            icon: Icons.text_fields, 
+            title: 'Cỡ chữ', 
+            subtitle: controller.fontSize.value, 
+            onTap: () => _showFontDialog(controller), 
+          ), 
+          ProfileMenuItem( 
+            icon: Icons.language, 
+            title: 'Ngôn ngữ', 
+            subtitle: controller.locale.value.languageCode, 
+            onTap: () => _showLanguageDialog(controller), 
+          ), 
+        ], 
+      ), 
+    ); 
+  } 
+ 
+  /// ===== LOGOUT ===== 
   Widget _buildLogoutButton(BuildContext context) { 
     final AuthController authController = Get.find<AuthController>(); 
  
@@ -194,22 +231,18 @@ Colors.white70),
         onTap: () async { 
           bool? confirm = await showDialog<bool>( 
             context: context, 
-            builder: (BuildContext dialogContext) { 
+            builder: (dialogContext) { 
               return AlertDialog( 
                 title: const Text('Đăng xuất'), 
                 content: const Text('Bạn có chắc muốn đăng xuất không?'), 
                 actions: [ 
                   TextButton( 
-                    onPressed: () { 
-                      Navigator.of(dialogContext).pop(false); 
-                    }, 
+                    onPressed: () => Navigator.pop(dialogContext, false), 
                     child: const Text('Hủy'), 
-                  ), 
+                  ),
                   TextButton( 
-                    onPressed: () { 
-                      Navigator.of(dialogContext).pop(true); 
-                    },
-                      child: const Text( 
+                    onPressed: () => Navigator.pop(dialogContext, true), 
+                    child: const Text( 
                       'Đăng xuất', 
                       style: TextStyle(color: Colors.red), 
                     ), 
@@ -252,14 +285,15 @@ Colors.white70),
   } 
 } 
  
+/// ===== GUEST ===== 
 Widget _buildGuestProfile(BuildContext context) { 
   return Scaffold( 
     backgroundColor: AppColors.background, 
     body: Column( 
-      children: [ 
+  children: [ 
         Container( 
           width: double.infinity, 
- padding: const EdgeInsets.fromLTRB(20, 60, 20, 30), 
+          padding: const EdgeInsets.fromLTRB(20, 60, 20, 30), 
           color: AppColors.primaryBlue, 
           child: Column( 
             children: [ 
@@ -269,7 +303,7 @@ Widget _buildGuestProfile(BuildContext context) {
               ), 
               const SizedBox(height: 16), 
               const Text( 
-                'Khách', 
+                'Guest User', 
                 style: TextStyle( 
                   fontSize: 20, 
                   fontWeight: FontWeight.bold, 
@@ -285,6 +319,93 @@ Widget _buildGuestProfile(BuildContext context) {
               ), 
             ], 
           ), 
+        ), 
+      ], 
+    ), 
+  ); 
+} 
+ 
+/// ===== DIALOGS ===== 
+void _showThemeDialog(SettingsController controller) { 
+  Get.defaultDialog( 
+    title: "Chọn Giao diện", 
+    content: Column( 
+      children: [ 
+        ListTile( 
+          title: const Text("Sáng"), 
+          onTap: () { 
+            controller.changeTheme('light'); 
+            Get.back(); 
+          }, 
+        ), 
+        ListTile( 
+          title: const Text("Tối"),
+           onTap: () { 
+            controller.changeTheme('dark'); 
+            Get.back(); 
+          }, 
+        ), 
+        ListTile( 
+          title: const Text("Theo hệ thống"), 
+          onTap: () { 
+            controller.changeTheme('system'); 
+            Get.back(); 
+          }, 
+        ), 
+      ], 
+    ), 
+  ); 
+} 
+ 
+void _showFontDialog(SettingsController controller) { 
+  Get.defaultDialog( 
+    title: "Cỡ chữ", 
+    content: Column( 
+      children: [ 
+        ListTile( 
+          title: const Text("Nhỏ"), 
+          onTap: () { 
+            controller.changeFontSize('small'); 
+            Get.back(); 
+          }, 
+        ), 
+        ListTile( 
+          title: const Text("Vừa"), 
+          onTap: () { 
+            controller.changeFontSize('medium'); 
+            Get.back(); 
+          }, 
+        ), 
+        ListTile( 
+          title: const Text("Lớn"), 
+          onTap: () { 
+            controller.changeFontSize('large'); 
+            Get.back(); 
+          }, 
+        ), 
+      ], 
+    ), 
+  ); 
+} 
+ 
+void _showLanguageDialog(SettingsController controller) { 
+  Get.defaultDialog( 
+   title: "Ngôn ngữ", 
+    content: Column( 
+      children: [ 
+        ListTile( 
+          title: const Text("Tiếng Việt"), 
+          onTap: () { 
+            controller.changeLanguage('vi'); 
+            Get.back(); 
+          }, 
+        ), 
+        ListTile( 
+          title: const Text("English"), 
+          onTap: () { 
+            controller.changeLanguage('en'); 
+            Get.back(); 
+          }, 
         ), 
       ], 
     ), 
