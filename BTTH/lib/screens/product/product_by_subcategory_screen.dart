@@ -36,8 +36,7 @@ Get.find<ProductController>();
   @override 
   void initState() { 
     super.initState();
-     // Gọi API lấy sản phẩm theo danh mục sau khi frame đầu tiên được 
-dựng 
+     // Gọi API lấy sản phẩm theo danh mục sau khi frame đầu tiên được dựng 
     WidgetsBinding.instance.addPostFrameCallback((_) { 
       productController.fetchProductsByCategory(categoryId: 
 widget.categoryId); 
@@ -98,8 +97,7 @@ widget.categoryId);
                       selectedColor: Colors.blue.shade600, 
                       backgroundColor: Colors.grey.shade100, 
                       labelStyle: TextStyle( 
-                        color: isSelected ? Colors.white : 
-Colors.black87, 
+                        color: isSelected ? Colors.white : Colors.black87, 
                         fontWeight: isSelected 
                             ? FontWeight.bold 
                             : FontWeight.normal, 
@@ -143,8 +141,7 @@ Colors.black87,
               if (productController.isLoading.value) { 
                 return const Center( 
                   child: CircularProgressIndicator( 
-                    valueColor: 
-AlwaysStoppedAnimation<Color>(Colors.blue), 
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue), 
                   ), 
                 ); 
               } 
@@ -178,16 +175,14 @@ AlwaysStoppedAnimation<Color>(Colors.blue),
                 padding: const EdgeInsets.all(16), 
                 itemCount: productController.categoryProducts.length, 
                 physics: const BouncingScrollPhysics(), 
-                gridDelegate: const 
-SliverGridDelegateWithFixedCrossAxisCount( 
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount( 
                   crossAxisCount: 2, 
                   crossAxisSpacing: 16, // Nhất quán với HomeScreen 
                   mainAxisSpacing: 16, 
                   childAspectRatio: 0.65, // Nhất quán với HomeScreen 
                 ),
                  itemBuilder: (context, index) { 
-                  final product = 
-productController.categoryProducts[index]; 
+                  final product = productController.categoryProducts[index]; 
                   return ProductCard(product: product); 
                 }, 
               ); 

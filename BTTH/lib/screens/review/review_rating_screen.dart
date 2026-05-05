@@ -63,8 +63,7 @@ class ReviewRatingScreen extends StatelessWidget {
             ), 
  
             const Padding( 
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 
-8), 
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8), 
               child: Text( 
                 "Nhận xét từ khách hàng", 
                 style: TextStyle( 
@@ -140,7 +139,7 @@ class ReviewRatingScreen extends StatelessWidget {
           color: Colors.grey.shade100, 
           margin: const EdgeInsets.symmetric(horizontal: 15),
             Widget _buildRatingOverview() { 
-    return Row( 
+return Row( 
       children: [ 
         // Cột trái: Điểm trung bình 
         Expanded( 
@@ -228,11 +227,9 @@ class ReviewRatingScreen extends StatelessWidget {
                 ), 
                 const SizedBox(height: 16), 
                 Text( 
-                  "Chưa có đánh giá nào.\nHãy là người đầu tiên nhận 
-xét!", 
+                  "Chưa có đánh giá nào.\nHãy là người đầu tiên nhận xét!", 
                   textAlign: TextAlign.center, 
-                  style: TextStyle(color: Colors.grey.shade500, height: 
-1.5), 
+                  style: TextStyle(color: Colors.grey.shade500, height: 1.5), 
                 ), 
               ], 
             ), 
@@ -277,11 +274,9 @@ xét!",
                 ), 
                 const SizedBox(height: 16), 
                 Text( 
-                  "Chưa có đánh giá nào.\nHãy là người đầu tiên nhận 
-xét!", 
+                  "Chưa có đánh giá nào.\nHãy là người đầu tiên nhận xét!", 
                   textAlign: TextAlign.center, 
-                  style: TextStyle(color: Colors.grey.shade500, height: 
-1.5), 
+                  style: TextStyle(color: Colors.grey.shade500, height: 1.5), 
                 ), 
               ], 
             ), 
@@ -534,8 +529,7 @@ class _ReviewItem extends StatelessWidget {
                           "Hữu ích", 
                           style: TextStyle( 
                             color: Colors.grey.shade500, 
-                            fontSize: 13, 
- fontWeight: FontWeight.w500, 
+                            fontSize: 13, fontWeight: FontWeight.w500, 
                           ), 
                         ), 
                       ], 
@@ -554,24 +548,20 @@ class _ReviewItem extends StatelessWidget {
     showDialog( 
       context: context, 
       builder: (context) => AlertDialog( 
-        shape: RoundedRectangleBorder(borderRadius: 
-BorderRadius.circular(20)), 
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), 
         title: const Text("Xóa đánh giá?"), 
-        content: const Text("Bạn có chắc chắn muốn xóa phản hồi này 
-không?"), 
+        content: const Text("Bạn có chắc chắn muốn xóa phản hồi này không?"), 
         actions: [ 
           TextButton( 
             onPressed: () => Navigator.pop(context), 
-            child: const Text("Hủy", style: TextStyle(color: 
-Colors.grey)), 
+            child: const Text("Hủy", style: TextStyle(color: Colors.grey)), 
           ), 
           ElevatedButton( 
             onPressed: () async { 
               await FirebaseFirestore.instance 
                   .collection('reviews') 
                   .doc(reviewId) 
-                  .update({'isDeleted': true, 'updatedAt': 
-Timestamp.now()}); 
+                  .update({'isDeleted': true, 'updatedAt': Timestamp.now()}); 
               Navigator.pop(context); 
             }, 
             style: ElevatedButton.styleFrom( 

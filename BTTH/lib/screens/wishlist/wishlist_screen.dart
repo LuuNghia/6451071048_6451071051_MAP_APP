@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:draf_project/routes/app_routes.dart';
-import 'package:draf_project/controller/login_controller.dart';
-import 'package:draf_project/controller/wishlist_controller.dart';
-import 'package:draf_project/data/models/product_model.dart';
+import 'package:btl/routes/app_routes.dart';
+import 'package:btl/controller/login_controller.dart';
+import 'package:btl/controller/wishlist_controller.dart';
+import 'package:btl/data/models/product_model.dart';
 
 class WishlistScreen extends StatefulWidget {
   const WishlistScreen({super.key});
