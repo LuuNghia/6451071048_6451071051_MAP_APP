@@ -178,20 +178,20 @@ a.title.toLowerCase().compareTo(b.title.toLowerCase()),
     try {
       final doc = await _db.collection('products').doc(productId).get(); 
 
-      if (!doc.exists) return null; 
+      if (doc.exists) {
+        final data = doc.data() as Map<String, dynamic>; 
+        String? brandName; 
 
-      final data = doc.data() as Map<String, dynamic>; 
-      String? brandName; 
+        if (data['brandId'] != null) { 
+          final brandDoc = await _db 
+              .collection('brands') 
+              .doc(data['brandId'])
+              .get(); 
+          brandName = brandDoc.data()?['name']; 
+        } 
 
-      if (data['brandId'] != null) { 
-        final brandDoc = await _db 
-            .collection('brands') 
-            .doc(data['brandId'])
-            .get(); 
-        brandName = brandDoc.data()?['name']; 
-      } 
-
-      return ProductModel.fromSnapshot(doc, brandName); 
+        return ProductModel.fromSnapshot(doc, brandName); 
+      }
     } catch (_) {
       // Fall back to local pizza products when Firestore is unavailable.
     }

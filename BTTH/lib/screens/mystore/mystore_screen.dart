@@ -2,15 +2,11 @@ import 'package:btl/controller/mystore_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../common/widgets/product_card.dart';
-import 'all_brand_screen.dart';
-import 'brand_detail_screen.dart';
-import '/controller/brand_controller.dart';
 import '/screens/product/product_by_subcategory_screen.dart';
 
 class MystoreScreen extends StatelessWidget {
   MystoreScreen({super.key});
   final MyStoreController controller = Get.put(MyStoreController());
-  final AllBrandController brandController = Get.put(AllBrandController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,27 +69,13 @@ class MystoreScreen extends StatelessWidget {
               ),
             ),
 
-            /// 2. FEATURED BRANDS
-            _buildSectionTitle(
-              context,
-              "Các thương hiệu nổi bật",
-              onSeeAll: () {
-                Get.to(() => AllBrandScreen());
-              },
-            ),
-            _buildFeaturedBrands(),
-
-            /// 3. CATEGORY TABS (STICKY)
+            /// 2. CATEGORY TABS (STICKY)
             _buildCategoryTabs(),
 
-            /// 4. BRAND BANNERS
-            _buildSectionTitle(context, "Thương hiệu trong danh mục"),
-            _buildBrandBanner(),
-
-            /// 5. PRODUCTS
+            /// 3. PRODUCTS
             _buildSectionTitle(
               context,
-              "Bạn có thể quan tâm",
+              "Thực đơn",
               onSeeAll: () {
                 final selectedIndex = controller.selectedCategoryIndex.value;
                 final selectedCategory = controller.categories[selectedIndex];
@@ -157,72 +139,6 @@ class MystoreScreen extends StatelessWidget {
                 ),
               ),
           ],
-        ),
-      ),
-    );
-  }
-
-  /// FEATURED BRANDS
-  Widget _buildFeaturedBrands() {
-    return SliverToBoxAdapter(
-      child: SizedBox(
-        height: 120,
-        child: ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          itemCount: controller.featuredBrands.length,
-          itemBuilder: (_, index) {
-            final brand = controller.featuredBrands[index];
-            return GestureDetector(
-              onTap: () {
-                Get.to(
-                  () => BrandDetailScreen(
-                    brandId: brand.id,
-                    brandName: brand.name,
-                  ),
-                );
-              },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                width: 100,
-                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      radius: 25,
-                      backgroundColor: Colors.blue.shade50,
-                      backgroundImage: brand.imageUrl != null
-                          ? NetworkImage(brand.imageUrl!)
-                          : null,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      brand.name,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
         ),
       ),
     );
@@ -294,92 +210,6 @@ class MystoreScreen extends StatelessWidget {
     );
   }
 
-  /// BRAND BANNER (Modern Dark Card)
-  Widget _buildBrandBanner() {
-    return SliverToBoxAdapter(
-      child: Column(
-        children: controller.categoryBrands.map((brand) {
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [const Color(0xFF232526), const Color(0xFF414345)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.12),
-                  blurRadius: 15,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: const Icon(
-                    Icons.verified_rounded,
-                    color: Colors.blueAccent,
-                    size: 28,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        brand.name,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const Text(
-                        "Cửa hàng chính hãng",
-                        style: TextStyle(color: Colors.white60, fontSize: 12),
-                      ),
-                    ],
-                  ),
-                ),
-                Material(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  child: InkWell(
-                    onTap: () {},
-                    borderRadius: BorderRadius.circular(12),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      child: Text(
-                        "Theo dõi",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
   /// PRODUCT GRID (Đồng bộ tỉ lệ 0.65)
   Widget _buildProductGrid() {
     return SliverPadding(
@@ -389,7 +219,7 @@ class MystoreScreen extends StatelessWidget {
           crossAxisCount: 2,
           mainAxisSpacing: 16,
           crossAxisSpacing: 16,
-          childAspectRatio: 0.65, // Tỉ lệ giống trang chủ và trang Popular
+          childAspectRatio: 0.58, // Tỉ lệ tăng lên để tránh tràn (RenderFlex overflow)
         ),
         delegate: SliverChildBuilderDelegate(
           (_, index) => ProductCard(product: controller.products[index]),
