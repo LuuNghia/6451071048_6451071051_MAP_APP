@@ -1,5 +1,5 @@
-import '/data/models/bank_account_model.dart'; 
-import '/data/services/bank_account_service.dart'; 
+import '../data/models/bank_account_model.dart'; 
+import '../data/services/bank_account_service.dart'; 
  
 class BankAccountController { 
   final BankAccountService _service = BankAccountService(); 

@@ -24,13 +24,13 @@ class _ProductBySubCategoryScreenState
 Get.find<ProductController>(); 
  
   // Lưu trữ filter đang chọn 
-  String _selectedFilterKey = 'Name'; 
+  String _selectedFilterKey = 'Tên'; 
  
   // Map cấu hình filter đồng bộ với hệ thống 
   final Map<String, String> _filterMap = { 
-    'Name': 'name', 
-    'Price: Low to High': 'low_price', 
-    'Price: High to Low': 'high_price', 
+    'Tên': 'name', 
+    'Giá: Thấp đến Cao': 'low_price', 
+    'Giá: Cao đến Thấp': 'high_price', 
   }; 
  
   @override 
