@@ -1,9 +1,35 @@
+import 'package:get_storage/get_storage.dart';
 import '../models/cart_model.dart'; 
 import '../models/cart_item_model.dart'; 
  
 class CartService { 
   final CartModel _cart = CartModel.empty(); 
+  final _storage = GetStorage();
+  static const _cartKey = 'cart_items';
  
+  CartService() {
+    _loadCart();
+  }
+
+  void _loadCart() {
+    try {
+      final List? storedItems = _storage.read(_cartKey);
+      if (storedItems != null) {
+        _cart.items = storedItems.map((e) => CartItemModel.fromJson(Map<String, dynamic>.from(e))).toList();
+      }
+    } catch (e) {
+      print("Error loading cart: $e");
+    }
+  }
+
+  void saveCart() {
+    try {
+      _storage.write(_cartKey, _cart.items.map((e) => e.toJson()).toList());
+    } catch (e) {
+      print("Error saving cart: $e");
+    }
+  }
+
   CartModel get cart => _cart; 
  
   /// Add to cart 
@@ -16,19 +42,22 @@ class CartService {
  
     if (index >= 0) { 
       _cart.items[index].quantity += item.quantity; 
-    } else {
-         _cart.items.add(item); 
+    } else { 
+      _cart.items.add(item); 
     } 
+    saveCart();
   } 
  
   /// Remove item 
   void removeItem(CartItemModel item) { 
     _cart.items.remove(item); 
+    saveCart();
   } 
  
   ///  Increase 
   void increaseQty(CartItemModel item) { 
     item.quantity++; 
+    saveCart();
   } 
  
   /// Decrease 
@@ -38,6 +67,7 @@ class CartService {
     } else { 
       _cart.items.remove(item); 
     } 
+    saveCart();
   } 
  
   ///Compare variation 

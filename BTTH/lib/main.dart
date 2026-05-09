@@ -10,9 +10,11 @@ import 'package:get/get.dart';
 import 'firebase_options.dart';
 import 'controller/login_controller.dart'; 
 import 'firebase_options.dart'; 
+import 'package:get_storage/get_storage.dart';
  
 void main() async { 
   WidgetsFlutterBinding.ensureInitialized(); 
+  await GetStorage.init();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   ); 

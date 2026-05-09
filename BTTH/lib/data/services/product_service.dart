@@ -219,44 +219,51 @@ class ProductService {
 
     WriteBatch batch = _db.batch();
 
+    // 1. Xóa sạch dữ liệu sản phẩm cũ để tránh trùng lặp hoặc sót các sản phẩm không gộp
+    try {
+      final oldProducts = await _db.collection('products').get();
+      for (var doc in oldProducts.docs) {
+        batch.delete(doc.reference);
+      }
+      print("=== ĐANG LÀM SẠCH DỮ LIỆU CŨ... ===");
+    } catch (e) {
+      print("Lỗi khi xóa dữ liệu cũ: $e");
+    }
+
     for (var cat in categories) {
       batch.set(_db.collection('categories').doc(cat['id']), cat, SetOptions(merge: true));
     }
 
     for (var raw in products) {
-      final sizes = [
-        {"suffix": "S", "priceMult": 1.0, "idSuffix": "s"},
-        {"suffix": "M", "priceMult": 1.3, "idSuffix": "m"},
-        {"suffix": "L", "priceMult": 1.5, "idSuffix": "l"},
-      ];
-
-      for (var size in sizes) {
-        final id = "${raw['name'].toString().replaceAll(' ', '_').toLowerCase()}_${size['idSuffix']}";
-        final price = (raw['basePrice'] as int) * (size['priceMult'] as double);
-        
-        final productData = {
-          "id": id,
-          "title": "${raw['name']} (${size['suffix']})",
-          "lowerTitle": "${raw['name'].toString().toLowerCase()} (${size['suffix'].toString().toLowerCase()})",
-          "price": price,
-          "description": raw['desc'] ?? "Thưởng thức hương vị tuyệt vời của ${raw['name']} với nguyên liệu tươi ngon nhất, chuẩn vị Domino's Pizza.",
-          "thumbnail": raw['img'],
-          "images": [raw['img']],
-          "categoryIds": [raw['cat']],
-          "attributes": [
-            {
-              "name": "Size",
-              "values": [size['suffix']]
-            }
-          ],
-          "stock": 100,
-          "isActive": true,
-          "isFeatured": true,
-          "productType": "simple",
-          "createdAt": Timestamp.now(),
-        };
-        batch.set(_db.collection('products').doc(id), productData, SetOptions(merge: true));
-      }
+      final id = raw['name'].toString().replaceAll(' ', '_').toLowerCase();
+      final basePrice = (raw['basePrice'] as int).toDouble();
+      
+      final productData = {
+        "id": id,
+        "title": raw['name'],
+        "lowerTitle": raw['name'].toString().toLowerCase(),
+        "price": basePrice,
+        "description": raw['desc'] ?? "Thưởng thức hương vị tuyệt vời của ${raw['name']} với nguyên liệu tươi ngon nhất, chuẩn vị Domino's Pizza.",
+        "thumbnail": raw['img'],
+        "images": [raw['img']],
+        "categoryIds": [raw['cat']],
+        "attributes": [
+          {
+            "name": "Size",
+            "values": ["S", "M", "L"]
+          },
+          {
+            "name": "Đế bánh",
+            "values": ["Đế dày", "Đế mỏng", "Đế vừa"]
+          }
+        ],
+        "stock": 100,
+        "isActive": true,
+        "isFeatured": true,
+        "productType": "variable",
+        "createdAt": Timestamp.now(),
+      };
+      batch.set(_db.collection('products').doc(id), productData, SetOptions(merge: true));
     }
 
     try {

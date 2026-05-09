@@ -38,6 +38,7 @@ dependencies:
   get: ^4.7.3
   intl: ^0.20.2
   timeago: ^3.7.1
+  get_storage: ^2.1.1
 dev_dependencies:
 flutter_test:
 sdk: flutter

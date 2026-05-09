@@ -91,17 +91,28 @@ class CartController extends GetxController {
 
     // Calculate base price
     double basePrice = item.price;
-    if (currentSize == 'M') basePrice -= 30000;
-    if (currentSize == 'L') basePrice -= 60000;
+    if (currentSize == 'M') basePrice /= 1.3;
+    if (currentSize == 'L') basePrice /= 1.5;
 
     // Calculate new price
     double newPrice = basePrice;
-    if (newSize == 'M') newPrice += 30000;
-    if (newSize == 'L') newPrice += 60000;
+    if (newSize == 'M') newPrice *= 1.3;
+    if (newSize == 'L') newPrice *= 1.5;
 
     item.selectedVariation![currentSizeKey] = newSize;
     item.price = newPrice;
 
+    _service.saveCart();
+    cartItems.refresh();
+  }
+
+  /// Update any variation
+  void updateItemVariation(CartItemModel item, String key, String newValue) {
+    if (item.selectedVariation == null) return;
+    if (item.selectedVariation![key] == newValue) return;
+
+    item.selectedVariation![key] = newValue;
+    _service.saveCart();
     cartItems.refresh();
   }
 }
