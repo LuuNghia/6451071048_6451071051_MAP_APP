@@ -313,23 +313,7 @@ class _CartItem extends StatelessWidget {
  
                 if (item.selectedVariation != null && 
                     item.selectedVariation!.isNotEmpty) 
-                  Container( 
-                    padding: const EdgeInsets.symmetric( 
-                      horizontal: 8, 
-                      vertical: 4, 
-                    ), 
-                    decoration: BoxDecoration(
-                          color: Colors.grey.shade100, 
-                      borderRadius: BorderRadius.circular(6), 
-                    ), 
-                    child: Text( 
-                      item.selectedVariation!.entries 
-                          .map((e) => "${e.key}: ${e.value}") 
-                          .join(" | "), 
-                      style: const TextStyle(fontSize: 11, color: 
-Colors.grey), 
-                    ), 
-                  ), 
+                  _buildSizeSelector(item),
  
                 const SizedBox(height: 12), 
  
@@ -380,6 +364,58 @@ onIncrease),
       ), 
     ); 
   } 
+
+  Widget _buildSizeSelector(CartItemModel item) {
+    final sizeKey = item.selectedVariation!.keys.firstWhere(
+      (k) => k.toLowerCase() == 'size',
+      orElse: () => '',
+    );
+
+    if (sizeKey.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Text(
+          item.selectedVariation!.entries.map((e) => "${e.key}: ${e.value}").join(" | "),
+          style: const TextStyle(fontSize: 11, color: Colors.grey),
+        ),
+      );
+    }
+
+    final currentSize = item.selectedVariation![sizeKey];
+
+    return Container(
+      height: 26,
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade50,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Colors.blue.shade100),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: currentSize,
+          isDense: true,
+          icon: Icon(Icons.arrow_drop_down, size: 16, color: Colors.blue.shade700),
+          style: TextStyle(fontSize: 12, color: Colors.blue.shade900, fontWeight: FontWeight.bold),
+          items: ['S', 'M', 'L'].map((size) {
+            return DropdownMenuItem<String>(
+              value: size,
+              child: Text("Size $size"),
+            );
+          }).toList(),
+          onChanged: (newSize) {
+            if (newSize != null) {
+              Get.find<CartController>().updateItemSize(item, newSize);
+            }
+          },
+        ),
+      ),
+    );
+  }
 } 
  
 class _QtyButton extends StatelessWidget { 

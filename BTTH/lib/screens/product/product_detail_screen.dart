@@ -177,7 +177,7 @@ MainAxisAlignment.spaceBetween,
                         ), 
                         const SizedBox(height: 8), 
                         Text( 
-                          "\$${product.price.toStringAsFixed(0)}", 
+                          "${_calculateCurrentPrice(product).toStringAsFixed(0)} đ", 
                           style: TextStyle( 
                             fontSize: 28, 
                             fontWeight: FontWeight.w900, 
@@ -239,6 +239,21 @@ _buildAttributeSection(attribute),
       }), 
     ); 
   } 
+ 
+  double _calculateCurrentPrice(dynamic product) {
+    double basePrice = product.price;
+    for (var attr in product.attributes) {
+      if (attr.name.toLowerCase() == 'size') {
+        int selectedIdx = selectedAttributes[attr.name] ?? 0;
+        if (selectedIdx == 1) { // Size M
+          basePrice += 30000;
+        } else if (selectedIdx == 2) { // Size L
+          basePrice += 60000;
+        }
+      }
+    }
+    return basePrice;
+  }
  
   /// UI Components con để code sạch hơn 
  
@@ -518,7 +533,7 @@ null),
                               productId: product.id, 
                               quantity: quantity, 
                               image: selectedImage, 
-                              price: product.price,
+                              price: _calculateCurrentPrice(product),
                                 title: product.title, 
                               brandName: product.brandName, 
                               selectedVariation: selectedVariation, 

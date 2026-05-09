@@ -294,7 +294,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         ),
                       ),
                       Text(
-                        "\$${order.totalAmount.toStringAsFixed(0)}",
+                        "${order.totalAmount.toStringAsFixed(0)} đ",
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -483,7 +483,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             ),
           ),
           Text(
-            "\$${item.price}",
+            "${item.price} đ",
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
@@ -536,7 +536,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         children: [
           Text(label, style: const TextStyle(color: Colors.grey)),
           Text(
-            "${isDiscount ? '-' : ''}\$${value.abs().toStringAsFixed(0)}",
+            "${isDiscount ? '-' : ''}${value.abs().toStringAsFixed(0)} đ",
             style: TextStyle(
               color: isDiscount ? Colors.red : Colors.black87,
               fontWeight: isDiscount ? FontWeight.bold : FontWeight.normal,
