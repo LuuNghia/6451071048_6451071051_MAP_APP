@@ -259,7 +259,11 @@ wishlistController.toggleWishlist(product);
                       crossAxisAlignment: WrapCrossAlignment.center, 
                       children: [ 
                         Text( 
+<<<<<<< HEAD
+                          "${product.price.toStringAsFixed(0)} đ", 
+=======
                           PriceFormatter.format(product.price), 
+>>>>>>> 6e395392698193b3227cc5973a3511c2544c03d2
                           style: const TextStyle( 
                             color: Colors.redAccent, 
                             fontWeight: FontWeight.bold, 
@@ -269,7 +273,11 @@ wishlistController.toggleWishlist(product);
                         if (hasDiscount) ...[ 
                           const SizedBox(width: 4), 
                           Text( 
+<<<<<<< HEAD
+                            "${originalPrice.toStringAsFixed(0)} đ", 
+=======
                             PriceFormatter.format(originalPrice), 
+>>>>>>> 6e395392698193b3227cc5973a3511c2544c03d2
                             style: TextStyle( 
                               decoration: TextDecoration.lineThrough, 
                               color: Colors.grey[400], 

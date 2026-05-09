@@ -359,7 +359,7 @@ class _WishlistProductCard extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      "\$${product.price.toStringAsFixed(0)}",
+                      "${product.price.toStringAsFixed(0)} đ",
                       style: const TextStyle(
                         fontWeight: FontWeight.w900,
                         fontSize: 16,

@@ -76,4 +76,32 @@ class CartController extends GetxController {
       return item.productId == productId; 
     }); 
   } 
+
+  /// Update Item Size
+  void updateItemSize(CartItemModel item, String newSize) {
+    if (item.selectedVariation == null) return;
+    final currentSizeKey = item.selectedVariation!.keys.firstWhere(
+      (k) => k.toLowerCase() == 'size',
+      orElse: () => '',
+    );
+    if (currentSizeKey.isEmpty) return;
+
+    final currentSize = item.selectedVariation![currentSizeKey];
+    if (currentSize == newSize) return;
+
+    // Calculate base price
+    double basePrice = item.price;
+    if (currentSize == 'M') basePrice -= 30000;
+    if (currentSize == 'L') basePrice -= 60000;
+
+    // Calculate new price
+    double newPrice = basePrice;
+    if (newSize == 'M') newPrice += 30000;
+    if (newSize == 'L') newPrice += 60000;
+
+    item.selectedVariation![currentSizeKey] = newSize;
+    item.price = newPrice;
+
+    cartItems.refresh();
+  }
 }
