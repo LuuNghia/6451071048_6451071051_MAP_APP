@@ -308,7 +308,7 @@ class _CartItem extends StatelessWidget {
  
                 if (item.selectedVariation != null && 
                     item.selectedVariation!.isNotEmpty) 
-                  _buildSizeSelector(item),
+                  _buildVariationSection(item),
  
                 const SizedBox(height: 12), 
  
@@ -360,28 +360,43 @@ onIncrease),
     ); 
   } 
 
-  Widget _buildSizeSelector(CartItemModel item) {
-    final sizeKey = item.selectedVariation!.keys.firstWhere(
-      (k) => k.toLowerCase() == 'size',
-      orElse: () => '',
-    );
-
-    if (sizeKey.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: Text(
-          item.selectedVariation!.entries.map((e) => "${e.key}: ${e.value}").join(" | "),
-          style: const TextStyle(fontSize: 11, color: Colors.grey),
-        ),
-      );
+  Widget _buildVariationSection(CartItemModel item) {
+    if (item.selectedVariation == null || item.selectedVariation!.isEmpty) {
+      return const SizedBox();
     }
 
-    final currentSize = item.selectedVariation![sizeKey];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          children: item.selectedVariation!.entries.map((entry) {
+            if (entry.key.toLowerCase() == 'size') {
+              return _buildSizeDropdown(item, entry.value);
+            }
+            if (entry.key.toLowerCase() == 'đế bánh') {
+              return _buildCrustDropdown(item, entry.value);
+            }
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.orange.shade50,
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: Colors.orange.shade100),
+              ),
+              child: Text(
+                "${entry.key}: ${entry.value}",
+                style: TextStyle(fontSize: 11, color: Colors.orange.shade900, fontWeight: FontWeight.w500),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
 
+  Widget _buildSizeDropdown(CartItemModel item, String currentSize) {
     return Container(
       height: 26,
       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -392,10 +407,11 @@ onIncrease),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          value: currentSize,
+          value: ['S', 'M', 'L'].contains(currentSize) ? currentSize : null,
           isDense: true,
           icon: Icon(Icons.arrow_drop_down, size: 16, color: Colors.blue.shade700),
           style: TextStyle(fontSize: 12, color: Colors.blue.shade900, fontWeight: FontWeight.bold),
+          hint: Text(currentSize, style: const TextStyle(fontSize: 12)),
           items: ['S', 'M', 'L'].map((size) {
             return DropdownMenuItem<String>(
               value: size,
@@ -405,6 +421,38 @@ onIncrease),
           onChanged: (newSize) {
             if (newSize != null) {
               Get.find<CartController>().updateItemSize(item, newSize);
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCrustDropdown(CartItemModel item, String currentCrust) {
+    return Container(
+      height: 26,
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+        color: Colors.orange.shade50,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Colors.orange.shade100),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: ['Đế dày', 'Đế mỏng', 'Đế vừa'].contains(currentCrust) ? currentCrust : null,
+          isDense: true,
+          icon: Icon(Icons.arrow_drop_down, size: 16, color: Colors.orange.shade700),
+          style: TextStyle(fontSize: 11, color: Colors.orange.shade900, fontWeight: FontWeight.w500),
+          hint: Text(currentCrust, style: const TextStyle(fontSize: 11)),
+          items: ['Đế dày', 'Đế mỏng', 'Đế vừa'].map((crust) {
+            return DropdownMenuItem<String>(
+              value: crust,
+              child: Text(crust),
+            );
+          }).toList(),
+          onChanged: (newCrust) {
+            if (newCrust != null) {
+              Get.find<CartController>().updateItemVariation(item, 'Đế bánh', newCrust);
             }
           },
         ),

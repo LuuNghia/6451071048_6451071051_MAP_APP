@@ -184,25 +184,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               fontWeight: FontWeight.bold, 
                             ), 
                           ), 
-<<<<<<< HEAD
-                        ), 
-                        const SizedBox(height: 8), 
-                        Text( 
-                          "${_calculateCurrentPrice(product).toStringAsFixed(0)} đ", 
-                          style: TextStyle( 
-                            fontSize: 28, 
-                            fontWeight: FontWeight.w900, 
-                            color: Colors.blue.shade800, 
-=======
                           const SizedBox(height: 8), 
                           Text( 
-                            PriceFormatter.format(product.price), 
+                            PriceFormatter.format(_calculateCurrentPrice(product)), 
                             style: TextStyle( 
                               fontSize: 28, 
                               fontWeight: FontWeight.w900, 
                               color: Colors.blue.shade800, 
                             ), 
->>>>>>> 6e395392698193b3227cc5973a3511c2544c03d2
                           ), 
   
                           const SizedBox(height: 12), 
@@ -267,9 +256,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       if (attr.name.toLowerCase() == 'size') {
         int selectedIdx = selectedAttributes[attr.name] ?? 0;
         if (selectedIdx == 1) { // Size M
-          basePrice += 30000;
+          return basePrice * 1.3;
         } else if (selectedIdx == 2) { // Size L
-          basePrice += 60000;
+          return basePrice * 1.5;
         }
       }
     }

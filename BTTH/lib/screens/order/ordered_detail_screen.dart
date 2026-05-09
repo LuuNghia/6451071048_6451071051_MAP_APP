@@ -343,11 +343,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         ),
                       ),
                       Text(
-<<<<<<< HEAD
-                        "${order.totalAmount.toStringAsFixed(0)} đ",
-=======
                         PriceFormatter.format(order.totalAmount),
->>>>>>> 6e395392698193b3227cc5973a3511c2544c03d2
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -557,11 +553,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             ),
           ),
           Text(
-<<<<<<< HEAD
-            "${item.price} đ",
-=======
             PriceFormatter.format(item.price),
->>>>>>> 6e395392698193b3227cc5973a3511c2544c03d2
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
@@ -614,11 +606,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         children: [
           Text(label, style: const TextStyle(color: Colors.grey)),
           Text(
-<<<<<<< HEAD
-            "${isDiscount ? '-' : ''}${value.abs().toStringAsFixed(0)} đ",
-=======
             "${isDiscount ? '-' : ''}${PriceFormatter.format(value.abs())}",
->>>>>>> 6e395392698193b3227cc5973a3511c2544c03d2
             style: TextStyle(
               color: isDiscount ? Colors.red : Colors.black87,
               fontWeight: isDiscount ? FontWeight.bold : FontWeight.normal,

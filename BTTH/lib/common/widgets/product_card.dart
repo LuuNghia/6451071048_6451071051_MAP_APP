@@ -8,10 +8,43 @@ import '../../data/models/product_model.dart';
 import '../../screens/product/product_detail_screen.dart'; 
 import '../../utils/price_formatter.dart';
  
-class ProductCard extends StatelessWidget { 
+class ProductCard extends StatefulWidget { 
   final ProductModel product; 
  
-  const ProductCard({super.key, required this.product}); 
+  const ProductCard({super.key, required this.product});
+
+  @override
+  State<ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> {
+  String selectedSize = "S";
+
+  @override
+  void initState() {
+    super.initState();
+    // Khởi tạo size mặc định từ attribute đầu tiên nếu có
+    final sizes = _getAvailableSizes();
+    if (sizes.isNotEmpty) {
+      selectedSize = sizes.first;
+    }
+  }
+
+  List<String> _getAvailableSizes() {
+    for (final attribute in widget.product.attributes) {
+      if (attribute.name.toLowerCase() == 'size') {
+        return attribute.values;
+      }
+    }
+    return [];
+  }
+
+  double _calculateCurrentPrice() {
+    double basePrice = widget.product.price;
+    if (selectedSize == "M") return basePrice * 1.3;
+    if (selectedSize == "L") return basePrice * 1.5;
+    return basePrice;
+  }
 
   ImageProvider _productImageProvider(String imageUrl) {
     if (imageUrl.startsWith('assets/')) {
@@ -30,7 +63,7 @@ class ProductCard extends StatelessWidget {
       'all': 'assets/images/foods/Rau_Cu/Pho_Mai_Truyen_Thong.jpg',
     };
 
-    for (final categoryId in product.categoryIds) {
+    for (final categoryId in widget.product.categoryIds) {
       if (fallbackMap.containsKey(categoryId)) {
         return fallbackMap[categoryId]!;
       }
@@ -40,37 +73,13 @@ class ProductCard extends StatelessWidget {
   }
 
   String _resolveThumbnail() {
-    final value = product.thumbnail.trim();
+    final value = widget.product.thumbnail.trim();
     if (value.isEmpty || value.contains('/foods/icon/')) {
       return _fallbackProductImage();
     }
     return value;
   }
 
-  String? _getSizeLabel() {
-    for (final attribute in product.attributes) {
-      final name = attribute.name.toLowerCase();
-      if (name.contains('size') || name.contains('kich')) {
-        if (attribute.values.isNotEmpty) {
-          return attribute.values.first;
-        }
-      }
-    }
-    return null;
-  }
-
-  Map<String, String>? _defaultVariation() {
-    if (product.attributes.isEmpty) return null;
-
-    final variation = <String, String>{};
-    for (final attribute in product.attributes) {
-      if (attribute.values.isNotEmpty) {
-        variation[attribute.name] = attribute.values.first;
-      }
-    }
-    return variation.isEmpty ? null : variation;
-  }
- 
   @override 
   Widget build(BuildContext context) { 
     final cartController = Get.find<CartController>(); 
@@ -78,21 +87,25 @@ class ProductCard extends StatelessWidget {
  
     /// ================= LOGIC TÍNH TOÁN ================= 
     final bool isOutOfStock = 
-        product.isOutOfStock == true || 
-        product.stock <= 0 || 
-        product.soldQuantity >= product.stock; 
+        widget.product.isOutOfStock == true || 
+        widget.product.stock <= 0 || 
+        widget.product.soldQuantity >= widget.product.stock; 
  
     final bool hasDiscount = 
-        product.salePrice != null && product.salePrice! > 0; 
-    final double discountPercent = hasDiscount ? product.salePrice! : 0; 
+        widget.product.salePrice != null && widget.product.salePrice! > 0; 
+    final double discountPercent = hasDiscount ? widget.product.salePrice! : 0; 
+    
+    final double currentPrice = _calculateCurrentPrice();
     final double originalPrice = hasDiscount 
-        ? product.price / (1 - discountPercent / 100) 
-        : product.price; 
+        ? currentPrice / (1 - discountPercent / 100) 
+        : currentPrice; 
  
+    final availableSizes = _getAvailableSizes();
+
     return InkWell( 
       borderRadius: BorderRadius.circular(16), 
       onTap: () { 
-        Get.to(() => ProductDetailScreen(productId: product.id)); 
+        Get.to(() => ProductDetailScreen(productId: widget.product.id)); 
       }, 
       child: Container( 
         decoration: BoxDecoration( 
@@ -109,7 +122,7 @@ class ProductCard extends StatelessWidget {
         child: Column( 
           crossAxisAlignment: CrossAxisAlignment.start, 
           children: [ 
-            /// ================= PHẦN HÌNH ẢNH (Sử dụng LayoutBuilder để tránh tràn) ================= 
+            /// ================= PHẦN HÌNH ẢNH ================= 
             Stack( 
               children: [ 
                 ClipRRect( 
@@ -117,7 +130,7 @@ class ProductCard extends StatelessWidget {
                     top: Radius.circular(16), 
                   ), 
                   child: AspectRatio( 
-                    aspectRatio: 1.1, // Cố định tỉ lệ ảnh để tránh nhảy layout 
+                    aspectRatio: 1.1, 
                     child: Image(
                       image: _productImageProvider(_resolveThumbnail()),
                       width: double.infinity, 
@@ -191,13 +204,13 @@ class ProductCard extends StatelessWidget {
                     ), 
                   ), 
  
-                /// NÚT YÊU THÍCH (Đặt trên ảnh để tiết kiệm diện tích bên dưới) 
+                /// NÚT YÊU THÍCH 
                 Positioned( 
                   top: 4, 
-right: 4, 
+                  right: 4, 
                   child: Obx(() { 
                     final isFav = 
-wishlistController.isInWishlist(product.id); 
+                        wishlistController.isInWishlist(widget.product.id); 
                     return IconButton( 
                       constraints: const BoxConstraints(), 
                       padding: const EdgeInsets.all(4), 
@@ -207,14 +220,12 @@ wishlistController.isInWishlist(product.id);
                         color: isFav ? Colors.red : Colors.grey[400], 
                       ), 
                       onPressed: () async { 
-                        final authController = 
-Get.find<AuthController>(); 
+                        final authController = Get.find<AuthController>(); 
                         if (authController.currentUser == null) { 
                           _showLoginDialog(); 
                           return; 
                         } 
-                        await 
-wishlistController.toggleWishlist(product); 
+                        await wishlistController.toggleWishlist(widget.product); 
                       }, 
                     ); 
                   }), 
@@ -222,17 +233,15 @@ wishlistController.toggleWishlist(product);
               ], 
             ), 
  
-            /// ================= PHẦN NỘI DUNG (Sử dụng padding hợp lý) ================= 
+            /// ================= PHẦN NỘI DUNG ================= 
             Expanded( 
               child: Padding( 
                 padding: const EdgeInsets.fromLTRB(10, 8, 10, 8), 
                 child: Column( 
                   crossAxisAlignment: CrossAxisAlignment.start, 
                   children: [ 
-                    /// Tiêu đề sản phẩm
-                     /// Tiêu đề sản phẩm 
                     Text( 
-                      product.title, 
+                      widget.product.title, 
                       maxLines: 2, 
                       overflow: TextOverflow.ellipsis, 
                       style: const TextStyle( 
@@ -241,29 +250,47 @@ wishlistController.toggleWishlist(product);
                         height: 1.2, 
                       ), 
                     ), 
-                    const SizedBox(height: 4),
-                    if (_getSizeLabel() != null)
-                      Text(
-                        'Size: ${_getSizeLabel()}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey[600],
-                        ),
+                    const SizedBox(height: 6),
+                    
+                    /// SIZE SELECTION BUTTONS
+                    if (availableSizes.isNotEmpty)
+                      Row(
+                        children: availableSizes.map((size) {
+                          final isSelected = selectedSize == size;
+                          return GestureDetector(
+                            onTap: () => setState(() => selectedSize = size),
+                            child: Container(
+                              margin: const EdgeInsets.only(right: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: isSelected ? Colors.blue : Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(
+                                  color: isSelected ? Colors.blue : Colors.grey.shade300,
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                size,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: isSelected ? Colors.white : Colors.grey.shade700,
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
                       ),
  
-                    const Spacer(), // Đẩy phần giá và rating xuống đáy 
+                    const Spacer(), 
+                    
                     /// Giá sản phẩm 
                     Wrap( 
                       crossAxisAlignment: WrapCrossAlignment.center, 
                       children: [ 
                         Text( 
-<<<<<<< HEAD
-                          "${product.price.toStringAsFixed(0)} đ", 
-=======
-                          PriceFormatter.format(product.price), 
->>>>>>> 6e395392698193b3227cc5973a3511c2544c03d2
+                          PriceFormatter.format(currentPrice), 
                           style: const TextStyle( 
                             color: Colors.redAccent, 
                             fontWeight: FontWeight.bold, 
@@ -273,11 +300,7 @@ wishlistController.toggleWishlist(product);
                         if (hasDiscount) ...[ 
                           const SizedBox(width: 4), 
                           Text( 
-<<<<<<< HEAD
-                            "${originalPrice.toStringAsFixed(0)} đ", 
-=======
                             PriceFormatter.format(originalPrice), 
->>>>>>> 6e395392698193b3227cc5973a3511c2544c03d2
                             style: TextStyle( 
                               decoration: TextDecoration.lineThrough, 
                               color: Colors.grey[400], 
@@ -296,14 +319,10 @@ wishlistController.toggleWishlist(product);
                       children: [ 
                         Row( 
                           children: [ 
-                            const Icon( 
-                              Icons.star, 
-                              size: 12,
-                               color: Colors.orange, 
-                            ), 
+                            const Icon(Icons.star, size: 12, color: Colors.orange), 
                             const SizedBox(width: 2), 
                             Text( 
-                              product.rating.toStringAsFixed(1), 
+                              widget.product.rating.toStringAsFixed(1), 
                               style: TextStyle( 
                                 fontSize: 10, 
                                 color: Colors.grey[600], 
@@ -314,30 +333,33 @@ wishlistController.toggleWishlist(product);
  
                         /// Nút cộng để thêm vào giỏ hàng
                         Obx(() {
-                          final variation = _defaultVariation();
+                          // Lấy đầy đủ các thuộc tính (Size đã chọn + các thuộc tính khác mặc định)
+                          final variation = <String, String>{};
+                          for (var attr in widget.product.attributes) {
+                            if (attr.name.toLowerCase() == 'size') {
+                              variation[attr.name] = selectedSize;
+                            } else if (attr.values.isNotEmpty) {
+                              variation[attr.name] = attr.values.first;
+                            }
+                          }
+                          
                           final isAdded = cartController.isInCart(
-                            product.id,
+                            widget.product.id,
                             variation,
                           );
-
+ 
                           return IconButton(
-                            onPressed: isOutOfStock
+                                onPressed: isOutOfStock
                                 ? null
                                 : () {
-                                    final authController =
-                                        Get.find<AuthController>();
-                                    if (authController.currentUser == null) {
-                                      _showLoginDialog();
-                                      return;
-                                    }
                                     cartController.addToCart(
                                       CartItemModel(
-                                        productId: product.id,
+                                        productId: widget.product.id,
                                         quantity: 1,
                                         image: _resolveThumbnail(),
-                                        price: product.price,
-                                        title: product.title,
-                                        brandName: product.brandName,
+                                        price: currentPrice,
+                                        title: widget.product.title,
+                                        brandName: widget.product.brandName,
                                         selectedVariation: variation,
                                       ),
                                     );
@@ -345,9 +367,7 @@ wishlistController.toggleWishlist(product);
                             icon: Icon(
                               Icons.add_circle,
                               size: 24,
-                              color: isAdded
-                                  ? Colors.green
-                                  : Colors.blue.shade600,
+                              color: isAdded ? Colors.green : Colors.blue.shade600,
                             ),
                             tooltip: 'Thêm vào giỏ hàng',
                             padding: EdgeInsets.zero,
@@ -377,7 +397,7 @@ wishlistController.toggleWishlist(product);
       onConfirm: () { 
         Get.back(); 
         Get.toNamed('/login');
-         }, 
+      }, 
     ); 
   } 
 } 
