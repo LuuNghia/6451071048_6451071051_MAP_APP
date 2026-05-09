@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import '../../controller/product_controller.dart'; 
 import '../review/review_rating_screen.dart'; 
 import '../../controller/order_controller.dart'; 
+import '../../utils/price_formatter.dart';
  
 class ProductDetailScreen extends StatefulWidget { 
   final String productId;
@@ -69,111 +70,121 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         return Stack(
            children: [ 
             /// 1. NỘI DUNG CHI TIẾT (CUỘN) 
-            CustomScrollView( 
-              physics: const BouncingScrollPhysics(), 
-              slivers: [ 
-                /// App Bar với hình ảnh sản phẩm 
-                SliverAppBar( 
-                  expandedHeight: 400, 
-                  pinned: true, 
-                  stretch: true, 
-                  backgroundColor: Colors.white, 
-                  leading: Padding( 
-                    padding: const EdgeInsets.all(8.0), 
-                    child: CircleAvatar( 
-                      backgroundColor: Colors.white.withOpacity(0.9), 
-                      child: BackButton(color: Colors.blue.shade800), 
-                    ), 
-                  ), 
-                  flexibleSpace: FlexibleSpaceBar( 
-                    background: Stack( 
-                      children: [ 
-                        Positioned.fill( 
-                          child: Image(
-                            image: _imageProvider(
-                              selectedImage ?? product.thumbnail,
-                            ),
-                            fit: BoxFit.cover,
-                          ), 
+            RefreshIndicator(
+              onRefresh: () => controller.refreshAllData(),
+              child: CustomScrollView( 
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ), 
+                slivers: [ 
+                  /// App Bar với hình ảnh sản phẩm 
+                  SliverAppBar( 
+                    expandedHeight: 400, 
+                    pinned: true, 
+                    stretch: true, 
+                    backgroundColor: Colors.white, 
+                    leading: Padding( 
+                      padding: const EdgeInsets.all(8.0), 
+                      child: CircleAvatar( 
+                        backgroundColor: Colors.white.withOpacity(0.9), 
+                        child: IconButton(
+                          onPressed: () => Get.back(),
+                          icon: Icon(Icons.arrow_back, color: Colors.blue.shade800),
+                          tooltip: '', // Xoá tooltip để không hiện chữ Back màu xám
                         ), 
-                        if (isOutOfStock) 
-                          Container( 
-                            color: Colors.black.withOpacity(0.4), 
-                            child: const Center( 
-                              child: Text( 
-                                "TẠM HẾT HÀNG", 
-                                style: TextStyle( 
-                                  color: Colors.white, 
-                                  fontSize: 24, 
-                                  fontWeight: FontWeight.bold, 
+                      ), 
+                    ), 
+                    flexibleSpace: FlexibleSpaceBar( 
+                      background: Stack( 
+                        children: [ 
+                          Positioned.fill( 
+                            child: Image(
+                              image: _imageProvider(
+                                selectedImage ?? product.thumbnail,
+                              ),
+                              fit: BoxFit.cover,
+                            ), 
+                          ), 
+                          if (isOutOfStock) 
+                            Container( 
+                              color: Colors.black.withOpacity(0.4), 
+                              child: const Center( 
+                                child: Text( 
+                                  "TẠM HẾT HÀNG", 
+                                  style: TextStyle( 
+                                    color: Colors.white, 
+                                    fontSize: 24, 
+                                    fontWeight: FontWeight.bold, 
+                                  ), 
                                 ), 
                               ), 
                             ), 
-                          ), 
-                      ], 
+                        ], 
+                      ), 
                     ), 
                   ), 
-                ), 
- 
-                SliverToBoxAdapter( 
-                  child: Padding( 
-                    padding: const EdgeInsets.all(20), 
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start, 
-                      children: [ 
-                        /// THUMBNAILS LIST 
-                        _buildThumbnails(product), 
- 
-                        const SizedBox(height: 24), 
- 
-                        /// BRAND & RATING ROW 
-                        Row( 
-                          mainAxisAlignment: 
-MainAxisAlignment.spaceBetween, 
-                          children: [ 
-                            Row( 
-                              children: [ 
-                                Container( 
-                                  padding: const EdgeInsets.all(8), 
-                                  decoration: BoxDecoration( 
-                                    color: Colors.blue.shade50, 
-                                    shape: BoxShape.circle, 
+  
+                  SliverToBoxAdapter( 
+                    child: Padding( 
+                      padding: const EdgeInsets.all(20), 
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start, 
+                        children: [ 
+                          /// THUMBNAILS LIST 
+                          _buildThumbnails(product), 
+  
+                          const SizedBox(height: 24), 
+  
+                          /// BRAND & RATING ROW 
+                          Row( 
+                            mainAxisAlignment: 
+  MainAxisAlignment.spaceBetween, 
+                            children: [ 
+                              Row( 
+                                children: [ 
+                                  Container( 
+                                    padding: const EdgeInsets.all(8), 
+                                    decoration: BoxDecoration( 
+                                      color: Colors.blue.shade50, 
+                                      shape: BoxShape.circle, 
+                                    ), 
+                                    child: Icon( 
+                                      Icons.store, 
+                                      color: Colors.blue.shade700, 
+                                      size: 20, 
+                                    ), 
                                   ), 
-                                  child: Icon( 
-                                    Icons.store, 
-                                    color: Colors.blue.shade700, 
-                                    size: 20, 
+                                  const SizedBox(width: 8), 
+                                  Text( 
+                                    product.brandName ?? '', 
+                                    style: const TextStyle( 
+                                      fontWeight: FontWeight.bold, 
+                                      fontSize: 16, 
+                                    ), 
                                   ), 
-                                ), 
-                                const SizedBox(width: 8), 
-                                Text( 
-                                  product.brandName ?? '', 
-                                  style: const TextStyle( 
-                                    fontWeight: FontWeight.bold, 
-                                    fontSize: 16, 
+                                  const SizedBox(width: 4), 
+                                  const Icon( 
+                                    Icons.verified, 
+                                    color: Colors.blue, 
+                                    size: 16, 
                                   ), 
-                                ), 
-                                const SizedBox(width: 4), 
-                                const Icon( 
-                                  Icons.verified, 
-                                  color: Colors.blue, 
-                                  size: 16, 
-                                ), 
-                              ], 
-                            ), 
-                            _buildRatingBadge(product), 
-                          ], 
-                        ), 
- 
-                        const SizedBox(height: 16), 
- 
-                        /// TITLE & PRICE 
-                        Text( 
-                          product.title, 
-                          style: const TextStyle( 
-                            fontSize: 22, 
-                            fontWeight: FontWeight.bold, 
+                                ], 
+                              ), 
+                              _buildRatingBadge(product), 
+                            ], 
                           ), 
+  
+                          const SizedBox(height: 16), 
+  
+                          /// TITLE & PRICE 
+                          Text( 
+                            product.title, 
+                            style: const TextStyle( 
+                              fontSize: 22, 
+                              fontWeight: FontWeight.bold, 
+                            ), 
+                          ), 
+<<<<<<< HEAD
                         ), 
                         const SizedBox(height: 8), 
                         Text( 
@@ -182,56 +193,66 @@ MainAxisAlignment.spaceBetween,
                             fontSize: 28, 
                             fontWeight: FontWeight.w900, 
                             color: Colors.blue.shade800, 
+=======
+                          const SizedBox(height: 8), 
+                          Text( 
+                            PriceFormatter.format(product.price), 
+                            style: TextStyle( 
+                              fontSize: 28, 
+                              fontWeight: FontWeight.w900, 
+                              color: Colors.blue.shade800, 
+                            ), 
+>>>>>>> 6e395392698193b3227cc5973a3511c2544c03d2
                           ), 
-                        ), 
- 
-                        const SizedBox(height: 12), 
- 
-                        /// STOCK STATUS 
-                        _buildStockStatus(isOutOfStock), 
- 
-                        const Divider(height: 40), 
- 
-                        /// REVIEW ACTIONS (Đồng bộ nút bấm hiện đại) 
-                        _buildReviewActionSection(product), 
- 
-                        const SizedBox(height: 10), 
- 
-                        /// ATTRIBUTES SELECTOR 
-                        ...product.attributes.map( 
-                          (attribute) => 
-_buildAttributeSection(attribute), 
-                        ), 
- 
-                        /// DESCRIPTION 
-                        const Text( 
-                          'Mô tả sản phẩm', 
-                          style: TextStyle( 
-                            fontWeight: FontWeight.bold, 
-                            fontSize: 18, 
+  
+                          const SizedBox(height: 12), 
+  
+                          /// STOCK STATUS 
+                          _buildStockStatus(isOutOfStock), 
+  
+                          const Divider(height: 40), 
+  
+                          /// REVIEW ACTIONS (Đồng bộ nút bấm hiện đại) 
+                          _buildReviewActionSection(product), 
+  
+                          const SizedBox(height: 10), 
+  
+                          /// ATTRIBUTES SELECTOR 
+                          ...product.attributes.map( 
+                            (attribute) => 
+  _buildAttributeSection(attribute), 
                           ), 
-                        ), 
-                        const SizedBox(height: 12), 
-                        Text( 
-                          product.description ?? 
-                              'Không có mô tả cho sản phẩm này.', 
-                          style: TextStyle( 
-                            color: Colors.grey.shade700, 
-                            height: 1.5, 
-                            fontSize: 15,
-                             ), 
-                        ), 
- 
-                        const SizedBox( 
-                          height: 120, 
-                        ), // Khoảng trống cho Bottom Bar 
-                      ], 
+  
+                          /// DESCRIPTION 
+                          const Text( 
+                            'Mô tả sản phẩm', 
+                            style: TextStyle( 
+                              fontWeight: FontWeight.bold, 
+                              fontSize: 18, 
+                            ), 
+                          ), 
+                          const SizedBox(height: 12), 
+                          Text( 
+                            product.description ?? 
+                                'Không có mô tả cho sản phẩm này.', 
+                            style: TextStyle( 
+                              color: Colors.grey.shade700, 
+                              height: 1.5, 
+                              fontSize: 15,
+                               ), 
+                          ), 
+  
+                          const SizedBox( 
+                            height: 120, 
+                          ), // Khoảng trống cho Bottom Bar 
+                        ], 
+                      ), 
                     ), 
                   ), 
-                ), 
-              ], 
-            ), 
- 
+                ], 
+              ), 
+            ),
+  
             /// 2. BOTTOM ACTION BAR (Cố định phía dưới) 
             if (!isOutOfStock) _buildBottomAction(product), 
           ], 
@@ -311,7 +332,7 @@ Colors.grey.shade200,
             const Icon(Icons.star, color: Colors.amber, size: 16), 
             const SizedBox(width: 4), 
             Text( 
-              "${product.rating}", 
+              product.rating.toStringAsFixed(1), 
               style: const TextStyle( 
                 fontWeight: FontWeight.bold, 
                 color: Colors.orange, 
@@ -507,7 +528,7 @@ null),
                     icon: const Icon(Icons.add), 
                   ), 
                 ], 
-              ), 
+              ),
             ), 
             const SizedBox(width: 16), 
  

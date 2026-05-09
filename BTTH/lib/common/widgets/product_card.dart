@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import '../../data/models/cart_item_model.dart';
 import '../../data/models/product_model.dart'; 
 import '../../screens/product/product_detail_screen.dart'; 
+import '../../utils/price_formatter.dart';
  
 class ProductCard extends StatelessWidget { 
   final ProductModel product; 
@@ -258,7 +259,11 @@ wishlistController.toggleWishlist(product);
                       crossAxisAlignment: WrapCrossAlignment.center, 
                       children: [ 
                         Text( 
+<<<<<<< HEAD
                           "${product.price.toStringAsFixed(0)} đ", 
+=======
+                          PriceFormatter.format(product.price), 
+>>>>>>> 6e395392698193b3227cc5973a3511c2544c03d2
                           style: const TextStyle( 
                             color: Colors.redAccent, 
                             fontWeight: FontWeight.bold, 
@@ -268,7 +273,11 @@ wishlistController.toggleWishlist(product);
                         if (hasDiscount) ...[ 
                           const SizedBox(width: 4), 
                           Text( 
+<<<<<<< HEAD
                             "${originalPrice.toStringAsFixed(0)} đ", 
+=======
+                            PriceFormatter.format(originalPrice), 
+>>>>>>> 6e395392698193b3227cc5973a3511c2544c03d2
                             style: TextStyle( 
                               decoration: TextDecoration.lineThrough, 
                               color: Colors.grey[400], 
@@ -294,7 +303,7 @@ wishlistController.toggleWishlist(product);
                             ), 
                             const SizedBox(width: 2), 
                             Text( 
-                              "${product.rating}", 
+                              product.rating.toStringAsFixed(1), 
                               style: TextStyle( 
                                 fontSize: 10, 
                                 color: Colors.grey[600], 
@@ -335,7 +344,7 @@ wishlistController.toggleWishlist(product);
                                   },
                             icon: Icon(
                               Icons.add_circle,
-                              size: 18,
+                              size: 24,
                               color: isAdded
                                   ? Colors.green
                                   : Colors.blue.shade600,

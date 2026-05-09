@@ -2,6 +2,7 @@ import 'package:btl/screens/order/ordered_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controller/order_controller.dart';
+import '../../utils/price_formatter.dart';
 
 class MyOrderScreen extends StatefulWidget {
   const MyOrderScreen({super.key});
@@ -103,25 +104,29 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
               }
               return filteredOrders.isEmpty
                   ? _buildEmpty()
-                  : ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 20),
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: filteredOrders.length,
-                      itemBuilder: (context, index) {
-                        final order = filteredOrders[index];
-                        return _OrderHistoryCard(
-                          orderCode: "#${order.id.toString().toUpperCase()}",
-                          status: order.orderStatus,
-                          orderDate: _formatDate(order.orderDate),
-                          deliveryDate: order.shippingDate != null
-                              ? _formatDate(order.shippingDate!)
-                              : "Đang xử lý",
-                          total: order.totalAmount,
-                          onTap: () {
-                            Get.to(() => OrderDetailScreen(order: order));
-                          },
-                        );
-                      },
+                  : RefreshIndicator(
+                      onRefresh: () => controller.fetchMyOrders(),
+                      child: ListView.builder(
+                        padding: const EdgeInsets.fromLTRB(16, 10, 16, 20),
+                        physics: const AlwaysScrollableScrollPhysics(
+                            parent: BouncingScrollPhysics()),
+                        itemCount: filteredOrders.length,
+                        itemBuilder: (context, index) {
+                          final order = filteredOrders[index];
+                          return _OrderHistoryCard(
+                            orderCode: "#${order.id.toString().toUpperCase()}",
+                            status: order.orderStatus,
+                            orderDate: _formatDate(order.orderDate),
+                            deliveryDate: order.shippingDate != null
+                                ? _formatDate(order.shippingDate!)
+                                : "Đang xử lý",
+                            total: order.totalAmount,
+                            onTap: () {
+                              Get.to(() => OrderDetailScreen(order: order));
+                            },
+                          );
+                        },
+                      ),
                     );
             }),
           ),
@@ -388,7 +393,7 @@ class _OrderHistoryCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '₫${total.toStringAsFixed(0)}',
+                        PriceFormatter.format(total),
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w900,

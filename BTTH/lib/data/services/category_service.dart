@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart'; 
-import '../local/pizza_categories.dart';
 import '../models/category_model.dart'; 
  
 class CategoryService { 
@@ -7,22 +6,23 @@ class CategoryService {
  
   Future<List<CategoryModel>> getAllCategories() async { 
     try {
+      print("=== DEBUG: ĐANG LẤY DANH MỤC TỪ FIREBASE... ===");
       final snapshot = await _db
           .collection('categories')
           .where('isActive', isEqualTo: true)
-          .orderBy('priority')
-          .limit(10)
           .get();
-
-      if (snapshot.docs.isNotEmpty) {
-        return snapshot.docs
-            .map((doc) => CategoryModel.fromSnapshot(doc))
-            .toList();
+ 
+      print("=== DEBUG: TÌM THẤY ${snapshot.docs.length} DANH MỤC ===");
+      for (var doc in snapshot.docs) {
+        print("  - Category: ${doc.data()['name']} (ID: ${doc.id})");
       }
-    } catch (_) {
-      // Fall back to local pizza categories when Firestore is unavailable.
+ 
+      return snapshot.docs
+          .map((doc) => CategoryModel.fromSnapshot(doc))
+          .toList();
+    } catch (e) {
+      print("Error loading categories from Firestore: $e");
+      return [];
     }
-
-    return PizzaCategories.defaults();
   } 
 }

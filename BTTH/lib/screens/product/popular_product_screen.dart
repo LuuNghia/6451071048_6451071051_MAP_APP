@@ -16,14 +16,14 @@ class _PopularProductScreenState extends State<PopularProductScreen> {
 Get.find<ProductController>(); 
  
   // Biến lưu trữ filter đang chọn 
-  String _selectedFilterKey = 'Name'; 
+  String _selectedFilterKey = 'Tên'; 
  
   // Map cấu hình filter: Hiển thị -> Giá trị gửi vào Controller 
   final Map<String, String> _filterMap = { 
-    'Name': 'name', 
-    'Price: Low to High': 'low_price', 
-    'Price: High to Low': 'high_price', 
-    'Newest': 'newest', 
+    'Tên': 'name', 
+    'Giá: Thấp đến Cao': 'low_price', 
+    'Giá: Cao đến Thấp': 'high_price', 
+    'Mới nhất': 'newest', 
   }; 
  
   @override 

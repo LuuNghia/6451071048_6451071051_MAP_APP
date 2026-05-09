@@ -371,6 +371,8 @@ class _OrderReviewScreenState extends State<OrderReviewScreen> {
                     const SizedBox(height: 8),
                     _row("Phí vận chuyển", controller.shippingFee.value),
                     const SizedBox(height: 8),
+                    _row("Thuế (2.5%)", controller.tax.value),
+                    const SizedBox(height: 8),
                     _row(
                       "Giảm giá",
                       -controller.discountAmount.value,

@@ -5,13 +5,11 @@ import 'package:get/get.dart';
 import '../../controller/cart_controller.dart'; 
 import '../../data/models/cart_item_model.dart'; 
 import '../order/order_overview_screen.dart'; 
+import '../../utils/price_formatter.dart';
  
 class CartOverviewScreen extends StatelessWidget { 
   const CartOverviewScreen({super.key}); 
 
-  String _formatVnd(double value) {
-    return "₫${value.toStringAsFixed(0)}";
-  }
   @override 
   Widget build(BuildContext context) { 
     final cartController = Get.find<CartController>(); 
@@ -121,7 +119,7 @@ class CartOverviewScreen extends StatelessWidget {
                           style: TextStyle(color: Colors.grey, fontSize: 14), 
                         ), 
                         Text( 
-                          _formatVnd(cartController.totalPrice), 
+                          PriceFormatter.format(cartController.totalPrice), 
                           style: TextStyle( 
                             fontSize: 22, 
                             fontWeight: FontWeight.bold, 
@@ -213,9 +211,6 @@ class _CartItem extends StatelessWidget {
     return NetworkImage(imageUrl);
   }
 
-  String _formatVnd(double value) {
-    return "₫${value.toStringAsFixed(0)}";
-  }
   @override 
   Widget build(BuildContext context) { 
     final total = item.finalPrice * item.quantity; 
@@ -348,7 +343,7 @@ onIncrease),
                       ), 
                     ), 
                     Text( 
-                      _formatVnd(total), 
+                      PriceFormatter.format(total), 
                       style: TextStyle( 
                         fontWeight: FontWeight.bold, 
                         fontSize: 16, 
