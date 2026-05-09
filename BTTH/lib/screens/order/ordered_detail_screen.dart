@@ -3,6 +3,10 @@ import 'package:btl/controller/order_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../data/models/order_model.dart';
+import '../../data/services/product_service.dart';
+import '../../data/models/product_model.dart';
+import '../review/write_review_screen.dart';
+import '../../utils/price_formatter.dart';
 
 class OrderDetailScreen extends StatefulWidget {
   final OrderModel order;
@@ -101,6 +105,51 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   String _buildAddress(Map<String, dynamic> addr) {
     return "${addr['number'] ?? ''} ${addr['street'] ?? ''}, ${addr['ward'] ?? ''}, ${addr['city'] ?? ''}";
+  }
+
+  Future<void> _navigateToReview(String productId) async {
+    final orderController = Get.find<OrderController>();
+    final productService = ProductService();
+
+    Get.dialog(const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false);
+
+    try {
+      var product = await productService.getProductById(productId);
+      
+      // Nếu không tìm thấy sản phẩm trên Firebase (do chưa tạo), tự động tạo mẫu để test
+      if (product == null || productId.startsWith("p_")) {
+        // await productService.uploadSampleData();
+        product = await productService.getProductById(productId);
+      }
+
+      final userId = orderController.auth.currentUser!.id;
+      final snapshot = await FirebaseFirestore.instance
+          .collection('reviews')
+          .where('userId', isEqualTo: userId)
+          .where('productId', isEqualTo: productId)
+          .where('isDeleted', isEqualTo: false)
+          .get();
+
+      String? reviewId;
+      if (snapshot.docs.isNotEmpty) {
+        reviewId = snapshot.docs.first.id;
+      }
+
+      Get.back(); // Close loading
+
+      if (product != null) {
+        Get.to(() => WriteReviewScreen(
+              product: product!,
+              reviewId: reviewId,
+            ));
+      } else {
+        Get.snackbar("Lỗi", "Không tìm thấy thông tin sản phẩm");
+      }
+    } catch (e) {
+      if (Get.isDialogOpen!) Get.back();
+      Get.snackbar("Lỗi", "Không thể tải dữ liệu đánh giá: $e");
+    }
   }
 
   @override
@@ -294,7 +343,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         ),
                       ),
                       Text(
-                        "\$${order.totalAmount.toStringAsFixed(0)}",
+                        PriceFormatter.format(order.totalAmount),
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -479,11 +528,32 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   "Số lượng: x${item.quantity}",
                   style: const TextStyle(color: Colors.grey, fontSize: 13),
                 ),
+                if (widget.order.orderStatus.toLowerCase() == "delivered")
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: SizedBox(
+                      height: 32,
+                      child: OutlinedButton(
+                        onPressed: () => _navigateToReview(item.productId),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          side: const BorderSide(color: Colors.blue),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          "Đánh giá",
+                          style: TextStyle(fontSize: 12, color: Colors.blue),
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
           Text(
-            "\$${item.price}",
+            PriceFormatter.format(item.price),
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
@@ -536,7 +606,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         children: [
           Text(label, style: const TextStyle(color: Colors.grey)),
           Text(
-            "${isDiscount ? '-' : ''}\$${value.abs().toStringAsFixed(0)}",
+            "${isDiscount ? '-' : ''}${PriceFormatter.format(value.abs())}",
             style: TextStyle(
               color: isDiscount ? Colors.red : Colors.black87,
               fontWeight: isDiscount ? FontWeight.bold : FontWeight.normal,
@@ -563,24 +633,33 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           ),
           ElevatedButton(
             onPressed: () async {
-              final orderController = Get.find<OrderController>();
-              await FirebaseFirestore.instance
-                  .collection('orders')
-                  .doc(order.docId)
-                  .update({
-                    "orderStatus": "cancelled",
-                    "updatedAt": DateTime.now(),
-                  });
-              await orderController.revertSoldQuantity(order);
-              Get.back();
-              Get.back();
-              Get.snackbar(
-                "Thành công",
-                "Đơn hàng của bạn đã được hủy",
-                backgroundColor: Colors.green,
-                colorText: Colors.white,
-                snackPosition: SnackPosition.BOTTOM,
-              );
+              try {
+                final orderController = Get.find<OrderController>();
+                await orderController.cancelOrder(widget.order);
+                
+                // Đóng dialog và quay lại danh sách trước khi hiện thông báo
+                Get.back(); // Đóng dialog
+                Get.back(); // Quay lại danh sách
+                
+                // Hiện thông báo ở trang danh sách
+                Get.snackbar(
+                  "Thành công",
+                  "Đơn hàng của bạn đã được hủy thành công",
+                  backgroundColor: Colors.green,
+                  colorText: Colors.white,
+                  snackPosition: SnackPosition.TOP,
+                  duration: const Duration(seconds: 3),
+                );
+              } catch (e) {
+                Get.back(); // Đóng dialog nếu có lỗi
+                Get.snackbar(
+                  "Lỗi",
+                  "Không thể hủy đơn hàng: $e",
+                  backgroundColor: Colors.red,
+                  colorText: Colors.white,
+                  snackPosition: SnackPosition.TOP,
+                );
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,

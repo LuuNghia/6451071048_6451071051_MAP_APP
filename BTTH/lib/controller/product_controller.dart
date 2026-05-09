@@ -11,14 +11,17 @@ class ProductController extends GetxController {
   var isLoading = false.obs; 
   @override 
   void onInit() { 
-    fetchPopularProducts(); 
     super.onInit(); 
+    fetchPopularProducts(); 
+    refreshAllData(); // Đồng bộ tự động khi khởi tạo
   } 
  
   Future<void> fetchPopularProducts() async { 
     try { 
+      print("=== [DEBUG] FETCHING POPULAR PRODUCTS FOR HOME ===");
       isLoading.value = true; 
       final result = await _service.getPopularProducts(); 
+      print("=== [DEBUG] FETCHED ${result.length} PRODUCTS. FIRST RATING: ${result.isNotEmpty ? result.first.rating : 'N/A'} ===");
       products.assignAll(result); 
     } catch (e) { 
       print("Error loading products: $e"); 
@@ -29,6 +32,7 @@ class ProductController extends GetxController {
  
   Future<void> fetchAllPopularProducts() async { 
     try { 
+      print("=== [DEBUG] FETCHING ALL POPULAR PRODUCTS (SEE ALL) ===");
       isLoading.value = true; 
  
       final result = await _service.getAllPopularProducts(); 
@@ -41,6 +45,21 @@ class ProductController extends GetxController {
       isLoading.value = false; 
     } 
   } 
+
+  Future<void> refreshAllData() async {
+    print("=== [DEBUG] REFRESHING ALL PRODUCT DATA & SYNCING SAMPLE DATA ===");
+    try {
+      await _service.uploadSampleData(); // Tự động đồng bộ mô tả mới lên Firebase
+      await _service.updateAllProductsDescription(); // Ép cập nhật mô tả cho sản phẩm cũ
+    } catch (e) {
+      print("Error syncing sample data: $e");
+    }
+    await fetchPopularProducts();
+    await fetchAllPopularProducts();
+    if (selectedProduct.value != null) {
+      await fetchProductDetail(selectedProduct.value!.id);
+    }
+  }
  
   var categoryProducts = <ProductModel>[].obs; 
   List<ProductModel> _originalCategoryProducts = []; 

@@ -112,12 +112,14 @@ class OrderModel {
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
       docId: json['docId'] ?? '',
-      id: json['id'],
-      userId: json['userId'],
+      id: json['id'] ?? '',
+      userId: json['userId'] ?? '',
       userDeviceToken: '',
-      products: (json['products'] as List)
-          .map((e) => CartItemModel.fromJson(e))
-          .toList(),
+      products: json['products'] != null 
+          ? (json['products'] as List)
+              .map((e) => CartItemModel.fromJson(e))
+              .toList()
+          : [],
       subTotal: (json['subTotal'] ?? 0).toDouble(),
       shippingAmount: json['shippingAmount'] ?? 0,
       taxRate: (json['taxRate'] ?? 0).toDouble(),
@@ -130,9 +132,9 @@ class OrderModel {
       pointsDiscountAmount: 0,
       totalDiscountAmount: (json['totalDiscountAmount'] ?? 0).toDouble(),
       totalAmount: (json['totalAmount'] ?? 0).toDouble(),
-      paymentStatus: json['paymentStatus'],
-      orderStatus: json['orderStatus'],
-      orderDate: json['orderDate'].toDate(),
+      paymentStatus: json['paymentStatus'] ?? 'pending',
+      orderStatus: json['orderStatus'] ?? 'created',
+      orderDate: json['orderDate'] != null ? json['orderDate'].toDate() : DateTime.now(),
 
       /// 🔥 FIX QUAN TRỌNG
       shippingDate: json['shippingDate'] != null
@@ -141,8 +143,8 @@ class OrderModel {
       shippingAddress: json['shippingAddress'],
       activities: [],
       itemCount: json['itemCount'] ?? 0,
-      createdAt: json['createdAt'].toDate(),
-      updatedAt: json['updatedAt'].toDate(),
+      createdAt: json['createdAt'] != null ? json['createdAt'].toDate() : DateTime.now(),
+      updatedAt: json['updatedAt'] != null ? json['updatedAt'].toDate() : DateTime.now(),
       paymentMethod: json['paymentMethod'] ?? '',
       paymentMethodType: json['paymentMethodType'] == 'bank'
           ? PaymentMethods.bank

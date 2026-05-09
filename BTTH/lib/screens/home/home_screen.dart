@@ -19,7 +19,6 @@ class HomeScreen extends StatelessWidget {
   final CategoryController categoryController = Get.put(CategoryController()); 
   final ProductController productController = Get.put(ProductController()); 
  
-  final cartController = Get.find<CartController>(); 
 
   ImageProvider _categoryImageProvider(String imageUrl) {
     if (imageUrl.startsWith('assets/')) {
@@ -27,110 +26,121 @@ class HomeScreen extends StatelessWidget {
     }
     return NetworkImage(imageUrl);
   }
+
   @override 
   Widget build(BuildContext context) { 
+    final categoryController = Get.put(CategoryController()); 
+    final productController = Get.put(ProductController()); 
+    final cartController = Get.find<CartController>(); 
+
     // Sử dụng GetBuilder để bọc bên ngoài Scaffold 
     return GetBuilder<AuthController>( 
       builder: (authController) { 
         // Logic lấy tên user từ controller 
         final user = authController.currentUser; 
-        String fullName = 'Guest User'; 
+        String fullName = 'Khách'; 
  
         if (user != null) { 
           fullName = '${user.firstName} ${user.lastName}'; 
         } 
  
         return Scaffold(
-             body: Column( 
-            children: [ 
-              /// TOP BLUE HEADER 
-              Container( 
-                padding: const EdgeInsets.all(24), 
-                decoration: const BoxDecoration( 
-                  color: Colors.blue, 
-                  borderRadius: BorderRadius.only( 
-                    bottomLeft: Radius.circular(24), 
-                    bottomRight: Radius.circular(24), 
+          body: RefreshIndicator(
+            onRefresh: () async {
+              await categoryController.fetchCategories();
+              await productController.fetchPopularProducts();
+              await productController.fetchAllPopularProducts();
+            },
+            child: Column( 
+              children: [ 
+                /// TOP BLUE HEADER 
+                Container( 
+                  padding: const EdgeInsets.all(24), 
+                  decoration: const BoxDecoration( 
+                    color: Colors.blue, 
+                    borderRadius: BorderRadius.only( 
+                      bottomLeft: Radius.circular(24), 
+                      bottomRight: Radius.circular(24), 
+                    ), 
                   ), 
-                ), 
-                child: SafeArea( 
-                  bottom: false, 
-                  child: Column( 
-                    crossAxisAlignment: CrossAxisAlignment.start, 
-                    children: [ 
-                      Row( 
-                        children: [ 
-                          Column( 
-                            crossAxisAlignment: CrossAxisAlignment.start, 
-                            children: [ 
-                              const Text( 
-                                'Good day for shopping', 
-                                style: TextStyle(color: Colors.white70), 
-                              ), 
-                              const SizedBox(height: 4), 
-                              Text( 
-                                fullName, //Đã thay bằng tên động 
-                                style: const TextStyle( 
-                                  color: Colors.white, 
-                                  fontSize: 20, 
-                                  fontWeight: FontWeight.bold, 
+                  child: SafeArea( 
+                    bottom: false, 
+                    child: Column( 
+                      crossAxisAlignment: CrossAxisAlignment.start, 
+                      children: [ 
+                        Row( 
+                          children: [ 
+                            Column( 
+                              crossAxisAlignment: CrossAxisAlignment.start, 
+                              children: [ 
+                                const Text( 
+                                  'Chúc bạn một ngày mua sắm vui vẻ', 
+                                  style: TextStyle(color: Colors.white70), 
                                 ), 
-                              ), 
-                            ], 
-                          ), 
-                          const Spacer(), 
- 
-                          /// Notification Icon 
-                          /// Chỉ hiện chuông khi đã login 
-                          if (authController.currentUser != null) 
-                            Obx(() { 
-                              final notificationController = 
-                                  Get.find<NotificationController>(); 
- 
-                              return Stack( 
-                                children: [ 
-                                  IconButton(
-                                      onPressed: () { 
-                                      Navigator.push( 
-                                        context, 
-                                        MaterialPageRoute( 
-                                          builder: (_) => 
-                                              MyNotificationScreen(), 
-                                        ), 
-                                      ); 
-                                    }, 
-                                    icon: const Icon( 
-                                      Icons.notifications, 
-                                      color: Colors.white, 
-                                    ), 
+                                const SizedBox(height: 4), 
+                                Text( 
+                                  fullName, //Đã thay bằng tên động 
+                                  style: const TextStyle( 
+                                    color: Colors.white, 
+                                    fontSize: 20, 
+                                    fontWeight: FontWeight.bold, 
                                   ), 
+                                ), 
+                              ], 
+                            ), 
+                            const Spacer(), 
  
-                                  if (notificationController.unreadCount.value > 
-                                      0) 
-                                    Positioned( 
-                                      right: 6, 
-                                      top: 6, 
-                                      child: Container( 
-                                        padding: const EdgeInsets.all(4), 
-                                        decoration: const BoxDecoration( 
-                                          color: Colors.red, 
-                                          shape: BoxShape.circle, 
-                                        ), 
-                                        child: Text( 
-                                          notificationController 
-                                              .unreadCount 
-                                              .value 
-                                              .toString(), 
-                                          style: const TextStyle( 
-                                            color: Colors.white, 
-                                            fontSize: 10, 
+                            /// Notification Icon 
+                            /// Chỉ hiện chuông khi đã login 
+                            if (authController.currentUser != null) 
+                              Obx(() { 
+                                final notificationController = 
+                                    Get.find<NotificationController>(); 
+ 
+                                return Stack( 
+                                  children: [ 
+                                    IconButton(
+                                        onPressed: () { 
+                                        Navigator.push( 
+                                          context, 
+                                          MaterialPageRoute( 
+                                            builder: (_) => 
+                                                MyNotificationScreen(), 
+                                          ), 
+                                        ); 
+                                      }, 
+                                      icon: const Icon( 
+                                        Icons.notifications, 
+                                        color: Colors.white, 
+                                      ), 
+                                    ), 
+ 
+                                    if (notificationController.unreadCount.value > 
+                                        0) 
+                                      Positioned( 
+                                        right: 6, 
+                                        top: 6, 
+                                        child: Container( 
+                                          padding: const EdgeInsets.all(4), 
+                                          decoration: const BoxDecoration( 
+                                            color: Colors.red, 
+                                            shape: BoxShape.circle, 
+                                          ), 
+                                          child: Text( 
+                                            notificationController 
+                                                .unreadCount 
+                                                .value 
+                                                .toString(), 
+                                            style: const TextStyle( 
+                                              color: Colors.white, 
+                                              fontSize: 10, 
+                                            ), 
                                           ), 
                                         ), 
                                       ), 
-                                    ), 
-                                ], 
-                              ); 
-                            }), 
+                                  ], 
+                                ); 
+                              }), 
                           Obx( 
                             () => Stack( 
                               children: [ 
@@ -248,13 +258,16 @@ category.name,
                                           ),
                                         )
                                       else
-                                        CircleAvatar( 
-                                          radius: 30, 
-                                          backgroundImage: 
-                                              _categoryImageProvider(
-                                            category.imageURL,
-                                          ),
-                                        ), 
+                                          CircleAvatar( 
+                                            radius: 30, 
+                                            backgroundColor: Colors.white.withOpacity(0.2),
+                                            backgroundImage: category.imageURL.isNotEmpty 
+                                                ? NetworkImage(category.imageURL) 
+                                                : null,
+                                            child: category.imageURL.isEmpty 
+                                                ? const Icon(Icons.category, color: Colors.white) 
+                                                : null,
+                                          ), 
                                       const SizedBox(height: 6), 
                                       Text( 
                                         category.name, 
@@ -371,6 +384,7 @@ productController.products.length,
                 }), 
               ), 
             ], 
+          ),
           ), 
         ); 
       }, 

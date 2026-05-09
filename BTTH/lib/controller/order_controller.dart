@@ -1,13 +1,17 @@
 import 'dart:math'; 
+import 'package:flutter/material.dart';
  
 import 'package:cloud_firestore/cloud_firestore.dart'; 
 import 'package:btl/controller/cart_controller.dart'; 
+import 'package:btl/controller/category_controller.dart';
 import 'package:btl/controller/login_controller.dart'; 
+import 'package:btl/controller/product_controller.dart';
 import 'package:btl/data/models/address_model.dart'; 
 import 'package:btl/data/models/cart_item_model.dart'; 
 import 'package:btl/data/models/coupon_model.dart'; 
 import 'package:btl/data/models/order_model.dart'; 
 import 'package:btl/data/services/order_service.dart'; 
+import 'package:btl/data/services/product_service.dart'; 
 import 'package:btl/screens/order/order_success_screen.dart'; 
 import 'package:get/get.dart';
 class OrderController extends GetxController { 
@@ -46,7 +50,7 @@ class OrderController extends GetxController {
   } 
  
   void _calculateTax() { 
-    tax.value = subTotal.value * 0.1; 
+    tax.value = subTotal.value * 0.025; 
   } 
  
   /// ================= SHIPPING ================= 
@@ -168,7 +172,7 @@ class OrderController extends GetxController {
          subTotal: subTotal.value, 
         shippingAmount: shipping, 
  
-        taxRate: 0.1, 
+        taxRate: 0.025, 
         taxAmount: tax.value, 
  
         /// 🔥 FIX COUPON 
@@ -276,10 +280,82 @@ FirebaseFirestore.instance.collection('coupons').doc(docId).update({
       }
 
       final userId = auth.currentUser!.id; 
+      print("=== DEBUG: ĐANG TÌM ĐƠN HÀNG CHO USER ID: $userId ===");
 
       final orders = await orderService.getOrdersByUser(userId); 
+ 
+      // ÉP BUỘC ĐỒNG BỘ THỰC ĐƠN MỚI NHẤT LÊN FIREBASE (ĐỂ KHỚP ID SEAFOOD, BEEF...)
+      // final productService = Get.put(ProductService());
+      // await productService.uploadSampleData();
+ 
+      if (orders.isEmpty) {
+        print("=== DEBUG: CHƯA CÓ ĐƠN HÀNG, ĐANG TẠO ĐƠN HÀNG MẪU VÀ DỮ LIỆU... ===");
+        
+        // 1. Tạo đơn hàng mẫu trạng thái "delivered" để có nút Đánh giá
+        final sampleOrderId = "sample_order_${DateTime.now().millisecondsSinceEpoch}";
+        final orderData = {
+          "id": sampleOrderId,
+          "userId": userId,
+          "orderStatus": "delivered", 
+          "paymentStatus": "paid",
+          "totalAmount": 245000.0,
+          "subTotal": 245000.0,
+          "shippingAmount": 0,
+          "taxRate": 0.0,
+          "taxAmount": 0.0,
+          "totalDiscountAmount": 0.0,
+          "couponDiscountAmount": 0.0,
+          "itemCount": 1,
+          "orderDate": Timestamp.now(),
+          "products": [
+            {
+              "productId": "pizza_hải_sản_cocktail_m", 
+              "title": "Pizza Hải Sản Cocktail (M)",
+              "price": 245000.0,
+              "quantity": 1,
+              "image": "https://img.dominos.vn/Seafood+cocktail+PC-MB1000X667px+(NEW).jpg",
+              "brandName": "Dominos",
+              "selectedVariation": {"Size": "M"}
+            }
+          ],
+          "shippingAddress": {
+            "name": "Lưu Đình Nghĩa", 
+            "phoneNumber": "0337681077", 
+            "number": "99",
+            "street": "Đường Pizza",
+            "ward": "Phường 10",
+            "city": "TP. Hồ Chí Minh"
+          },
+          "paymentMethod": "cash",
+          "paymentMethodType": "cash",
+          "isApproved": true,
+          "createdAt": Timestamp.now(),
+          "updatedAt": Timestamp.now(),
+        };
+        await FirebaseFirestore.instance.collection('orders').doc(sampleOrderId).set(orderData);
 
-      myOrders.assignAll(orders);
+        // 2. Kích hoạt đổ bộ dữ liệu thực đơn (Categories & Products)
+        // final productService = Get.put(ProductService());
+        // await productService.uploadSampleData();
+ 
+        // ÉP BUỘC LÀM MỚI DANH MỤC VÀ SẢN PHẨM Ở TRANG CHỦ
+        try {
+          if (Get.isRegistered<CategoryController>()) {
+            await Get.find<CategoryController>().fetchCategories();
+          }
+          if (Get.isRegistered<ProductController>()) {
+            await Get.find<ProductController>().fetchPopularProducts();
+          }
+        } catch (e) {
+          print("Error refreshing controllers: $e");
+        }
+        
+        // 3. Tải lại danh sách đơn hàng
+        final newOrders = await orderService.getOrdersByUser(userId);
+        myOrders.assignAll(newOrders);
+      } else {
+        myOrders.assignAll(orders);
+      }
     } catch (e) { 
       Get.snackbar("Error", "Không load được orders: $e"); 
     } finally { 
@@ -287,12 +363,36 @@ FirebaseFirestore.instance.collection('coupons').doc(docId).update({
     } 
   } 
  
-  Future<void> cancelOrder(String orderId) async { 
-    await 
-FirebaseFirestore.instance.collection("orders").doc(orderId).update({ 
-      "orderStatus": "cancelled", 
-      "updatedAt": DateTime.now(), 
-    }); 
+  Future<void> cancelOrder(OrderModel order) async { 
+    try {
+      if (order.docId.isEmpty) {
+        Get.snackbar("Lỗi", "Không tìm thấy ID đơn hàng để hủy",
+            backgroundColor: Colors.red, colorText: Colors.white);
+        return;
+      }
+
+      await FirebaseFirestore.instance.collection("orders").doc(order.docId).update({ 
+        "orderStatus": "cancelled", 
+        "updatedAt": DateTime.now(), 
+      }); 
+
+      // Revert sold quantity (try-catch riêng để không làm treo tiến trình chính)
+      try {
+        await revertSoldQuantity(order);
+      } catch (e) {
+        print("Lỗi khi hoàn tác số lượng: $e");
+      }
+
+      // Update local list
+      int index = myOrders.indexWhere((o) => o.docId == order.docId);
+      if (index != -1) {
+        myOrders[index].orderStatus = "cancelled";
+        myOrders.refresh();
+      }
+
+    } catch (e) {
+      rethrow;
+    }
   } 
  
   Future<bool> canReviewProduct(String productId) async { 

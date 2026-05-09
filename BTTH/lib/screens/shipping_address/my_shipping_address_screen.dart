@@ -1,8 +1,8 @@
 import 
 'package:btl/screens/shipping_address/add_edit_address_screen.dart'; 
 import 'package:flutter/material.dart'; 
-import '/controller/address_controller.dart'; 
-import '/data/models/address_model.dart'; 
+import '../../controller/address_controller.dart'; 
+import '../../data/models/address_model.dart'; 
  
 class MyShippingAddressScreen extends StatelessWidget { 
   final AddressController _controller = AddressController(); 

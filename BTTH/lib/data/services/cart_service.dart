@@ -1,5 +1,5 @@
-import '/data/models/cart_model.dart'; 
-import '/data/models/cart_item_model.dart'; 
+import '../models/cart_model.dart'; 
+import '../models/cart_item_model.dart'; 
  
 class CartService { 
   final CartModel _cart = CartModel.empty(); 
