@@ -24,7 +24,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     _fetchUserPhone();
   }
 
-  /// ================= FETCH PHONE =================
   Future<void> _fetchUserPhone() async {
     try {
       final snapshot = await FirebaseFirestore.instance
@@ -42,7 +41,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     }
   }
 
-  /// ================= LOGIC TRẠNG THÁI =================
   int _getStepIndex(String status) {
     switch (status.toLowerCase()) {
       case "created":
@@ -61,24 +59,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   String _getStatusText(String status) {
     switch (status.toLowerCase()) {
-      case "created":
-        return "Mới tạo";
-      case "pending":
-        return "Chờ xử lý";
-      case "processing":
-        return "Đang đóng gói";
-      case "shipped":
-        return "Đang giao hàng";
-      case "delivered":
-        return "Đã giao thành công";
-      case "cancelled":
-        return "Đã hủy";
-      case "returned":
-        return "Đã trả hàng";
-      case "refunded":
-        return "Đã hoàn tiền";
-      default:
-        return status;
+      case "created": return "Mới tạo";
+      case "pending": return "Chờ xử lý";
+      case "processing": return "Đang đóng gói";
+      case "shipped": return "Đang giao hàng";
+      case "delivered": return "Đã giao thành công";
+      case "cancelled": return "Đã hủy";
+      case "returned": return "Đã trả hàng";
+      case "refunded": return "Đã hoàn tiền";
+      default: return status;
     }
   }
 
@@ -89,12 +78,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   String _getPaymentMethodText(String method) {
     switch (method.toLowerCase()) {
-      case "cash":
-        return "Thanh toán khi nhận hàng (COD)";
-      case "bank":
-        return "Chuyển khoản ngân hàng";
-      default:
-        return method;
+      case "cash": return "Thanh toán khi nhận hàng (COD)";
+      case "bank": return "Chuyển khoản ngân hàng";
+      default: return method;
     }
   }
 
@@ -111,18 +97,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     final orderController = Get.find<OrderController>();
     final productService = ProductService();
 
-    Get.dialog(const Center(child: CircularProgressIndicator()),
-        barrierDismissible: false);
+    Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
 
     try {
       var product = await productService.getProductById(productId);
       
-      // Nếu không tìm thấy sản phẩm trên Firebase (do chưa tạo), tự động tạo mẫu để test
-      if (product == null || productId.startsWith("p_")) {
-        // await productService.uploadSampleData();
-        product = await productService.getProductById(productId);
-      }
-
       final userId = orderController.auth.currentUser!.id;
       final snapshot = await FirebaseFirestore.instance
           .collection('reviews')
@@ -138,14 +117,29 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
       Get.back(); // Close loading
 
-      if (product != null) {
-        Get.to(() => WriteReviewScreen(
-              product: product!,
-              reviewId: reviewId,
-            ));
-      } else {
-        Get.snackbar("Lỗi", "Không tìm thấy thông tin sản phẩm");
+      if (product == null) {
+        // Fallback: Tạo ProductModel ảo từ dữ liệu item trong đơn hàng
+        final orderItem = widget.order.products.firstWhere((p) => p.productId == productId);
+        product = ProductModel(
+          id: productId,
+          title: orderItem.title,
+          lowerTitle: orderItem.title.toLowerCase(),
+          price: orderItem.price,
+          thumbnail: orderItem.image ?? "",
+          images: orderItem.image != null ? [orderItem.image!] : [],
+          categoryIds: [],
+          tags: [],
+          attributes: [],
+          stock: 100,
+          productType: ProductType.simple,
+          brandName: orderItem.brandName,
+        );
       }
+
+      Get.to(() => WriteReviewScreen(
+            product: product!,
+            reviewId: reviewId,
+          ));
     } catch (e) {
       if (Get.isDialogOpen!) Get.back();
       Get.snackbar("Lỗi", "Không thể tải dữ liệu đánh giá: $e");
@@ -157,12 +151,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     final order = widget.order;
     final currentStep = _getStepIndex(order.orderStatus);
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FB), // Nền xám rất nhẹ đồng bộ App
+      backgroundColor: const Color(0xFFF8F9FB),
       appBar: AppBar(
-        title: const Text(
-          "Chi tiết đơn hàng",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: const Text("Chi tiết đơn hàng", style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         elevation: 0,
         foregroundColor: Colors.white,
@@ -182,7 +173,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// 1. MÃ ĐƠN HÀNG & TRẠNG THÁI CHUNG
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -202,175 +192,91 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Mã đơn hàng",
-                        style: TextStyle(color: Colors.grey, fontSize: 12),
-                      ),
+                      const Text("Mã đơn hàng", style: TextStyle(color: Colors.grey, fontSize: 12)),
                       const SizedBox(height: 4),
-                      Text(
-                        "#${order.id.toUpperCase()}",
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
-                        ),
-                      ),
+                      Text("#${order.id.toUpperCase()}",
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue)),
                     ],
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: _isSpecialStatus(order.orderStatus)
-                          ? Colors.red.shade50
-                          : Colors.blue.shade50,
+                      color: _isSpecialStatus(order.orderStatus) ? Colors.red.shade50 : Colors.blue.shade50,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Text(
-                      _getStatusText(order.orderStatus),
+                    child: Text(_getStatusText(order.orderStatus),
                       style: TextStyle(
-                        color: _isSpecialStatus(order.orderStatus)
-                            ? Colors.red
-                            : Colors.blue.shade700,
+                        color: _isSpecialStatus(order.orderStatus) ? Colors.red : Colors.blue.shade700,
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
-                      ),
-                    ),
+                      )),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 20),
 
-            /// 2. STEPPER TRẠNG THÁI ĐƠN HÀNG
-            const Text(
-              "Hành trình đơn hàng",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
+            const Text("Hành trình đơn hàng", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
               child: _isSpecialStatus(order.orderStatus)
                   ? _buildSpecialStatusUI(order.orderStatus)
                   : _buildHorizontalStepper(currentStep),
             ),
             const SizedBox(height: 20),
 
-            /// 3. DANH SÁCH SẢN PHẨM
-            const Text(
-              "Sản phẩm",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
+            const Text("Sản phẩm", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             ...order.products.map((item) => _buildProductCard(item)),
             const SizedBox(height: 20),
 
-            /// 4. THÔNG TIN GIAO HÀNG & LIÊN HỆ
-            const Text(
-              "Thông tin nhận hàng",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
+            const Text("Thông tin nhận hàng", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
               child: Column(
                 children: [
-                  _buildInfoRow(
-                    Icons.location_on_outlined,
-                    "Địa chỉ",
-                    _buildAddress(order.shippingAddress),
-                  ),
+                  _buildInfoRow(Icons.location_on_outlined, "Địa chỉ", _buildAddress(order.shippingAddress)),
                   const Divider(height: 24),
-                  _buildInfoRow(
-                    Icons.phone_android_outlined,
-                    "Số điện thoại",
-                    isLoadingPhone ? "Đang tải..." : phone,
-                  ),
+                  _buildInfoRow(Icons.phone_android_outlined, "Số điện thoại", isLoadingPhone ? "Đang tải..." : phone),
                   const Divider(height: 24),
-                  _buildInfoRow(
-                    Icons.calendar_today_outlined,
-                    "Ngày giao dự kiến",
-                    _formatDate(order.shippingDate),
-                  ),
+                  _buildInfoRow(Icons.calendar_today_outlined, "Ngày giao dự kiến", _formatDate(order.shippingDate)),
                 ],
               ),
             ),
             const SizedBox(height: 20),
 
-            /// 5. TỔNG KẾT THANH TOÁN
             Container(
               padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
               child: Column(
                 children: [
                   _priceSummaryRow("Tạm tính", order.subTotal),
-                  _priceSummaryRow(
-                    "Phí vận chuyển",
-                    order.shippingAmount.toDouble(),
-                  ),
+                  _priceSummaryRow("Phí vận chuyển", order.shippingAmount.toDouble()),
                   _priceSummaryRow("Thuế", order.taxAmount),
                   if (order.couponDiscountAmount > 0)
-                    _priceSummaryRow(
-                      "Giảm giá",
-                      -order.couponDiscountAmount,
-                      isDiscount: true,
-                    ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Divider(thickness: 1),
-                  ),
+                    _priceSummaryRow("Giảm giá", -order.couponDiscountAmount, isDiscount: true),
+                  const Padding(padding: EdgeInsets.symmetric(vertical: 12), child: Divider(thickness: 1)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        "Tổng thanh toán",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        PriceFormatter.format(order.totalAmount),
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
-                        ),
-                      ),
+                      const Text("Tổng thanh toán", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      Text(PriceFormatter.format(order.totalAmount),
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue)),
                     ],
                   ),
                   const SizedBox(height: 16),
                   Container(
                     padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade50,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    decoration: BoxDecoration(color: Colors.grey.shade50, borderRadius: BorderRadius.circular(12)),
                     child: Row(
                       children: [
-                        const Icon(
-                          Icons.account_balance_wallet_outlined,
-                          size: 20,
-                          color: Colors.blue,
-                        ),
+                        const Icon(Icons.account_balance_wallet_outlined, size: 20, color: Colors.blue),
                         const SizedBox(width: 10),
-                        Text(
-                          _getPaymentMethodText(order.paymentMethod),
-                          style: const TextStyle(fontSize: 13),
-                        ),
+                        Text(_getPaymentMethodText(order.paymentMethod), style: const TextStyle(fontSize: 13)),
                       ],
                     ),
                   ),
@@ -379,7 +285,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             ),
             const SizedBox(height: 30),
 
-            /// 6. NÚT HỦY ĐƠN
             if (order.orderStatus.toLowerCase() == "created")
               SizedBox(
                 width: double.infinity,
@@ -390,15 +295,26 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     backgroundColor: Colors.white,
                     foregroundColor: Colors.red,
                     side: const BorderSide(color: Colors.red),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     elevation: 0,
                   ),
-                  child: const Text(
-                    "Hủy đơn hàng",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  child: const Text("Hủy đơn hàng", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                ),
+              ),
+
+            if (order.orderStatus.toLowerCase() == "shipped")
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: () => _confirmReceived(order),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue.shade700,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    elevation: 0,
                   ),
+                  child: const Text("Đã nhận được hàng", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
               ),
             const SizedBox(height: 20),
@@ -408,7 +324,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
-  /// ================= UI WIDGETS =================
   Widget _buildHorizontalStepper(int current) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -430,62 +345,29 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         AnimatedContainer(
           duration: const Duration(milliseconds: 500),
           padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: isDone ? Colors.blue : Colors.grey.shade200,
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            icon,
-            size: 20,
-            color: isDone ? Colors.white : Colors.grey,
-          ),
+          decoration: BoxDecoration(color: isDone ? Colors.blue : Colors.grey.shade200, shape: BoxShape.circle),
+          child: Icon(icon, size: 20, color: isDone ? Colors.white : Colors.grey),
         ),
         const SizedBox(height: 6),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 10,
-            color: isDone ? Colors.blue.shade700 : Colors.grey,
-            fontWeight: isDone ? FontWeight.bold : FontWeight.normal,
-          ),
-        ),
+        Text(label, style: TextStyle(fontSize: 10, color: isDone ? Colors.blue.shade700 : Colors.grey, fontWeight: isDone ? FontWeight.bold : FontWeight.normal)),
       ],
     );
   }
 
   Widget _buildStepLine(bool isActive) {
-    return Expanded(
-      child: Container(
-        height: 2,
-        margin: const EdgeInsets.only(bottom: 20),
-        color: isActive ? Colors.blue : Colors.grey.shade200,
-      ),
-    );
+    return Expanded(child: Container(height: 2, margin: const EdgeInsets.only(bottom: 20), color: isActive ? Colors.blue : Colors.grey.shade200));
   }
 
   Widget _buildSpecialStatusUI(String status) {
-    IconData icon = Icons.info;
-    Color color = Colors.grey;
-    if (status.toLowerCase() == "cancelled") {
-      icon = Icons.cancel;
-      color = Colors.red;
-    } else if (status.toLowerCase() == "returned") {
-      icon = Icons.assignment_return;
-      color = Colors.orange;
-    }
+    IconData icon = Icons.info; Color color = Colors.grey;
+    if (status.toLowerCase() == "cancelled") { icon = Icons.cancel; color = Colors.red; }
+    else if (status.toLowerCase() == "returned") { icon = Icons.assignment_return; color = Colors.orange; }
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(icon, color: color, size: 30),
         const SizedBox(width: 12),
-        Text(
-          _getStatusText(status),
-          style: TextStyle(
-            color: color,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        Text(_getStatusText(status), style: TextStyle(color: color, fontSize: 18, fontWeight: FontWeight.bold)),
       ],
     );
   }
@@ -494,40 +376,24 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
       child: Row(
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.network(
-              item.image,
-              width: 70,
-              height: 70,
-              fit: BoxFit.cover,
-            ),
+            child: (item.image != null && item.image!.startsWith('assets/')) 
+              ? Image.asset(item.image!, width: 70, height: 70, fit: BoxFit.cover)
+              : Image.network(item.image ?? "", width: 70, height: 70, fit: BoxFit.cover, 
+                  errorBuilder: (_, __, ___) => Container(width: 70, height: 70, color: Colors.grey.shade100, child: const Icon(Icons.image))),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  item.title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                Text(item.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15), maxLines: 1, overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 4),
-                Text(
-                  "Số lượng: x${item.quantity}",
-                  style: const TextStyle(color: Colors.grey, fontSize: 13),
-                ),
+                Text("Số lượng: x${item.quantity}", style: const TextStyle(color: Colors.grey, fontSize: 13)),
                 if (widget.order.orderStatus.toLowerCase() == "delivered")
                   Padding(
                     padding: const EdgeInsets.only(top: 8),
@@ -535,31 +401,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       height: 32,
                       child: OutlinedButton(
                         onPressed: () => _navigateToReview(item.productId),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          side: const BorderSide(color: Colors.blue),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text(
-                          "Đánh giá",
-                          style: TextStyle(fontSize: 12, color: Colors.blue),
-                        ),
+                        style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12), side: const BorderSide(color: Colors.blue), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                        child: const Text("Đánh giá", style: TextStyle(fontSize: 12, color: Colors.blue)),
                       ),
                     ),
                   ),
               ],
             ),
           ),
-          Text(
-            PriceFormatter.format(item.price),
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-              color: Colors.blue,
-            ),
-          ),
+          Text(PriceFormatter.format(item.price), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue)),
         ],
       ),
     );
@@ -575,18 +425,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: const TextStyle(color: Colors.grey, fontSize: 12),
-              ),
+              Text(title, style: const TextStyle(color: Colors.grey, fontSize: 12)),
               const SizedBox(height: 2),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
             ],
           ),
         ),
@@ -594,83 +435,68 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
-  Widget _priceSummaryRow(
-    String label,
-    double value, {
-    bool isDiscount = false,
-  }) {
+  Widget _priceSummaryRow(String label, double value, {bool isDiscount = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: const TextStyle(color: Colors.grey)),
-          Text(
-            "${isDiscount ? '-' : ''}${PriceFormatter.format(value.abs())}",
-            style: TextStyle(
-              color: isDiscount ? Colors.red : Colors.black87,
-              fontWeight: isDiscount ? FontWeight.bold : FontWeight.normal,
-            ),
+          Text("${isDiscount ? '-' : ''}${PriceFormatter.format(value.abs())}", style: TextStyle(color: isDiscount ? Colors.red : Colors.black87, fontWeight: isDiscount ? FontWeight.bold : FontWeight.normal)),
+        ],
+      ),
+    );
+  }
+
+  void _confirmCancel(OrderModel order) {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text("Xác nhận hủy đơn"),
+        content: const Text("Bạn có chắc chắn muốn hủy đơn hàng này không? Hành động này không thể hoàn tác."),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: const Text("Đóng", style: TextStyle(color: Colors.grey))),
+          ElevatedButton(
+            onPressed: () async {
+              try {
+                final orderController = Get.find<OrderController>();
+                await orderController.cancelOrder(widget.order);
+                Get.back(); Get.back();
+                Get.snackbar("Thành công", "Đơn hàng của bạn đã được hủy thành công", backgroundColor: Colors.green, colorText: Colors.white, snackPosition: SnackPosition.TOP, duration: const Duration(seconds: 3));
+              } catch (e) {
+                Get.back(); Get.snackbar("Lỗi", "Không thể hủy đơn hàng: $e", backgroundColor: Colors.red, colorText: Colors.white, snackPosition: SnackPosition.TOP);
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+            child: const Text("Xác nhận hủy", style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
     );
   }
 
-  /// ================= LOGIC HỦY ĐƠN =================
-  void _confirmCancel(OrderModel order) {
+  void _confirmReceived(OrderModel order) {
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text("Xác nhận hủy đơn"),
-        content: const Text(
-          "Bạn có chắc chắn muốn hủy đơn hàng này không? Hành động này không thể hoàn tác.",
-        ),
+        title: const Text("Xác nhận nhận hàng"),
+        content: const Text("Bạn xác nhận đã nhận được đầy đủ sản phẩm và hài lòng với đơn hàng?"),
         actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text("Đóng", style: TextStyle(color: Colors.grey)),
-          ),
+          TextButton(onPressed: () => Get.back(), child: const Text("Chưa nhận", style: TextStyle(color: Colors.grey))),
           ElevatedButton(
             onPressed: () async {
               try {
                 final orderController = Get.find<OrderController>();
-                await orderController.cancelOrder(widget.order);
-                
-                // Đóng dialog và quay lại danh sách trước khi hiện thông báo
-                Get.back(); // Đóng dialog
-                Get.back(); // Quay lại danh sách
-                
-                // Hiện thông báo ở trang danh sách
-                Get.snackbar(
-                  "Thành công",
-                  "Đơn hàng của bạn đã được hủy thành công",
-                  backgroundColor: Colors.green,
-                  colorText: Colors.white,
-                  snackPosition: SnackPosition.TOP,
-                  duration: const Duration(seconds: 3),
-                );
+                await orderController.confirmDelivery(widget.order);
+                Get.back();
+                Get.snackbar("Thành công", "Cảm ơn bạn đã xác nhận nhận hàng!", backgroundColor: Colors.green, colorText: Colors.white, snackPosition: SnackPosition.TOP);
+                setState(() {}); // Refresh UI
               } catch (e) {
-                Get.back(); // Đóng dialog nếu có lỗi
-                Get.snackbar(
-                  "Lỗi",
-                  "Không thể hủy đơn hàng: $e",
-                  backgroundColor: Colors.red,
-                  colorText: Colors.white,
-                  snackPosition: SnackPosition.TOP,
-                );
+                Get.back(); Get.snackbar("Lỗi", "Không thể cập nhật trạng thái: $e", backgroundColor: Colors.red, colorText: Colors.white);
               }
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: const Text(
-              "Xác nhận hủy",
-              style: TextStyle(color: Colors.white),
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade700, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+            child: const Text("Xác nhận", style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

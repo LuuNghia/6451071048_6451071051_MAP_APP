@@ -8,12 +8,14 @@ class NotificationService {
     return _db 
         .collection('notifications') 
         .where('userId', isEqualTo: userId) 
-        .orderBy('createdAt', descending: true) 
-          .snapshots() 
+        .snapshots() 
         .map((snapshot) { 
-          return snapshot.docs 
+          final list = snapshot.docs 
               .map((doc) => NotificationModel.fromFirestore(doc)) 
               .toList(); 
+          // Sắp xếp thủ công theo thời gian mới nhất lên đầu
+          list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          return list;
         }); 
   } 
  
@@ -23,4 +25,20 @@ class NotificationService {
         .doc(docId) 
         .update({"isRead": true}); 
   } 
+
+  Future<void> sendNotification({
+    required String userId,
+    required String orderId,
+    required String orderStatus,
+    required String message,
+  }) async {
+    await _db.collection('notifications').add({
+      'userId': userId,
+      'orderId': orderId,
+      'orderStatus': orderStatus,
+      'message': message,
+      'isRead': false,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+  }
 }

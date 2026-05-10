@@ -1,5 +1,6 @@
 import 'package:get/get.dart'; 
 import '../data/models/notification_model.dart'; 
+import '../data/models/user_model.dart'; 
 import '../data/services/notification_service.dart'; 
 import 'login_controller.dart'; 
  
@@ -15,16 +16,28 @@ class NotificationController extends GetxController {
     super.onInit(); 
  
     authController = Get.find<AuthController>(); 
-    final user = authController.currentUser; 
- 
-    if (user != null) { 
-      _service.getUserNotifications(user.id).listen((data) { 
-        notifications.value = data; 
- 
-        ///tính số chưa đọc 
-        unreadCount.value = data.where((n) => n.isRead == false).length; 
-      }); 
-    } 
+
+    // Listen to user changes
+    ever(authController.user, (UserModel? u) {
+      if (u != null) {
+        _startListening(u.id);
+      } else {
+        notifications.clear();
+        unreadCount.value = 0;
+      }
+    });
+
+    // Initial check
+    if (authController.currentUser != null) {
+      _startListening(authController.currentUser!.id);
+    }
+  }
+
+  void _startListening(String userId) {
+    _service.getUserNotifications(userId).listen((data) { 
+      notifications.value = data; 
+      unreadCount.value = data.where((n) => !n.isRead).length; 
+    }); 
   } 
  
   /// đánh dấu đã đọc 

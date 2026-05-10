@@ -29,7 +29,9 @@ class NotificationModel {
       orderStatus: data['orderStatus'], 
       message: data['message'], 
       isRead: data['isRead'] ?? false, 
-      createdAt: (data['createdAt'] as Timestamp).toDate(), 
+      createdAt: data['createdAt'] != null 
+          ? (data['createdAt'] as Timestamp).toDate() 
+          : DateTime.now(), 
     ); 
   } 
 } 

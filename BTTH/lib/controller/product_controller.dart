@@ -47,13 +47,7 @@ class ProductController extends GetxController {
   } 
 
   Future<void> refreshAllData() async {
-    print("=== [DEBUG] REFRESHING ALL PRODUCT DATA & SYNCING SAMPLE DATA ===");
-    try {
-      await _service.uploadSampleData(); // Tự động đồng bộ mô tả mới lên Firebase
-      await _service.updateAllProductsDescription(); // Ép cập nhật mô tả cho sản phẩm cũ
-    } catch (e) {
-      print("Error syncing sample data: $e");
-    }
+    print("=== [DEBUG] REFRESHING PRODUCT DATA ===");
     await fetchPopularProducts();
     await fetchAllPopularProducts();
     if (selectedProduct.value != null) {

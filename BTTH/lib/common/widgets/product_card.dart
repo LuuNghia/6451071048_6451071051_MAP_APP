@@ -352,6 +352,11 @@ class _ProductCardState extends State<ProductCard> {
                                 onPressed: isOutOfStock
                                 ? null
                                 : () {
+                                    final authController = Get.find<AuthController>();
+                                    if (authController.currentUser == null) {
+                                      _showLoginDialog();
+                                      return;
+                                    }
                                     cartController.addToCart(
                                       CartItemModel(
                                         productId: widget.product.id,
