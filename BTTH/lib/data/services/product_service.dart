@@ -10,7 +10,7 @@ class ProductService {
       final snapshot = await _db.collection('products')
           .where('isFeatured', isEqualTo: true)
           .limit(20)
-          .get(const GetOptions(source: Source.server));
+          .get();
 
       for (var doc in snapshot.docs) {
         final data = doc.data();
@@ -38,7 +38,7 @@ class ProductService {
     try {
       final snapshot = await _db.collection('products')
           .where('isFeatured', isEqualTo: true)
-          .get(const GetOptions(source: Source.server));
+          .get();
 
       for (var doc in snapshot.docs) {
         final data = doc.data();
@@ -70,7 +70,7 @@ class ProductService {
       final snapshot = await _db
           .collection('products')
           .where('isActive', isEqualTo: true)
-          .get(const GetOptions(source: Source.server));
+          .get();
 
       for (var doc in snapshot.docs) {
         final p = ProductModel.fromSnapshot(doc, null);
@@ -87,7 +87,7 @@ class ProductService {
 
   Future<ProductModel?> getProductById(String productId) async {
     try {
-      final doc = await _db.collection('products').doc(productId).get(const GetOptions(source: Source.server));
+      final doc = await _db.collection('products').doc(productId).get();
 
       if (doc.exists) {
         final data = doc.data() as Map<String, dynamic>;

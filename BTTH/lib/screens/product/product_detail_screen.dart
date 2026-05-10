@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import '../../controller/product_controller.dart'; 
 import '../review/review_rating_screen.dart'; 
 import '../../controller/order_controller.dart'; 
+import '../../controller/wishlist_controller.dart'; 
 import '../../utils/price_formatter.dart';
  
 class ProductDetailScreen extends StatefulWidget { 
@@ -29,7 +30,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   String? selectedImage; 
  
   Map<String, int> selectedAttributes = {}; 
-
+ 
   ImageProvider _imageProvider(String imageUrl) {
     if (imageUrl.startsWith('assets/')) {
       return AssetImage(imageUrl);
@@ -90,10 +91,36 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         child: IconButton(
                           onPressed: () => Get.back(),
                           icon: Icon(Icons.arrow_back, color: Colors.blue.shade800),
-                          tooltip: '', // Xoá tooltip để không hiện chữ Back màu xám
+                          tooltip: '', 
                         ), 
                       ), 
-                    ), 
+                    ),
+                    actions: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CircleAvatar(
+                          backgroundColor: Colors.white.withOpacity(0.9),
+                          child: Obx(() {
+                            final wishlistController = Get.find<WishlistController>();
+                            final isFav = wishlistController.isInWishlist(widget.productId);
+                            return IconButton(
+                              onPressed: () async {
+                                final authController = Get.find<AuthController>();
+                                if (authController.currentUser == null) {
+                                  _showLoginDialog();
+                                  return;
+                                }
+                                await wishlistController.toggleWishlist(controller.selectedProduct.value!);
+                              },
+                              icon: Icon(
+                                isFav ? Icons.favorite : Icons.favorite_border,
+                                color: isFav ? Colors.red : Colors.grey,
+                              ),
+                            );
+                          }),
+                        ),
+                      ),
+                    ],
                     flexibleSpace: FlexibleSpaceBar( 
                       background: Stack( 
                         children: [ 
@@ -308,29 +335,45 @@ Colors.grey.shade200,
           rating: product.rating, 
           reviewCount: product.ratingCount, 
         ), 
+        transition: Transition.rightToLeftWithFade,
       ), 
       child: Container( 
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 
-6), 
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8), 
         decoration: BoxDecoration( 
-          color: Colors.amber.shade50, 
-          borderRadius: BorderRadius.circular(20), 
+          gradient: LinearGradient(
+            colors: [Colors.amber.shade50, Colors.orange.shade50],
+          ),
+          borderRadius: BorderRadius.circular(25), 
+          border: Border.all(color: Colors.amber.shade200, width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.amber.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ), 
         child: Row( 
+          mainAxisSize: MainAxisSize.min,
           children: [ 
-            const Icon(Icons.star, color: Colors.amber, size: 16), 
-            const SizedBox(width: 4), 
+            const Icon(Icons.star_rounded, color: Colors.amber, size: 20), 
+            const SizedBox(width: 6), 
             Text( 
               product.rating.toStringAsFixed(1), 
               style: const TextStyle( 
-                fontWeight: FontWeight.bold, 
-                color: Colors.orange, 
+                fontWeight: FontWeight.w800, 
+                color: Color(0xFFD35400), 
+                fontSize: 15,
               ), 
             ), 
+            const SizedBox(width: 4),
             Text( 
-              " (${product.ratingCount})", 
-              style: TextStyle(color: Colors.orange.shade300, fontSize: 
-12), 
+              "(${product.ratingCount})", 
+              style: TextStyle(
+                color: Colors.orange.shade300, 
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ), 
             ), 
           ], 
         ), 
@@ -434,35 +477,87 @@ Colors.white,
  
         if (state == "not_allowed") return const SizedBox.shrink(); 
  
-        return Padding( 
-          padding: const EdgeInsets.only(bottom: 20), 
-          child: OutlinedButton.icon( 
-            onPressed: () { 
-              Get.to( 
-                () => WriteReviewScreen( 
-                  product: product, 
-                  reviewId: data["reviewId"], 
-                ), 
-              );
-               }, 
-            style: OutlinedButton.styleFrom( 
-              padding: const EdgeInsets.symmetric(horizontal: 16, 
-vertical: 12), 
-              shape: RoundedRectangleBorder( 
-                borderRadius: BorderRadius.circular(12), 
-              ), 
-              side: BorderSide(color: Colors.blue.shade700), 
-            ), 
-            icon: Icon( 
-              state == "can_edit" ? Icons.edit : Icons.rate_review, 
-              size: 18, 
-            ), 
-            label: Text( 
-              state == "can_edit" 
-                  ? "Chỉnh sửa đánh giá" 
-                  : "Viết đánh giá sản phẩm", 
-            ), 
-          ), 
+        final bool isEditing = state == "can_edit";
+
+        return Container( 
+          width: double.infinity,
+          margin: const EdgeInsets.only(bottom: 24),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              colors: [Colors.blue.shade50, Colors.white],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            border: Border.all(color: Colors.blue.shade100),
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () { 
+                Get.to( 
+                  () => WriteReviewScreen( 
+                    product: product, 
+                    reviewId: data["reviewId"], 
+                  ), 
+                  transition: Transition.cupertino,
+                ); 
+              }, 
+              borderRadius: BorderRadius.circular(20),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade700,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.blue.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Icon( 
+                        isEditing ? Icons.edit_note_rounded : Icons.rate_review_rounded, 
+                        size: 24, 
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            isEditing ? "Cập nhật đánh giá" : "Chia sẻ cảm nhận",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            isEditing 
+                                ? "Bạn muốn thay đổi ý kiến về sản phẩm này?" 
+                                : "Nhận xét của bạn giúp mọi người mua sắm tốt hơn",
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.chevron_right_rounded, color: Colors.blue.shade300),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ); 
       }, 
     ); 
@@ -538,6 +633,11 @@ null),
                   onPressed: isAdded 
                       ? null 
                       : () { 
+                          final authController = Get.find<AuthController>();
+                          if (authController.currentUser == null) {
+                            _showLoginDialog();
+                            return;
+                          }
                           cartController.addToCart( 
                             CartItemModel( 
                               productId: product.id, 
@@ -601,5 +701,20 @@ null),
       return {"state": "can_edit", "reviewId": snapshot.docs.first.id}; 
     } 
     return {"state": "can_write"}; 
+  } 
+
+  void _showLoginDialog() { 
+    Get.defaultDialog( 
+      title: "Yêu cầu đăng nhập", 
+      middleText: "Vui lòng đăng nhập để thực hiện chức năng này", 
+      textConfirm: "Đăng nhập", 
+      textCancel: "Hủy", 
+      confirmTextColor: Colors.white, 
+      buttonColor: Colors.blue, 
+      onConfirm: () { 
+        Get.back(); 
+        Get.toNamed('/login');
+      }, 
+    ); 
   } 
 }

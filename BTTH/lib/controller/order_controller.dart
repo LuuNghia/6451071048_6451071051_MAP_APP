@@ -13,6 +13,7 @@ import 'package:btl/data/models/order_model.dart';
 import 'package:btl/data/services/order_service.dart'; 
 import 'package:btl/data/services/product_service.dart'; 
 import 'package:btl/screens/order/order_success_screen.dart'; 
+import 'package:btl/data/services/notification_service.dart';
 import 'package:get/get.dart';
 class OrderController extends GetxController { 
   /// ================= CONTROLLER ================= 
@@ -204,8 +205,15 @@ class OrderController extends GetxController {
             : PaymentMethods.cash, 
       ); 
  
-      await 
-FirebaseFirestore.instance.collection('orders').add(order.toJson()); 
+      final orderDoc = await FirebaseFirestore.instance.collection('orders').add(order.toJson()); 
+
+      // SEND NOTIFICATION
+      await NotificationService().sendNotification(
+        userId: auth.currentUser!.id,
+        orderId: order.id,
+        orderStatus: 'created',
+        message: 'Đặt hàng thành công! Đơn hàng #${order.id.toUpperCase()} của bạn đang chờ xử lý.',
+      );
  
       /// 🔥 UPDATE SOLD QUANTITY 
       await updateSoldQuantityAfterOrder(); 
@@ -363,6 +371,34 @@ FirebaseFirestore.instance.collection('coupons').doc(docId).update({
     } 
   } 
  
+  Future<void> confirmDelivery(OrderModel order) async {
+    try {
+      if (order.docId.isEmpty) return;
+
+      await FirebaseFirestore.instance.collection("orders").doc(order.docId).update({
+        "orderStatus": "delivered",
+        "updatedAt": DateTime.now(),
+      });
+
+      // SEND NOTIFICATION
+      await NotificationService().sendNotification(
+        userId: auth.currentUser!.id,
+        orderId: order.id,
+        orderStatus: 'delivered',
+        message: 'Bạn đã xác nhận nhận đơn hàng #${order.id.toUpperCase()}. Cảm ơn bạn đã mua sắm!',
+      );
+
+      // Update local list
+      int index = myOrders.indexWhere((o) => o.docId == order.docId);
+      if (index != -1) {
+        myOrders[index].orderStatus = "delivered";
+        myOrders.refresh();
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<void> cancelOrder(OrderModel order) async { 
     try {
       if (order.docId.isEmpty) {
@@ -375,6 +411,14 @@ FirebaseFirestore.instance.collection('coupons').doc(docId).update({
         "orderStatus": "cancelled", 
         "updatedAt": DateTime.now(), 
       }); 
+
+      // SEND NOTIFICATION
+      await NotificationService().sendNotification(
+        userId: auth.currentUser!.id,
+        orderId: order.id,
+        orderStatus: 'cancelled',
+        message: 'Đơn hàng #${order.id.toUpperCase()} của bạn đã được hủy thành công.',
+      );
 
       // Revert sold quantity (try-catch riêng để không làm treo tiến trình chính)
       try {
