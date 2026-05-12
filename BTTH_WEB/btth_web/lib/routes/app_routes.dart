@@ -1,5 +1,5 @@
-import 'package:draf_project_web/views/customers/customers_page.dart';
-import 'package:draf_project_web/views/product_review/all_review_screen.dart';
+import 'package:btth_web/views/customers/customers_page.dart';
+import 'package:btth_web/views/product_review/all_review_screen.dart';
 import 'package:flutter/material.dart';
 import '../views/auth/login_page.dart';
 import '../views/layout/admin_layout.dart';
