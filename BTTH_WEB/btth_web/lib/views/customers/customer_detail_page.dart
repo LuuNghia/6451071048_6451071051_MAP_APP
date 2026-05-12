@@ -86,7 +86,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          "Customer Detail",
+          "Chi tiết khách hàng",
           style: TextStyle(
             color: Color(0xFF2B3674),
             fontWeight: FontWeight.bold,
@@ -104,7 +104,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
               child: Column(
                 children: [
                   _buildSectionCard(
-                    title: "Customer Information",
+                    title: "Thông tin khách hàng",
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -125,18 +125,19 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                           ),
                         ),
                         const SizedBox(height: 24),
-                        infoRow("FName", widget.customer.firstName),
-                        infoRow("LName", widget.customer.lastName),
+                        infoRow("Họ", widget.customer.lastName),
+                        infoRow("Tên", widget.customer.firstName),
                         infoRow("Email", widget.customer.email),
-                        infoRow("Phone", widget.customer.phone ?? '-'),
+                        infoRow("Số điện thoại", widget.customer.phone),
+                        infoRow("Ngày sinh", formatDate(widget.customer.dateOfBirth)),
                         const Divider(height: 32),
-                        infoRow("Last Order", formatDate(lastOrderDate)),
+                        infoRow("Đơn hàng cuối", formatDate(lastOrderDate)),
                         infoRow(
-                          "Average Order Value",
-                          averageOrderValue.toStringAsFixed(2),
+                          "Giá trị đơn hàng TB",
+                          averageOrderValue.toStringAsFixed(0),
                         ),
                         infoRow(
-                          "Register Date",
+                          "Ngày đăng ký",
                           formatDate(widget.customer.createdAt),
                         ),
                       ],
@@ -144,10 +145,10 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                   ),
                   const SizedBox(height: 24),
                   _buildSectionCard(
-                    title: "Shipping Address",
+                    title: "Địa chỉ giao hàng",
                     child: addresses.isEmpty
                         ? const Text(
-                            "No address found",
+                            "Không tìm thấy địa chỉ",
                             style: TextStyle(color: Color(0xFFA3AED0)),
                           )
                         : Column(
@@ -167,7 +168,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
               child: Column(
                 children: [
                   _buildSectionCard(
-                    title: "Orders History",
+                    title: "Lịch sử đơn hàng",
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -179,11 +180,11 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                             ),
                             columnSpacing: 20,
                             columns: const [
-                              DataColumn(label: _TableLabel("Order ID")),
-                              DataColumn(label: _TableLabel("Date")),
-                              DataColumn(label: _TableLabel("Item")),
-                              DataColumn(label: _TableLabel("Status")),
-                              DataColumn(label: _TableLabel("Amount")),
+                              DataColumn(label: _TableLabel("Mã đơn")),
+                              DataColumn(label: _TableLabel("Ngày đặt")),
+                              DataColumn(label: _TableLabel("Số lượng")),
+                              DataColumn(label: _TableLabel("Trạng thái")),
+                              DataColumn(label: _TableLabel("Tổng tiền")),
                             ],
                             rows: orders
                                 .map(
@@ -232,14 +233,14 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Text(
-                                "Summary Report",
+                                "Báo cáo tổng quát",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Color(0xFF2B3674),
                                 ),
                               ),
                               Text(
-                                "Total spent ${totalSpent.toStringAsFixed(2)}on ${orders.length} orders",
+                                "Tổng chi tiêu ${totalSpent.toStringAsFixed(0)}đ trên ${orders.length} đơn hàng",
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Color(0xFF4318FF),
@@ -322,7 +323,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
               children: [
                 if (address.isDefault)
                   const Text(
-                    "DEFAULT ADDRESS",
+                    "ĐỊA CHỈ MẶC ĐỊNH",
                     style: TextStyle(
                       color: Color(0xFF4318FF),
                       fontSize: 10,
@@ -345,16 +346,38 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
   }
 
   Widget _buildStatusBadge(String status) {
+    String vietnameseStatus = status;
+    Color color = Colors.blue;
+
+    switch (status.toLowerCase()) {
+      case 'delivered':
+        vietnameseStatus = "Đã giao";
+        color = Colors.green;
+        break;
+      case 'cancelled':
+        vietnameseStatus = "Đã hủy";
+        color = Colors.red;
+        break;
+      case 'processing':
+        vietnameseStatus = "Đang xử lý";
+        color = Colors.orange;
+        break;
+      case 'pending':
+        vietnameseStatus = "Chờ xử lý";
+        color = Colors.amber;
+        break;
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.1),
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        status,
-        style: const TextStyle(
-          color: Colors.blue,
+        vietnameseStatus,
+        style: TextStyle(
+          color: color,
           fontWeight: FontWeight.bold,
           fontSize: 12,
         ),

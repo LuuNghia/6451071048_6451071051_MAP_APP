@@ -9,7 +9,6 @@ class CustomerService {
     try {
       final snapshot = await _db
           .collection('users')
-          .orderBy('createdAt', descending: true)
           .get();
       return snapshot.docs.map((doc) => CustomerModel.fromFirestore(doc)).toList();
     } catch (e) {

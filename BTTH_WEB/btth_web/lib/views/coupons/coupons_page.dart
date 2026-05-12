@@ -102,139 +102,203 @@ class _CouponsView extends StatelessWidget {
               ),
               child: controller.isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: DataTable(
-                            headingRowHeight: 56,
-                            dataRowMaxHeight: 64,
-                            columnSpacing: 24,
-                            headingRowColor: MaterialStateProperty.all(
-                              const Color(0xFFF4F7FE),
-                            ),
-                            columns: const [
-                              DataColumn(label: _TableLabel("STT")),
-                              DataColumn(label: _TableLabel("MÃ GIẢM GIÁ")),
-                              DataColumn(label: _TableLabel("GIÁ TRỊ")),
-                              DataColumn(label: _TableLabel("LOẠI")),
-                              DataColumn(label: _TableLabel("MÔ TẢ")),
-                              DataColumn(label: _TableLabel("TRẠNG THÁI")),
-                              DataColumn(label: _TableLabel("BẮT ĐẦU")),
-                              DataColumn(label: _TableLabel("HẾT HẠN")),
-                              DataColumn(label: _TableLabel("THAO TÁC")),
-                            ],
-                            rows: controller.paginatedData.asMap().entries.map((
-                              entry,
-                            ) {
-                              final index = entry.key;
-                              final c = entry.value;
-                              final seq =
-                                  (controller.currentPage - 1) *
-                                      controller.rowsPerPage +
-                                  index +
-                                  1;
-                              return DataRow(
-                                cells: [
-                                  // SEQ
-                                  DataCell(
-                                    Text(
-                                      "$seq",
-                                      style: const TextStyle(
-                                        color: Color(0xFFA3AED0),
-                                      ),
-                                    ),
+                  : Column(
+                      children: [
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius:
+                                const BorderRadius.vertical(top: Radius.circular(20)),
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.vertical,
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: DataTable(
+                                  headingRowHeight: 56,
+                                  dataRowMaxHeight: 64,
+                                  columnSpacing: 24,
+                                  headingRowColor: MaterialStateProperty.all(
+                                    const Color(0xFFF4F7FE),
                                   ),
-                                  // COUPON
-                                  DataCell(
-                                    Text(
-                                      c.code,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF2B3674),
-                                      ),
-                                    ),
-                                  ),
-                                  // DISCOUNT VALUE
-                                  DataCell(
-                                    Text(
-                                      c.discountType == DiscountType.percentage
-                                          ? "${c.discountValue}%"
-                                          : "${c.discountValue.toStringAsFixed(0)} đ",
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                  // TYPE
-                                  DataCell(
-                                    Text(
-                                      c.discountType == DiscountType.percentage
-                                          ? "Phần trăm"
-                                          : "Cố định",
-                                    ),
-                                  ),
-                                  // DESCRIPTION
-                                  DataCell(
-                                    SizedBox(
-                                      width: 180,
-                                      child: Text(
-                                        c.description,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontSize: 13,
-                                          color: Colors.blueGrey,
+                                  columns: const [
+                                    DataColumn(label: _TableLabel("STT")),
+                                    DataColumn(label: _TableLabel("MÃ GIẢM GIÁ")),
+                                    DataColumn(label: _TableLabel("GIÁ TRỊ")),
+                                    DataColumn(label: _TableLabel("LOẠI")),
+                                    DataColumn(label: _TableLabel("MÔ TẢ")),
+                                    DataColumn(label: _TableLabel("TRẠNG THÁI")),
+                                    DataColumn(label: _TableLabel("BẮT ĐẦU")),
+                                    DataColumn(label: _TableLabel("HẾT HẠN")),
+                                    DataColumn(label: _TableLabel("THAO TÁC")),
+                                  ],
+                                  rows: controller.paginatedData
+                                      .asMap()
+                                      .entries
+                                      .map((entry) {
+                                    final index = entry.key;
+                                    final c = entry.value;
+                                    final seq = (controller.currentPage - 1) *
+                                            controller.rowsPerPage +
+                                        index +
+                                        1;
+                                    return DataRow(
+                                      cells: [
+                                        // SEQ
+                                        DataCell(
+                                          Text(
+                                            "$seq",
+                                            style: const TextStyle(
+                                              color: Color(0xFFA3AED0),
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                  ),
-                                  // IS ACTIVE
-                                  DataCell(_StatusBadge(isActive: c.isActive)),
-                                  // START DATE
-                                  DataCell(
-                                    Text(
-                                      c.startDate != null
-                                          ? "${c.startDate!.day}/${c.startDate!.month}/${c.startDate!.year}"
-                                          : "-",
-                                    ),
-                                  ),
-                                  // END DATE
-                                  DataCell(
-                                    Text(
-                                      c.endDate != null
-                                          ? "${c.endDate!.day}/${c.endDate!.month}/${c.endDate!.year}"
-                                          : "-",
-                                    ),
-                                  ),
-                                  // ACTION
-                                  DataCell(
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        _CircularActionButton(
-                                          icon: Icons.edit_rounded,
-                                          color: Colors.blue,
-                                          onPressed: () =>
-                                              _showDialog(context, coupon: c),
+                                        // COUPON
+                                        DataCell(
+                                          Text(
+                                            c.code,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Color(0xFF2B3674),
+                                            ),
+                                          ),
                                         ),
-                                        const SizedBox(width: 8),
-                                        _CircularActionButton(
-                                          icon: Icons.delete_outline_rounded,
-                                          color: Colors.red,
-                                          onPressed: () =>
-                                              controller.delete(c.id),
+                                        // DISCOUNT VALUE
+                                        DataCell(
+                                          Text(
+                                            c.discountType ==
+                                                    DiscountType.percentage
+                                                ? "${c.discountValue}%"
+                                                : "${c.discountValue.toStringAsFixed(0)} đ",
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
+                                        // TYPE
+                                        DataCell(
+                                          Text(
+                                            c.discountType ==
+                                                    DiscountType.percentage
+                                                ? "Phần trăm"
+                                                : "Cố định",
+                                          ),
+                                        ),
+                                        // DESCRIPTION
+                                        DataCell(
+                                          SizedBox(
+                                            width: 180,
+                                            child: Text(
+                                              c.description,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.blueGrey,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        // IS ACTIVE
+                                        DataCell(_StatusBadge(isActive: c.isActive)),
+                                        // START DATE
+                                        DataCell(
+                                          Text(
+                                            c.startDate != null
+                                                ? "${c.startDate!.day}/${c.startDate!.month}/${c.startDate!.year}"
+                                                : "-",
+                                          ),
+                                        ),
+                                        // END DATE
+                                        DataCell(
+                                          Text(
+                                            c.endDate != null
+                                                ? "${c.endDate!.day}/${c.endDate!.month}/${c.endDate!.year}"
+                                                : "-",
+                                          ),
+                                        ),
+                                        // ACTION
+                                        DataCell(
+                                          Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              _CircularActionButton(
+                                                icon: Icons.edit_rounded,
+                                                color: Colors.blue,
+                                                onPressed: () => _showDialog(
+                                                    context,
+                                                    coupon: c),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              _CircularActionButton(
+                                                icon: Icons.delete_outline_rounded,
+                                                color: Colors.red,
+                                                onPressed: () =>
+                                                    controller.delete(c.id),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ],
-                                    ),
-                                  ),
-                                ],
-                              );
-                            }).toList(),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+
+                        /// --- PAGINATION ---
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 16),
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              top: BorderSide(color: Color(0xFFF4F7FE)),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Hiển thị ${controller.paginatedData.length} trên ${controller.filtered.length} mã",
+                                style: const TextStyle(
+                                  color: Color(0xFFA3AED0),
+                                  fontSize: 13,
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  _PageButton(
+                                    icon: Icons.chevron_left_rounded,
+                                    isEnabled: controller.currentPage > 1,
+                                    onPressed: () => controller
+                                        .changePage(controller.currentPage - 1),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  ...List.generate(controller.totalPages, (index) {
+                                    final page = index + 1;
+                                    return Padding(
+                                      padding: const EdgeInsets.only(right: 8),
+                                      child: _PageNumberButton(
+                                        page: page,
+                                        isActive:
+                                            controller.currentPage == page,
+                                        onPressed: () =>
+                                            controller.changePage(page),
+                                      ),
+                                    );
+                                  }),
+                                  _PageButton(
+                                    icon: Icons.chevron_right_rounded,
+                                    isEnabled: controller.currentPage <
+                                        controller.totalPages,
+                                    onPressed: () => controller
+                                        .changePage(controller.currentPage + 1),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
             ),
           ),
@@ -443,6 +507,71 @@ class _CircularActionButton extends StatelessWidget {
         onPressed: onPressed,
         constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
         padding: EdgeInsets.zero,
+      ),
+    );
+  }
+}
+
+class _PageButton extends StatelessWidget {
+  final IconData icon;
+  final bool isEnabled;
+  final VoidCallback onPressed;
+  const _PageButton({
+    required this.icon,
+    required this.isEnabled,
+    required this.onPressed,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: isEnabled ? Colors.white : Colors.grey[100],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(color: Colors.grey[200]!),
+      ),
+      child: IconButton(
+        icon: Icon(icon, size: 18, color: isEnabled ? Colors.blueAccent : Colors.grey),
+        onPressed: isEnabled ? onPressed : null,
+        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+        padding: EdgeInsets.zero,
+      ),
+    );
+  }
+}
+
+class _PageNumberButton extends StatelessWidget {
+  final int page;
+  final bool isActive;
+  final VoidCallback onPressed;
+  const _PageNumberButton({
+    required this.page,
+    required this.isActive,
+    required this.onPressed,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        width: 32,
+        height: 32,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: isActive ? Colors.blueAccent : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isActive ? Colors.blueAccent : Colors.grey[200]!,
+          ),
+        ),
+        child: Text(
+          "$page",
+          style: TextStyle(
+            color: isActive ? Colors.white : Colors.grey[700],
+            fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+            fontSize: 13,
+          ),
+        ),
       ),
     );
   }
