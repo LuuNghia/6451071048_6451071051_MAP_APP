@@ -62,6 +62,43 @@ class _OrderPageState extends State<OrderPage> {
     }
   }
 
+  /// DỊCH TRẠNG THÁI
+  String _translateOrderStatus(String status) {
+    switch (status.toLowerCase()) {
+      case 'created':
+        return "Mới tạo";
+      case 'pending':
+        return "Chờ xử lý";
+      case 'processing':
+        return "Đang chuẩn bị";
+      case 'shipped':
+        return "Đang giao";
+      case 'delivered':
+        return "Đã giao";
+      case 'canceled':
+        return "Đã hủy";
+      case 'returned':
+        return "Trả hàng";
+      case 'refunded':
+        return "Hoàn tiền";
+      default:
+        return status;
+    }
+  }
+
+  String _translatePaymentStatus(String status) {
+    switch (status.toLowerCase()) {
+      case 'paid':
+        return "Đã thanh toán";
+      case 'pending':
+        return "Chưa thanh toán";
+      case 'failed':
+        return "Thất bại";
+      default:
+        return status;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,7 +112,7 @@ class _OrderPageState extends State<OrderPage> {
                 children: [
                   /// HEADER
                   const Text(
-                    "Order Management",
+                    "Quản lý Đơn hàng",
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -115,22 +152,22 @@ class _OrderPageState extends State<OrderPage> {
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: DataTable(
-                              headingRowColor: MaterialStateProperty.all(
+                              headingRowColor: WidgetStateProperty.all(
                                 Colors.grey.withOpacity(0.05),
                               ),
                               dataRowHeight: 75,
                               headingRowHeight: 60,
                               columnSpacing: 35,
                               columns: const [
-                                DataColumn(label: _HeaderLabel("Seq")),
-                                DataColumn(label: _HeaderLabel("Order ID")),
-                                DataColumn(label: _HeaderLabel("Customer")),
-                                DataColumn(label: _HeaderLabel("Item")),
-                                DataColumn(label: _HeaderLabel("Order Status")),
-                                DataColumn(label: _HeaderLabel("Payment")),
-                                DataColumn(label: _HeaderLabel("Amount")),
-                                DataColumn(label: _HeaderLabel("Date")),
-                                DataColumn(label: _HeaderLabel("Action")),
+                                DataColumn(label: _HeaderLabel("STT")),
+                                DataColumn(label: _HeaderLabel("Mã đơn")),
+                                DataColumn(label: _HeaderLabel("Khách hàng")),
+                                DataColumn(label: _HeaderLabel("Số lượng")),
+                                DataColumn(label: _HeaderLabel("Trạng thái")),
+                                DataColumn(label: _HeaderLabel("Thanh toán")),
+                                DataColumn(label: _HeaderLabel("Tổng tiền")),
+                                DataColumn(label: _HeaderLabel("Ngày đặt")),
+                                DataColumn(label: _HeaderLabel("Thao tác")),
                               ],
                               rows: controller.filteredOrders
                                   .asMap()
@@ -188,7 +225,7 @@ class _OrderPageState extends State<OrderPage> {
         /// ORDER STATUS COLUMN
         DataCell(
           _buildBadge(
-            order.orderStatus,
+            _translateOrderStatus(order.orderStatus),
             _getOrderStatusColor(order.orderStatus),
           ),
         ),
@@ -196,7 +233,7 @@ class _OrderPageState extends State<OrderPage> {
         /// PAYMENT STATUS COLUMN
         DataCell(
           _buildBadge(
-            order.paymentStatus,
+            _translatePaymentStatus(order.paymentStatus),
             _getPaymentStatusColor(order.paymentStatus),
             isOutline: true,
           ),

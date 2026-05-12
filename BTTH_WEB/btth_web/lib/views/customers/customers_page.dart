@@ -32,7 +32,7 @@ class _CustomersView extends StatelessWidget {
         children: [ 
           // ===== HEADER ===== 
           const Text( 
-            "Customer Management", 
+            "Quản Lý Khách Hàng", 
             style: TextStyle( 
               fontSize: 28, 
               fontWeight: FontWeight.bold, 
@@ -58,7 +58,7 @@ class _CustomersView extends StatelessWidget {
             ), 
             child: TextField( 
               decoration: const InputDecoration( 
-                hintText: "Search by name, email or phone...", 
+                hintText: "Tìm theo tên, email hoặc số điện thoại...", 
                 hintStyle: TextStyle(color: Color(0xFFA3AED0), fontSize: 14), 
                 prefixIcon: Icon( 
                   Icons.search_rounded, 
@@ -105,18 +105,18 @@ class _CustomersView extends StatelessWidget {
                                   headingRowHeight: 56, 
                                   dataRowMaxHeight: 70, 
                                   columnSpacing: 32, 
-                                  headingRowColor: MaterialStateProperty.all( 
+                                  headingRowColor: WidgetStateProperty.all( 
                                     const Color(0xFFF4F7FE), 
                                   ), 
                                   columns: const [ 
-                                    DataColumn(label: _TableLabel("SEQ")), 
-                                    DataColumn(label: _TableLabel("CUSTOMER")), 
+                                    DataColumn(label: _TableLabel("STT")), 
+                                    DataColumn(label: _TableLabel("KHÁCH HÀNG")), 
                                     DataColumn(label: _TableLabel("EMAIL")), 
-                                    DataColumn(label: _TableLabel("PHONE")), 
-                                    DataColumn(label: _TableLabel("ORDERS")), 
+                                    DataColumn(label: _TableLabel("SỐ ĐIỆN THOẠI")), 
+                                    DataColumn(label: _TableLabel("ĐƠN HÀNG")), 
                                     DataColumn( 
-                                      label: _TableLabel("REGISTER DATE"),    ), 
-                                    DataColumn(label: _TableLabel("ACTION")), 
+                                      label: _TableLabel("NGÀY ĐĂNG KÝ"),    ), 
+                                    DataColumn(label: _TableLabel("HÀNH ĐỘNG")), 
                                   ], 
                                   rows: controller.paginatedData.asMap().entries.map(( 
                                     entry, 
@@ -335,7 +335,7 @@ class _CustomersView extends StatelessWidget {
       builder: (_) => AlertDialog( 
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)), 
         title: Text( 
-          "Orders of ${customer.firstName}", 
+          "Đơn hàng của ${customer.firstName}", 
           style: const TextStyle( 
             fontWeight: FontWeight.bold, 
             color: Color(0xFF2B3674), 
@@ -345,7 +345,7 @@ class _CustomersView extends StatelessWidget {
           width: 500, 
           child: orders.isEmpty 
               ? const Padding( padding: EdgeInsets.symmetric(vertical: 20), 
-                  child: Text("No orders found.", textAlign: TextAlign.center), 
+                  child: Text("Không tìm thấy đơn hàng nào.", textAlign: TextAlign.center), 
                 ) 
               : ListView.separated( 
                   shrinkWrap: true, 
@@ -363,13 +363,13 @@ class _CustomersView extends StatelessWidget {
                         ), 
                       ), 
                       title: Text( 
-                        "Order ID: ${order['id'] ?? ''}", 
+                        "Mã đơn: ${order['id'] ?? ''}", 
                         style: const TextStyle( 
                           fontWeight: FontWeight.bold, 
                           fontSize: 14, 
                         ), 
                       ), 
-                      subtitle: Text("Total: ${order['totalAmount'] ?? 0}"), 
+                      subtitle: Text("Tổng tiền: ${order['totalAmount'] ?? 0}"), 
                       trailing: const Icon(Icons.chevron_right_rounded), 
                     ); 
                   }, 
@@ -380,7 +380,7 @@ class _CustomersView extends StatelessWidget {
           TextButton( 
             onPressed: () => Navigator.pop(context), 
             child: const Text( 
-              "Close", 
+              "Đóng", 
               style: TextStyle(color: Color(0xFFA3AED0)), 
             ), 
           ), 
@@ -395,15 +395,15 @@ class _CustomersView extends StatelessWidget {
       context: context, 
       builder: (_) => AlertDialog( 
         shape: RoundedRectangleBorder(borderRadius: 
-BorderRadius.circular(20)), 
-        title: const Text("Delete Customer?"), 
+ BorderRadius.circular(20)), 
+        title: const Text("Xác nhận xóa?"), 
         content: const Text( 
-          "This action cannot be undone. Are you sure you want to remove this customer?", 
+          "Hành động này không thể hoàn tác. Bạn có chắc chắn muốn xóa khách hàng này không?", 
         ), 
         actions: [ 
           TextButton( 
             onPressed: () => Navigator.pop(context), 
-            child: const Text("Cancel", style: TextStyle(color: Colors.grey)), 
+            child: const Text("Hủy", style: TextStyle(color: Colors.grey)), 
           ), 
           ElevatedButton( 
             style: ElevatedButton.styleFrom( 
@@ -416,7 +416,7 @@ BorderRadius.circular(20)),
               await controller.delete(id); 
               Navigator.pop(context); 
             }, 
-            child: const Text("Delete", style: TextStyle(color: Colors.white)), 
+            child: const Text("Xóa", style: TextStyle(color: Colors.white)), 
           ), 
         ], 
       ), 

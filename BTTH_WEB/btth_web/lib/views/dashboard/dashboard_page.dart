@@ -47,6 +47,30 @@ class _MyDashboardState extends State<MyDashboard> {
     return NumberFormat("#,###").format(value);
   }
 
+  String translateStatus(String status) {
+    switch (status.toLowerCase()) {
+      case 'created':
+        return "Mới tạo";
+      case 'pending':
+        return "Chờ xử lý";
+      case 'processing':
+        return "Đang chuẩn bị";
+      case 'shipped':
+        return "Đang giao";
+      case 'delivered':
+        return "Đã giao";
+      case 'cancelled':
+      case 'canceled':
+        return "Đã hủy";
+      case 'returned':
+        return "Trả hàng";
+      case 'refunded':
+        return "Hoàn tiền";
+      default:
+        return status;
+    }
+  }
+
   Color getStatusColor(String status) {
     switch (status.toLowerCase()) {
       case 'created':
@@ -101,7 +125,7 @@ class _MyDashboardState extends State<MyDashboard> {
                 ),
                 const SizedBox(width: 15),
                 const Text(
-                  "Hệ Thống Quản Lý",
+                  "Quản Trị Pizza",
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.w800,
@@ -232,7 +256,7 @@ class _MyDashboardState extends State<MyDashboard> {
                                           child: Text(o.itemCount.toString()),
                                         ),
                                       ),
-                                      DataCell(statusChip(o.orderStatus)),
+                                      DataCell(statusChip(translateStatus(o.orderStatus))),
                                       DataCell(
                                         Text(
                                           "${money(o.totalAmount)}đ",
@@ -247,6 +271,11 @@ class _MyDashboardState extends State<MyDashboard> {
                                 .toList(),
                           ),
                         ),
+                      ),
+                      const SizedBox(height: 25),
+                      cardContainer(
+                        title: "Sản Phẩm Bán Chạy",
+                        child: _buildTopProducts(),
                       ),
                     ],
                   ),
@@ -272,7 +301,7 @@ class _MyDashboardState extends State<MyDashboard> {
                         ),
                         const SizedBox(height: 20),
                         ...statusCount.entries
-                            .map((e) => statusRow(e.key, e.value))
+                            .map((e) => statusRow(translateStatus(e.key), e.value))
                             .toList(),
                       ],
                     ),
@@ -438,8 +467,18 @@ class _MyDashboardState extends State<MyDashboard> {
             FlLine(color: Colors.grey[100], strokeWidth: 1),
       ),
       titlesData: FlTitlesData(
-        rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        leftTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            reservedSize: 40,
+            getTitlesWidget: (value, meta) => Text(
+              money(value),
+              style: const TextStyle(color: Colors.grey, fontSize: 10),
+            ),
+          ),
+        ),
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
@@ -508,5 +547,70 @@ class _MyDashboardState extends State<MyDashboard> {
         ),
       );
     }).toList();
+  }
+
+  Widget _buildTopProducts() {
+    return Column(
+      children: [
+        _topProductRow("Pizza Hải Sản Cao Cấp", "342 lượt bán", "4.8/5", Colors.orange),
+        const Divider(height: 20),
+        _topProductRow("Pizza Thập Cẩm Đặc Biệt", "285 lượt bán", "4.7/5", Colors.blue),
+        const Divider(height: 20),
+        _topProductRow("Pizza Phô Mai 4 Vị", "198 lượt bán", "4.9/5", Colors.purple),
+      ],
+    );
+  }
+
+  Widget _topProductRow(String name, String sales, String rating, Color color) {
+    return Row(
+      children: [
+        Container(
+          width: 45,
+          height: 45,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(Icons.local_pizza_rounded, color: color),
+        ),
+        const SizedBox(width: 15),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              ),
+              Text(
+                sales,
+                style: const TextStyle(color: Colors.grey, fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            color: Colors.amber.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.star_rounded, color: Colors.amber, size: 16),
+              const SizedBox(width: 4),
+              Text(
+                rating,
+                style: const TextStyle(
+                  color: Colors.amber,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }

@@ -49,7 +49,7 @@ class _SidebarState extends State<Sidebar> {
                 const SizedBox(width: 12), 
                 const Flexible( 
                   child: Text( 
-                    "SHOE ADMIN", 
+                    "PIZZA ADMIN", 
                     style: TextStyle( 
                       color: Colors.white, 
                       fontSize: 20, 
@@ -73,33 +73,28 @@ class _SidebarState extends State<Sidebar> {
             child: ListView( 
               padding: const EdgeInsets.symmetric(horizontal: 12), 
               children: [ 
-                _buildSectionTitle("MAIN MENU"), 
+                _buildSectionTitle("DANH MỤC CHÍNH"), 
                 _item( 
-                  Icons.dashboard_outlined,
-                   "Bảng điều khiển", 
+                  Icons.dashboard_outlined, 
+                  "Bảng điều khiển", 
                   "/dashboard", 
                 ), 
-                _item(Icons.category, "Danh mục sản phẩm", "/categories"), 
+                _item(Icons.category, "Danh mục bánh", "/categories"), 
                 _item( 
                   Icons.info_outline, 
-                  "Danh mục thuộc tính sản phẩm", 
+                  "Thuộc tính (Size/Crust)", 
                   "/attributes", 
                 ), 
-                _item( 
-                  Icons.branding_watermark_outlined, 
-                  "Danh mục thương hiệu", 
-                  "/brands", 
-                ), 
-                _item(Icons.card_giftcard, "Danh mục mã giảm giá", "/coupons"), 
-                _item(Icons.inventory_2_outlined, "Sản phẩm", "/products"), 
+                _item(Icons.card_giftcard, "Mã giảm giá", "/coupons"), 
+                _item(Icons.local_pizza_outlined, "Quản lý Pizza", "/products"), 
  
-                _buildSectionTitle("SALES"), 
+                _buildSectionTitle("KINH DOANH"), 
                 _item(Icons.shopping_cart_outlined, "Đơn hàng", "/orders"), 
                 _item(Icons.people_outline, "Khách hàng", "/customers"), 
                 _item(Icons.star_rate_outlined, "Đánh giá", "/reviews"), 
  
-                _buildSectionTitle("SYSTEM"), 
-                _item(Icons.settings_outlined, "Cài đặt cá nhân", "/settings"), 
+                _buildSectionTitle("HỆ THỐNG"), 
+                _item(Icons.settings_outlined, "Cài đặt", "/settings"), 
               ], 
             ), 
           ), 

@@ -40,7 +40,6 @@ class _ProductFormPageState extends State<ProductFormPage> {
   ProductType productType = ProductType.simple; 
   bool isDraft = false; 
  
-  String? selectedBrandId; 
   List<String> selectedCategoryIds = []; 
   List<Map<String, dynamic>> selectedAttributes = []; 
   AttributeModel? currentAttribute; 
@@ -67,7 +66,6 @@ class _ProductFormPageState extends State<ProductFormPage> {
       productType = p.productType; 
       isDraft = p.isDraft; 
  
-      selectedBrandId = p.brandId; 
       selectedCategoryIds = p.categoryIds ?? []; 
       selectedAttributes = p.attributes ?? []; 
  
@@ -114,12 +112,6 @@ class _ProductFormPageState extends State<ProductFormPage> {
   Widget build(BuildContext context) { 
     return Consumer<ProductController>( 
       builder: (context, controller, _) { 
-        if (controller.brands.isEmpty) { 
-          return const Scaffold( 
-            body: Center(child: CircularProgressIndicator()), 
-          ); 
-        } 
- 
         return Scaffold( 
           appBar: AppBar(title: const Text("Create Product")), 
           // GIẢI PHÁP: Bọc toàn bộ body bằng SingleChildScrollView 
@@ -632,31 +624,6 @@ class _ProductFormPageState extends State<ProductFormPage> {
                         ), 
                         const SizedBox(height: 20), 
  
-                        /// BRAND 
-                        Card( 
-                          child: Padding( 
-                            padding: const EdgeInsets.all(16), 
-                            child: DropdownButtonFormField<String>( 
-                              value: selectedBrandId, 
-                              items: controller.brands 
-                                  .map(
-                                       (b) => DropdownMenuItem( 
-                                      value: b.id, 
-                                      child: Text(b.name), 
-                                    ), 
-                                  ) 
-                                  .toList(), 
-                              onChanged: (v) => 
-                                  setState(() => selectedBrandId = v), 
-                              decoration: const InputDecoration( 
-                                labelText: "Brand", 
-                                border: OutlineInputBorder(), 
-                              ), 
-                              validator: (v) => 
-                                  v == null ? "Select brand" : null, 
-                            ), 
-                          ), 
-                        ), 
                         const SizedBox(height: 20), 
  
                         /// CATEGORIES 
@@ -782,7 +749,6 @@ class _ProductFormPageState extends State<ProductFormPage> {
                                   _quillController.document.toDelta().toJson(), 
                                 ), 
  
-                                brandId: selectedBrandId, 
                                 categoryIds: selectedCategoryIds,
                                    tags: tagController.text 
                                     .split(',') 
