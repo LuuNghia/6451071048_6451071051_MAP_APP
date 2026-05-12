@@ -53,8 +53,7 @@ class _BrandsView extends StatelessWidget {
               ElevatedButton.icon( 
                 onPressed: () => _showDialog(context), 
                 icon: const Icon( 
-                  Icons.add_business_rounded, 
-  color: Colors.white, 
+                  Icons.add_business_rounded, color: Colors.white, 
                 ), 
                 label: const Text("ADD NEW BRAND"), 
                 style: ElevatedButton.styleFrom( 
@@ -112,8 +111,7 @@ class _BrandsView extends StatelessWidget {
                     decoration: BoxDecoration( 
                       color: Colors.white, 
                       borderRadius: BorderRadius.circular(16), 
-                      border: Border.all(color: 
-Colors.grey.withOpacity(0.2)), 
+                      border: Border.all(color: Colors.grey.withOpacity(0.2)), 
                     ), 
                     child: ClipRRect( 
                       borderRadius: BorderRadius.circular(16), 
@@ -189,8 +187,7 @@ Colors.grey.withOpacity(0.2)),
                               ), 
                             ), 
                           ], 
-                          rows: 
-controller.paginatedData.asMap().entries.map(( 
+                          rows: controller.paginatedData.asMap().entries.map(( 
                             entry, 
                           ) { 
                             final index = entry.key; 
@@ -199,8 +196,7 @@ controller.paginatedData.asMap().entries.map((
                               cells: [ 
                                 DataCell( 
                                   Text( 
-                                    "${(controller.currentPage - 1) * 
-controller.rowsPerPage + index + 1}", 
+                                    "${(controller.currentPage - 1) * controller.rowsPerPage + index + 1}", 
                                   ), 
                                 ),
                                        DataCell( 
@@ -210,8 +206,7 @@ controller.rowsPerPage + index + 1}",
                                         width: 45, 
                                         height: 45, 
                                         decoration: BoxDecoration( 
-                                          borderRadius: 
-BorderRadius.circular( 
+                                          borderRadius: BorderRadius.circular( 
                                             8, 
                                           ), 
                                           color: Colors.grey[100], 
@@ -251,23 +246,18 @@ BorderRadius.circular(
                                                 .map( 
                                                   (cat) => Container( 
                                                     margin: 
-                                                        const 
-EdgeInsets.only( 
-                     right: 4, 
+                                                        const EdgeInsets.only( right: 4, 
                                                         ), 
                                                     padding: 
-                                                        const 
-EdgeInsets.symmetric( 
+                                                        const EdgeInsets.symmetric( 
                                                           horizontal: 8, 
                                                           vertical: 4, 
                                                         ), 
-                                                    decoration: 
-BoxDecoration( 
+                                                    decoration: BoxDecoration( 
                                                       color: Colors.blue 
                                                           .withOpacity(0.1), 
                                                       borderRadius: 
-                                                          BorderRadius.circul
-ar( 
+                                                          BorderRadius.circular( 
                                                             6, 
                                                           ), 
                                                     ), 
@@ -299,8 +289,7 @@ ar(
                                 DataCell( 
                                   Text( 
                                     b.updatedAt != null 
-                                        ? 
-"${b.updatedAt!.day}/${b.updatedAt!.month}/${b.updatedAt!.year}" 
+                                        ? "${b.updatedAt!.day}/${b.updatedAt!.month}/${b.updatedAt!.year}" 
                                         : "-", 
                                   ),
                                       ), 
@@ -414,8 +403,7 @@ ar(
     showDialog( 
       context: context, 
       builder: (_) => AlertDialog( 
-        shape: RoundedRectangleBorder(borderRadius: 
-BorderRadius.circular(16)), 
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), 
         title: const Text("Delete Brand?"), 
         content: const Text("This action cannot be undone."), 
         actions: [ 
@@ -429,8 +417,7 @@ BorderRadius.circular(16)),
               await controller.delete(id); 
               Navigator.pop(context); 
             }, 
-            child: const Text("DELETE", style: TextStyle(color: 
-Colors.white)), 
+            child: const Text("DELETE", style: TextStyle(color: Colors.white)), 
           ), 
         ], 
       ), 
@@ -447,8 +434,7 @@ Colors.white)),
     } 
  
     final nameController = TextEditingController(text: brand?.name ?? ""); 
-    final imageController = TextEditingController(text: brand?.imageURL ?? 
-""); 
+    final imageController = TextEditingController(text: brand?.imageURL ?? ""); 
     bool isActive = brand?.isActive ?? true; 
     bool isFeatured = brand?.isFeatured ?? false; 
  

@@ -28,8 +28,7 @@ class AttributeController extends ChangeNotifier {
       _filteredData = _allData; 
     } else { 
       _filteredData = _allData.where((e) { 
-        return e.name.toLowerCase().contains(_searchText) || 
-            e.attributeValues.join("|").toLowerCase().contains(_searchText); 
+        return e.name.toLowerCase().contains(_searchText) || e.attributeValues.join("|").toLowerCase().contains(_searchText); 
       }).toList(); 
     } 
     notifyListeners(); 
@@ -44,6 +43,5 @@ class AttributeController extends ChangeNotifier {
       end > _filteredData.length ? _filteredData.length : end, 
     ); 
   } 
- 
   int get totalPages => (_filteredData.length / rowsPerPage).ceil(); 
 }
