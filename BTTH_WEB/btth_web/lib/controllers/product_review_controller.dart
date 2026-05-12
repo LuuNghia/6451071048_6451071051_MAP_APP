@@ -45,7 +45,7 @@ class ReviewController extends ChangeNotifier {
   Future<String> getCustomerName(String userId) async { 
     if (customerCache.containsKey(userId)) { 
       return customerCache[userId]!.fullName; 
-    } final customer = await customerService.getById(userId); 
+    } final customer = await customerService.getCustomerById(userId); 
  
     if (customer != null) { 
       customerCache[userId] = customer; 

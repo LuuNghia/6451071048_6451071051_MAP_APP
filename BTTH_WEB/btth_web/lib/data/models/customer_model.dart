@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class CustomerModel { 
   String id; 
   String firstName; 
@@ -28,11 +30,17 @@ class CustomerModel {
       phone: map['phone'] ?? '', 
       username: map['username'] ?? '', 
       gender: map['gender'] ?? 'Not set', 
-      createdAt: map['createdAt'] != null 
-          ? DateTime.tryParse(map['createdAt']) 
-          : null, 
+      createdAt: map['createdAt'] is Timestamp 
+          ? (map['createdAt'] as Timestamp).toDate()
+          : (map['createdAt'] != null ? DateTime.tryParse(map['createdAt'].toString()) : null), 
     ); 
-  } 
+  }
+
+  factory CustomerModel.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    data['id'] = doc.id;
+    return CustomerModel.fromMap(data);
+  }
  
   String get fullName => "$firstName $lastName"; 
 } 
