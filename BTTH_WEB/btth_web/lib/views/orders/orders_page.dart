@@ -40,6 +40,7 @@ class _OrderPageState extends State<OrderPage> {
       case 'delivered':
         return Colors.green;
       case 'canceled':
+      case 'cancelled':
         return Colors.red;
       case 'returned':
         return Colors.purple;
@@ -76,6 +77,7 @@ class _OrderPageState extends State<OrderPage> {
       case 'delivered':
         return "Đã giao";
       case 'canceled':
+      case 'cancelled':
         return "Đã hủy";
       case 'returned':
         return "Trả hàng";
@@ -240,7 +242,7 @@ class _OrderPageState extends State<OrderPage> {
         ),
         DataCell(
           Text(
-            "\$${order.totalAmount.toStringAsFixed(0)}",
+            "${order.totalAmount.toStringAsFixed(0)}đ",
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
@@ -248,13 +250,14 @@ class _OrderPageState extends State<OrderPage> {
         DataCell(
           Row(
             children: [
-              _buildActionIcon(Icons.remove_red_eye, Colors.blue, () {
-                Navigator.push(
+              _buildActionIcon(Icons.remove_red_eye, Colors.blue, () async {
+                await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => OrderDetailPage(order: order),
                   ),
                 );
+                loadData();
               }),
               const SizedBox(width: 8),
               _buildActionIcon(

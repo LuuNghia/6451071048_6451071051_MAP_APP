@@ -8,6 +8,7 @@ class CustomerModel {
   String phone; 
   String username; 
   String gender; 
+  DateTime? dateOfBirth;
   DateTime? createdAt; 
  
   CustomerModel({ 
@@ -18,6 +19,7 @@ class CustomerModel {
     required this.phone, 
     required this.username, 
     required this.gender, 
+    this.dateOfBirth,
     this.createdAt, 
   }); 
  
@@ -30,6 +32,9 @@ class CustomerModel {
       phone: map['phone'] ?? '', 
       username: map['username'] ?? '', 
       gender: map['gender'] ?? 'Not set', 
+      dateOfBirth: map['dateOfBirth'] is Timestamp 
+          ? (map['dateOfBirth'] as Timestamp).toDate() 
+          : (map['dateOfBirth'] != null ? DateTime.tryParse(map['dateOfBirth'].toString()) : null),
       createdAt: map['createdAt'] is Timestamp 
           ? (map['createdAt'] as Timestamp).toDate()
           : (map['createdAt'] != null ? DateTime.tryParse(map['createdAt'].toString()) : null), 

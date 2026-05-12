@@ -13,6 +13,7 @@ class OrderDetailPage extends StatefulWidget {
 
 class _OrderDetailPageState extends State<OrderDetailPage> {
   final OrderController controller = OrderController();
+  late OrderModel currentOrder;
   String selectedStatus = "";
   Map<String, dynamic>? customerData;
   final List<String> statuses = [
@@ -39,6 +40,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       case 'delivered':
         return "Đã giao";
       case 'cancelled':
+      case 'canceled':
         return "Đã hủy";
       case 'returned':
         return "Trả hàng";
@@ -64,8 +66,26 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   @override
   void initState() {
     super.initState();
-    selectedStatus = widget.order.orderStatus.toLowerCase();
+    currentOrder = widget.order;
+    selectedStatus = currentOrder.orderStatus.toLowerCase();
     fetchCustomer();
+  }
+
+  Future<void> reloadOrder() async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(currentOrder.docId)
+          .get();
+      if (doc.exists && mounted) {
+        setState(() {
+          currentOrder = OrderModel.fromFirestore(doc);
+          selectedStatus = currentOrder.orderStatus.toLowerCase();
+        });
+      }
+    } catch (e) {
+      debugPrint("Error reloading order: $e");
+    }
   }
 
   Future<void> fetchCustomer() async {
@@ -92,6 +112,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       case 'shipped':
         return Colors.indigo;
       case 'canceled':
+      case 'cancelled':
         return Colors.red;
       default:
         return Colors.blueGrey;
@@ -184,6 +205,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text("Cập nhật thành công")),
                 );
+                await reloadOrder();
                 setState(() {});
               },
             ),
@@ -195,7 +217,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final order = widget.order;
+    final order = currentOrder;
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
@@ -242,7 +264,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                           ),
                           _infoRow(
                             "Tổng thanh toán",
-                            "\$${order.totalAmount.toStringAsFixed(0)}",
+                            "${order.totalAmount.toStringAsFixed(0)}đ",
                             isPrice: true,
                           ),
                         ],
@@ -262,25 +284,25 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                           ),
                           _summaryRow(
                             "Tạm tính",
-                            "\$${order.subTotal.toStringAsFixed(0)}",
+                            "${order.subTotal.toStringAsFixed(0)}đ",
                           ),
                           _summaryRow(
                             "Giảm giá Coupon",
-                            "-\$${order.couponDiscountAmount}",
+                            "-${order.couponDiscountAmount}đ",
                             color: Colors.red,
                           ),
                           _summaryRow(
                             "Phí vận chuyển",
-                            "\$${order.shippingAmount}",
+                            "${order.shippingAmount}đ",
                           ),
                           _summaryRow(
                             "Thuế (VAT)",
-                            "\$${order.taxAmount.toStringAsFixed(0)}",
+                            "${order.taxAmount.toStringAsFixed(0)}đ",
                           ),
                           const Divider(height: 32, thickness: 1),
                           _summaryRow(
                             "Tổng thanh toán",
-                            "\$${order.totalAmount.toStringAsFixed(0)}",
+                            "${order.totalAmount.toStringAsFixed(0)}đ",
                             bold: true,
                           ),
                         ],
@@ -318,8 +340,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                           _infoRow(
                             "Số tiền thực nhận",
                             order.paymentStatus == "pending"
-                                ? "\$0"
-                                : "\$${order.totalAmount.toStringAsFixed(0)}",
+                                ? "0đ"
+                                : "${order.totalAmount.toStringAsFixed(0)}đ",
                           ),
                         ],
                       ),
@@ -381,6 +403,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                   order,
                                   selectedStatus,
                                 );
+                                await reloadOrder();
                                 print("Update done");
                                 if (context.mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -723,11 +746,11 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 ],
               ),
             ),
-            DataCell(Text("\$${item['price']}")),
+            DataCell(Text("${item['price']}đ")),
             DataCell(Text("x${item['quantity']}")),
             DataCell(
               Text(
-                "\$${(item['price'] * item['quantity'])}",
+                "${(item['price'] * item['quantity'])}đ",
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
