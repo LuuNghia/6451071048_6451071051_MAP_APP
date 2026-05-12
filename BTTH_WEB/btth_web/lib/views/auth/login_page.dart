@@ -92,8 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                     // TextField Tên đăng nhập 
                     TextField( 
                       controller: usernameController, 
-                      decoration: InputDecoration( 
-  prefixIcon: const Icon(Icons.person_outline), 
+                      decoration: InputDecoration( prefixIcon: const Icon(Icons.person_outline), 
                         labelText: "Username", 
                         filled: true, 
                         fillColor: Colors.grey.shade100, 
