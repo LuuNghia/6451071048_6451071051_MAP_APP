@@ -33,7 +33,7 @@ class _ProductListView extends StatelessWidget {
         children: [ 
           // --- HEADER --- 
           const Text( 
-            "Product Inventory", 
+            "Quản Lý Kho Pizza", 
             style: TextStyle( 
               fontSize: 28, 
               fontWeight: FontWeight.bold, 
@@ -59,7 +59,7 @@ class _ProductListView extends StatelessWidget {
                   ), 
                   child: TextField( 
                     decoration: const InputDecoration( 
-                      hintText: "Search products...", 
+                      hintText: "Tìm tên Pizza...", 
                       prefixIcon: Icon(Icons.search, color: Colors.blueAccent), 
                       border: InputBorder.none, 
                     ), 
@@ -74,7 +74,7 @@ class _ProductListView extends StatelessWidget {
                   MaterialPageRoute(builder: (_) => const ProductFormPage()), 
                 ), 
                 icon: const Icon(Icons.add, color: Colors.white), 
-                label: const Text("ADD PRODUCT"), 
+                label: const Text("THÊM PIZZA MỚI"), 
                 style: ElevatedButton.styleFrom( 
                   backgroundColor: Colors.blueAccent, 
                   foregroundColor: Colors.white, 
@@ -122,17 +122,15 @@ class _ProductListView extends StatelessWidget {
                                  columnSpacing: 
                                     20, // Thu hẹp khoảng cách giữa các cột 
                                 columns: const [ 
-                                  DataColumn(label: Text("SEQ")), 
-                                  DataColumn(label: Text("PRODUCT")), 
-                                  DataColumn(label: Text("PRICE")), 
-                                  DataColumn(label: Text("TYPE")), 
-                                  DataColumn(label: Text("STOCK")), 
-                                  DataColumn( 
-                                    label: Text("CÒN HÀNG"), 
-                                  ), // 👈 THÊM 
-                                  DataColumn(label: Text("VISIBLE")), 
-                                  DataColumn(label: Text("STATUS")), 
-                                  DataColumn(label: Text("ACTION")), 
+                                  DataColumn(label: Text("STT")), 
+                                  DataColumn(label: Text("PIZZA")), 
+                                  DataColumn(label: Text("GIÁ")), 
+                                  DataColumn(label: Text("LOẠI")), 
+                                  DataColumn(label: Text("KHO")), 
+                                  DataColumn(label: Text("TRẠNG THÁI")), 
+                                  DataColumn(label: Text("HIỂN THỊ")), 
+                                  DataColumn(label: Text("KÍCH HOẠT")), 
+                                  DataColumn(label: Text("HÀNH ĐỘNG")), 
                                 ], 
                                 rows: List.generate( 
                                   controller.paginatedData.length, 
@@ -270,7 +268,7 @@ class _ProductListView extends StatelessWidget {
                   onPressed: controller.previousPage, 
                 ), 
                 Text( 
-                  "Page ${controller.currentPage + 1} of ${controller.totalPages}", 
+                  "Trang ${controller.currentPage + 1} / ${controller.totalPages}", 
                 ), 
                 IconButton( 
                   icon: const Icon(Icons.chevron_right), 
@@ -294,7 +292,7 @@ class _ProductListView extends StatelessWidget {
         borderRadius: BorderRadius.circular(6), 
       ), 
       child: Text( 
-        "$stock In Stock", 
+        stock > 0 ? "$stock Còn lại" : "Hết hàng", 
         style: TextStyle( 
           color: stock > 0 ? Colors.green : Colors.red, 
           fontSize: 12, 
@@ -313,7 +311,7 @@ class _ProductListView extends StatelessWidget {
         borderRadius: BorderRadius.circular(6), 
       ), 
         child: Text( 
-        isDraft ? "Draft" : "Published", 
+        isDraft ? "Bản nháp" : "Đã đăng", 
         style: TextStyle( 
           color: isDraft ? Colors.orange : Colors.blue, 
           fontSize: 12, 
@@ -328,12 +326,12 @@ Future<void> _showDeleteDialog(BuildContext context, VoidCallback onConfirm)
   return showDialog( 
     context: context, 
     builder: (_) => AlertDialog( 
-      title: const Text("Confirm Delete"), 
-      content: const Text("Are you sure?"), 
+      title: const Text("Xác nhận xóa"), 
+      content: const Text("Bạn có chắc chắn muốn xóa pizza này không?"), 
       actions: [ 
         TextButton( 
           onPressed: () => Navigator.pop(context), 
-          child: const Text("Cancel"), 
+          child: const Text("Hủy"), 
         ), 
         ElevatedButton( 
           style: ElevatedButton.styleFrom(backgroundColor: Colors.red), 
@@ -341,7 +339,7 @@ Future<void> _showDeleteDialog(BuildContext context, VoidCallback onConfirm)
             onConfirm(); 
             Navigator.pop(context); 
           }, 
-          child: const Text("Delete", style: TextStyle(color: Colors.white)), 
+          child: const Text("Xóa", style: TextStyle(color: Colors.white)), 
         ), 
       ], 
     ), 

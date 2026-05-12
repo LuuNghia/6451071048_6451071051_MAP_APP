@@ -1,4 +1,3 @@
-import 'package:btth_web/controllers/brand_controller.dart';
 import 'package:btth_web/controllers/product_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -27,7 +26,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CategoryController()),
         ChangeNotifierProvider(create: (_) => ProductController()),
         ChangeNotifierProvider(create: (_) => AttributeController()),
-        ChangeNotifierProvider(create: (_) => BrandController()),
       ],
       child: Builder(
         builder: (context) {

@@ -32,7 +32,7 @@ class _CouponsView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                "Coupon Management",
+                "Quản lý mã giảm giá",
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -42,7 +42,7 @@ class _CouponsView extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: () => _showDialog(context),
                 icon: const Icon(Icons.add_rounded),
-                label: const Text("ADD COUPON"),
+                label: const Text("THÊM MÃ GIẢM GIÁ"),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF4318FF),
                   foregroundColor: Colors.white,
@@ -76,7 +76,7 @@ class _CouponsView extends StatelessWidget {
             child: TextField(
               onChanged: controller.search,
               decoration: const InputDecoration(
-                hintText: "Search coupon code...",
+                hintText: "Tìm mã giảm giá...",
                 prefixIcon: Icon(Icons.search, color: Color(0xFF4318FF)),
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(vertical: 15),
@@ -116,15 +116,15 @@ class _CouponsView extends StatelessWidget {
                               const Color(0xFFF4F7FE),
                             ),
                             columns: const [
-                              DataColumn(label: _TableLabel("SEQ")),
-                              DataColumn(label: _TableLabel("COUPON")),
-                              DataColumn(label: _TableLabel("DISCOUNTVALUE")),
-                              DataColumn(label: _TableLabel("TYPE")),
-                              DataColumn(label: _TableLabel("DESCRIPTION")),
-                              DataColumn(label: _TableLabel("IS ACTIVE")),
-                              DataColumn(label: _TableLabel("START DATE")),
-                              DataColumn(label: _TableLabel("END DATE")),
-                              DataColumn(label: _TableLabel("ACTION")),
+                              DataColumn(label: _TableLabel("STT")),
+                              DataColumn(label: _TableLabel("MÃ GIẢM GIÁ")),
+                              DataColumn(label: _TableLabel("GIÁ TRỊ")),
+                              DataColumn(label: _TableLabel("LOẠI")),
+                              DataColumn(label: _TableLabel("MÔ TẢ")),
+                              DataColumn(label: _TableLabel("TRẠNG THÁI")),
+                              DataColumn(label: _TableLabel("BẮT ĐẦU")),
+                              DataColumn(label: _TableLabel("HẾT HẠN")),
+                              DataColumn(label: _TableLabel("THAO TÁC")),
                             ],
                             rows: controller.paginatedData.asMap().entries.map((
                               entry,
@@ -172,8 +172,8 @@ class _CouponsView extends StatelessWidget {
                                   DataCell(
                                     Text(
                                       c.discountType == DiscountType.percentage
-                                          ? "Percentage"
-                                          : "Flat",
+                                          ? "Phần trăm"
+                                          : "Cố định",
                                     ),
                                   ),
                                   // DESCRIPTION
@@ -262,34 +262,34 @@ class _CouponsView extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            title: Text(coupon == null ? "New Coupon" : "Edit Coupon"),
+            title: Text(coupon == null ? "Tạo mã giảm giá mới" : "Chỉnh sửa mã giảm giá"),
             content: SizedBox(
               width: 400,
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _buildField(controller: codeController, label: "Code"),
+                    _buildField(controller: codeController, label: "Mã giảm giá"),
                     const SizedBox(height: 12),
                     _buildField(
                       controller: descController,
-                      label: "Description",
+                      label: "Mô tả",
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<DiscountType>(
                       value: type,
                       decoration: const InputDecoration(
-                        labelText: "Discount Type",
+                        labelText: "Loại giảm giá",
                         border: OutlineInputBorder(),
                       ),
                       items: const [
                         DropdownMenuItem(
                           value: DiscountType.percentage,
-                          child: Text("Percentage"),
+                          child: Text("Phần trăm (%)"),
                         ),
                         DropdownMenuItem(
                           value: DiscountType.flat,
-                          child: Text("Flat"),
+                          child: Text("Cố định (đ)"),
                         ),
                       ],
                       onChanged: (v) => setState(() => type = v!),
@@ -297,13 +297,13 @@ class _CouponsView extends StatelessWidget {
                     const SizedBox(height: 12),
                     _buildField(
                       controller: valueController,
-                      label: "Discount Value",
+                      label: "Giá trị giảm",
                       isNumber: true,
                     ),
                     const SizedBox(height: 8),
                     SwitchListTile(
                       title: const Text(
-                        "Is Active",
+                        "Kích hoạt mã",
                         style: TextStyle(fontSize: 14),
                       ),
                       value: isActive,
@@ -318,7 +318,7 @@ class _CouponsView extends StatelessWidget {
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: const Text(
-                  "Cancel",
+                  "Hủy",
                   style: TextStyle(color: Colors.grey),
                 ),
               ),
@@ -351,7 +351,7 @@ class _CouponsView extends StatelessWidget {
                   Navigator.pop(context);
                 },
                 child: const Text(
-                  "SAVE",
+                  "LƯU",
                   style: TextStyle(color: Colors.white),
                 ),
               ),
@@ -413,7 +413,7 @@ class _StatusBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        isActive ? "Active" : "Inactive",
+        isActive ? "Hoạt động" : "Tắt/Hết hạn",
         style: TextStyle(
           color: isActive ? Colors.green : Colors.red,
           fontWeight: FontWeight.bold,

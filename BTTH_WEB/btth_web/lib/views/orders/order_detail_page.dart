@@ -16,19 +16,55 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   String selectedStatus = "";
   Map<String, dynamic>? customerData;
   final List<String> statuses = [
-    "Created",
-    "Pending",
-    "Processing",
-    "Shipped",
-    "Delivered",
-    "Cancelled",
-    "Returned",
-    "Refunded",
+    "created",
+    "pending",
+    "processing",
+    "shipped",
+    "delivered",
+    "cancelled",
+    "returned",
+    "refunded",
   ];
+
+  String translateStatus(String status) {
+    switch (status.toLowerCase()) {
+      case 'created':
+        return "Mới tạo";
+      case 'pending':
+        return "Đang chờ";
+      case 'processing':
+        return "Đang chuẩn bị";
+      case 'shipped':
+        return "Đang giao";
+      case 'delivered':
+        return "Đã giao";
+      case 'cancelled':
+        return "Đã hủy";
+      case 'returned':
+        return "Trả hàng";
+      case 'refunded':
+        return "Hoàn tiền";
+      default:
+        return status;
+    }
+  }
+
+  String translatePaymentStatus(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return "Chưa thanh toán";
+      case 'paid':
+        return "Đã thanh toán";
+      case 'failed':
+        return "Thất bại";
+      default:
+        return status;
+    }
+  }
   @override
   void initState() {
     super.initState();
-    selectedStatus = widget.order.orderStatus.capitalize();
+    selectedStatus = widget.order.orderStatus.toLowerCase();
     fetchCustomer();
   }
 
@@ -78,12 +114,11 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 children: [
                   /// Payment Status
                   DropdownButtonFormField<String>(
-                    value: selectedStatus,
                     items: ["pending", "paid", "failed"]
                         .map(
                           (e) => DropdownMenuItem(
                             value: e,
-                            child: Text(e.toUpperCase()),
+                            child: Text(translatePaymentStatus(e).toUpperCase()),
                           ),
                         )
                         .toList(),
@@ -216,8 +251,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     const SizedBox(height: 24),
                     _buildAnimatedFrame(
                       index: 2,
-                      title: "Sản phẩm đã mua",
-                      icon: Icons.shopping_bag_outlined,
+                      title: "Chi tiết món ăn",
+                      icon: Icons.local_pizza_outlined,
                       child: Column(
                         children: [
                           _buildProductTable(order),
@@ -239,12 +274,12 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                             "\$${order.shippingAmount}",
                           ),
                           _summaryRow(
-                            "Thuế",
+                            "Thuế (VAT)",
                             "\$${order.taxAmount.toStringAsFixed(0)}",
                           ),
                           const Divider(height: 32, thickness: 1),
                           _summaryRow(
-                            "Tổng cộng",
+                            "Tổng thanh toán",
                             "\$${order.totalAmount.toStringAsFixed(0)}",
                             bold: true,
                           ),
@@ -269,19 +304,19 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                           ),
                           const SizedBox(height: 16),
                           _infoRow(
-                            "Trạng thái",
-                            order.paymentStatus.toUpperCase(),
+                            "Thanh toán",
+                            translatePaymentStatus(order.paymentStatus).toUpperCase(),
                             color: order.paymentStatus == "paid"
                                 ? Colors.green
                                 : Colors.orange,
                           ),
                           _infoRow(
-                            "Ngày vận chuyển",
+                            "Ngày giao hàng",
                             order.shippingDate?.toString() ??
                                 "Chưa có thông tin",
                           ),
                           _infoRow(
-                            "Số tiền khớp",
+                            "Số tiền thực nhận",
                             order.paymentStatus == "pending"
                                 ? "\$0"
                                 : "\$${order.totalAmount.toStringAsFixed(0)}",
@@ -320,7 +355,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                 .map(
                                   (s) => DropdownMenuItem(
                                     value: s,
-                                    child: Text(s),
+                                    child: Text(translateStatus(s)),
                                   ),
                                 )
                                 .toList(),
@@ -460,7 +495,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                           // 2. Mốc Cập nhật (Lần cuối)
                           _buildActivityItem(
                             title:
-                                "Trạng thái:${order.orderStatus.toUpperCase()}",
+                                "Trạng thái: ${translateStatus(order.orderStatus).toUpperCase()}",
                             subtitle: "Cập nhật lần cuối bởi hệ thống",
                             time: DateFormat(
                               'dd/MM/yyyy HH:mm',
@@ -571,7 +606,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 ),
               ),
               Text(
-                "Trạng thái thanh toán:${order.paymentStatus.toUpperCase()}",
+                "Trạng thái: ${translatePaymentStatus(order.paymentStatus).toUpperCase()}",
                 style: const TextStyle(color: Colors.white70),
               ),
             ],

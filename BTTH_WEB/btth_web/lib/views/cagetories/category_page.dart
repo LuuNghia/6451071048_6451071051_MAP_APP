@@ -32,7 +32,7 @@ class _CategoriesView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                "Product Categories",
+                "Danh mục món ăn",
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -42,7 +42,7 @@ class _CategoriesView extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: () => _showDialog(context),
                 icon: const Icon(Icons.add, size: 18),
-                label: const Text("ADD CATEGORY"),
+                label: const Text("THÊM DANH MỤC"),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.indigoAccent,
                   foregroundColor: Colors.white,
@@ -75,7 +75,7 @@ class _CategoriesView extends StatelessWidget {
             child: TextField(
               onChanged: controller.search,
               decoration: const InputDecoration(
-                hintText: "Search categories by name...",
+                hintText: "Tìm kiếm danh mục theo tên...",
                 prefixIcon: Icon(Icons.search, color: Colors.grey),
                 border: InputBorder.none,
               ),
@@ -110,37 +110,37 @@ class _CategoriesView extends StatelessWidget {
                           columns: const [
                             DataColumn(
                               label: Text(
-                                "SEQ",
+                                "STT",
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
                             DataColumn(
                               label: Text(
-                                "CATEGORY",
+                                "DANH MỤC",
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
                             DataColumn(
                               label: Text(
-                                "FEATURED",
+                                "NỔI BẬT",
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
                             DataColumn(
                               label: Text(
-                                "STATUS",
+                                "TRẠNG THÁI",
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
                             DataColumn(
                               label: Text(
-                                "UPDATED",
+                                "CẬP NHẬT",
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
                             DataColumn(
                               label: Text(
-                                "ACTIONS",
+                                "HÀNH ĐỘNG",
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -277,7 +277,7 @@ class _CategoriesView extends StatelessWidget {
         ),
       ),
       child: Text(
-        isActive ? "Active" : "Inactive",
+        isActive ? "Hoạt động" : "Tắt",
         style: TextStyle(
           color: isActive ? Colors.green[700] : Colors.red[700],
           fontSize: 12,
@@ -309,12 +309,12 @@ class _CategoriesView extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        title: const Text("Confirm Delete"),
-        content: const Text("This action cannot be undone. Are you sure?"),
+        title: const Text("Xác nhận xóa"),
+        content: const Text("Hành động này không thể hoàn tác. Bạn có chắc chắn muốn xóa không?"),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
+            child: const Text("Hủy"),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -322,7 +322,7 @@ class _CategoriesView extends StatelessWidget {
               await context.read<CategoryController>().delete(id);
               Navigator.pop(context);
             },
-            child: const Text("Delete"),
+            child: const Text("Xóa"),
           ),
         ],
       ),
@@ -343,7 +343,7 @@ class _CategoriesView extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          title: Text(category == null ? "New Category" : " Edit Category"),
+          title: Text(category == null ? "Danh mục mới" : "Chỉnh sửa danh mục"),
           content: SizedBox(
             width: 450,
             child: SingleChildScrollView(
@@ -353,7 +353,7 @@ class _CategoriesView extends StatelessWidget {
                   TextField(
                     controller: nameController,
                     decoration: InputDecoration(
-                      labelText: "Category Name",
+                      labelText: "Tên danh mục",
                       prefixIcon: const Icon(Icons.label_outline),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -365,7 +365,7 @@ class _CategoriesView extends StatelessWidget {
                     controller: imageController,
                     onChanged: (_) => setState(() {}),
                     decoration: InputDecoration(
-                      labelText: "Image URL",
+                      labelText: "Đường dẫn ảnh (URL)",
                       prefixIcon: const Icon(Icons.link),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -388,13 +388,13 @@ class _CategoriesView extends StatelessWidget {
                   const SizedBox(height: 10),
                   SwitchListTile(
                     value: isActive,
-                    title: const Text("Active Status"),
+                    title: const Text("Trạng thái hoạt động"),
                     activeColor: Colors.indigoAccent,
                     onChanged: (v) => setState(() => isActive = v),
                   ),
                   SwitchListTile(
                     value: isFeatured,
-                    title: const Text("Featured Category"),
+                    title: const Text("Danh mục nổi bật"),
                     activeColor: Colors.orange,
                     onChanged: (v) => setState(() => isFeatured = v),
                   ),
@@ -405,7 +405,7 @@ class _CategoriesView extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel"),
+              child: const Text("Hủy"),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -437,7 +437,7 @@ class _CategoriesView extends StatelessWidget {
                 Navigator.pop(context);
               },
               child: const Text(
-                "Save Changes",
+                "Lưu thay đổi",
                 style: TextStyle(color: Colors.white),
               ),
             ),

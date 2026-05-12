@@ -22,7 +22,6 @@ class ProductService {
       stock: model.stock, 
       isOutOfStock: model.isOutOfStock, 
       soldQuantity: model.soldQuantity, 
-      brandId: model.brandId, 
       categoryIds: model.categoryIds, 
       tags: model.tags, 
       attributes: model.attributes, 

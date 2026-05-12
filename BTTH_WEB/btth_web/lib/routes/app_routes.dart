@@ -5,7 +5,6 @@ import '../views/auth/login_page.dart';
 import '../views/layout/admin_layout.dart';
 import '../views/cagetories/category_page.dart';
 import '../controllers/auth_controller.dart';
-import '../views/brands/brands_page.dart';
 import '../views/products/product_list_page.dart';
 import '../views/attributes/attribute_page.dart';
 import '../views/dashboard/dashboard_page.dart';
@@ -42,9 +41,6 @@ class AppRouterDelegate extends RouterDelegate<String>
         break;
       case "/coupons":
         page = const CouponsPage();
-        break;
-      case "/brands":
-        page = const BrandsPage();
         break;
       case "/orders":
         page = const OrderPage();

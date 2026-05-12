@@ -20,7 +20,6 @@ final ProductType productType;
   final bool? isOutOfStock; 
   final int soldQuantity; 
  
-  final String? brandId; 
  
   final List<String>? categoryIds; 
   final List<String>? tags; 
@@ -72,7 +71,6 @@ final ProductType productType;
     this.stock = 0, 
     this.isOutOfStock, 
     this.soldQuantity = 0, 
-    this.brandId, 
     this.tags, 
     this.categoryIds, 
     this.attributes, 
@@ -116,7 +114,6 @@ final ProductType productType;
         "stock": stock, 
       "isOutOfStock": isOutOfStock, 
       "soldQuantity": soldQuantity, 
-      "brandId": brandId, 
       "categoryIds": categoryIds, 
       "tags": tags, 
       "attributes": attributes, 
@@ -165,7 +162,6 @@ final ProductType productType;
       stock: map['stock'] ?? 0, 
  isOutOfStock: map['isOutOfStock'], 
       soldQuantity: map['soldQuantity'] ?? 0, 
-      brandId: map['brandId'], 
       categoryIds: List<String>.from(map['categoryIds'] ?? []), 
       tags: List<String>.from(map['tags'] ?? []), 
       attributes: List<Map<String, dynamic>>.from(map['attributes'] ?? []), 

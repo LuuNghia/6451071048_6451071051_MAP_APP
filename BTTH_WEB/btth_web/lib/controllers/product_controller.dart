@@ -1,27 +1,22 @@
 import 'package:flutter/material.dart'; 
 import '../data/models/product_model.dart'; 
-import '../data/models/brand_model.dart'; 
 import '../data/models/category_model.dart'; 
 import '../data/models/attribute_model.dart'; 
 import '../data/services/product_service.dart'; 
-import '../data/services/brand_service.dart'; 
 import '../data/services/category_service.dart'; 
 import '../data/services/attribute_service.dart'; 
 import 'dart:async'; 
  
 class ProductController extends ChangeNotifier { 
   final ProductService productService = ProductService(); 
-  final BrandService brandService = BrandService(); 
   final CategoryService categoryService = CategoryService(); 
   final AttributeService attributeService = AttributeService(); 
   StreamSubscription? _subscription; 
  
-  List<BrandModel> brands = []; 
   List<CategoryModel> categories = []; 
   List<AttributeModel> attributes = []; 
  
   Future<void> loadInitialData() async { 
-    brands = await brandService.getAllBrands(); 
     categories = await categoryService.getCategories(); 
     attributes = await attributeService.getAll().first; 
     notifyListeners(); 
