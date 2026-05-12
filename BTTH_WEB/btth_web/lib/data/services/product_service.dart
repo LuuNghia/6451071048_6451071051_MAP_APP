@@ -58,17 +58,16 @@ class ProductService {
     await _db.collection(collection).doc(model.id).update(model.toMap()); 
   } 
  
-  ///  GET ALL 
-  Stream<List<ProductModel>> getAll() { return _db 
-        .collection(collection) 
-        .orderBy("updatedAt", descending: true) 
-        .snapshots() 
-        .map((snapshot) { 
-          return snapshot.docs.map((doc) { 
-            return ProductModel.fromMap(doc.id, doc.data()); 
-          }).toList(); 
-        }); 
-  } 
+  Stream<List<ProductModel>> getAll() {
+    return _db
+        .collection(collection)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return ProductModel.fromMap(doc.id, doc.data());
+      }).toList();
+    });
+  }
  
   /// GET ACTIVE PRODUCTS 
   Stream<List<ProductModel>> getActiveProducts() { 

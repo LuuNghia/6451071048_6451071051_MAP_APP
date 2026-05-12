@@ -63,13 +63,13 @@ class _LoginPageState extends State<LoginPage> {
                     Container( 
                       padding: const EdgeInsets.all(15), 
                       decoration: BoxDecoration( 
-                        color: Colors.blue.shade50, 
+                        color: Colors.orange.shade50, 
                         shape: BoxShape.circle, 
                       ), 
                       child: Icon( 
-                        Icons.medical_services_rounded, 
+                        Icons.local_pizza_rounded, 
                         size: 50, 
-                        color: Colors.blue.shade800, 
+                        color: Colors.orange.shade800, 
                       ), 
                     ), 
                     const SizedBox(height: 20), 
@@ -84,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
                     ), 
                     const SizedBox(height: 10), 
                     const Text( 
-                      "Hệ thống nhận diện tên thuốc", 
+                      "Hệ thống quản trị cửa hàng Pizza", 
                       style: TextStyle(color: Colors.grey), 
                     ), 
                     const SizedBox(height: 30), 
@@ -164,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
                           } 
                         }, 
                         style: ElevatedButton.styleFrom( 
-                          backgroundColor: Colors.blue.shade800, 
+                          backgroundColor: Colors.orange.shade800, 
                           foregroundColor: Colors.white, 
                           shape: RoundedRectangleBorder( 
                             borderRadius: BorderRadius.circular(15), 

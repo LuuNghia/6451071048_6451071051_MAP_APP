@@ -103,154 +103,187 @@ class _ProductListView extends StatelessWidget {
               child: ClipRRect( 
                 borderRadius: BorderRadius.circular(16), 
                 child: controller.filteredProducts.isEmpty 
-                    ? const Center(child: Text("No products found")) 
-                    : Scrollbar( 
-                        thumbVisibility: true, // Luôn hiện thanh cuộn ngang 
-                        thickness: 8, 
-                        child: SingleChildScrollView( 
-                          scrollDirection: Axis.horizontal, // Cuộn ngang 
-                          child: SingleChildScrollView( 
-                            scrollDirection: Axis.vertical, // Cuộn dọc 
-                            child: ConstrainedBox( 
-                              constraints: const BoxConstraints( 
-                                minWidth: 1100, 
-                              ), // ÉP ĐỘ RỘNG BẢNG ĐỂ HIỆN HẾT CỘT 
-                              child: DataTable( 
-                                headingRowColor: WidgetStateProperty.all( 
-                                  const Color(0xFFF8FAFC), 
-                                ),
-                                 columnSpacing: 
-                                    20, // Thu hẹp khoảng cách giữa các cột 
-                                columns: const [ 
-                                  DataColumn(label: Text("STT")), 
-                                  DataColumn(label: Text("PIZZA")), 
-                                  DataColumn(label: Text("GIÁ")), 
-                                  DataColumn(label: Text("LOẠI")), 
-                                  DataColumn(label: Text("KHO")), 
-                                  DataColumn(label: Text("TRẠNG THÁI")), 
-                                  DataColumn(label: Text("HIỂN THỊ")), 
-                                  DataColumn(label: Text("KÍCH HOẠT")), 
-                                  DataColumn(label: Text("HÀNH ĐỘNG")), 
-                                ], 
-                                rows: List.generate( 
-                                  controller.paginatedData.length, 
-                                  (index) { 
-                                    final item = 
-                                        controller.paginatedData[index]; 
-                                    return DataRow( 
-                                      cells: [ 
-                                        DataCell(Text("${index + 1}")), 
-                                        DataCell( 
-                                          Row( 
-                                            children: [ 
-                                              ClipRRect( 
-                                                borderRadius: 
-                                                    BorderRadius.circular(8), 
-                                                child: Image.network( 
-                                                  item.thumbnail, 
-                                                  width: 40, 
-                                                  height: 40, 
-                                                  fit: BoxFit.cover, 
-                                                  errorBuilder: (_, __, ___) => 
-                                                      const Icon( 
-                                                        Icons.image, 
-                                                        size: 40, 
-                                                      ), 
-                                                ), 
-                                              ), 
-                                              const SizedBox(width: 10), 
-                                              SizedBox( 
-                                                width: 150, 
-                                                child: Text( 
-                                                  item.title, 
-                                                  overflow: 
-                                                      TextOverflow.ellipsis, 
-                                                ), 
-                                                ), 
-                                            ], 
-                                          ), 
-                                        ), 
-                                        DataCell( 
-                                          Text( 
-                                            "\$${item.price}", 
-                                            style: const TextStyle( 
-                                              fontWeight: FontWeight.bold, 
-                                              color: Colors.green, 
-                                            ), 
-                                          ), 
-                                        ), 
-                                        DataCell(Text(item.productType.name)), 
-                                        DataCell(_buildStockBadge(item.stock)), 
-                                        DataCell( 
-                                          Icon( 
-                                            (item.stock - item.soldQuantity) > 0 
-                                                ? Icons.check_circle 
-                                                : Icons.cancel, 
-                                            color: 
-                                                (item.stock - 
-                                                        item.soldQuantity) > 
-                                                    0 
-                                                ? Colors.green 
-                                                : Colors.red, 
-                                            size: 20, 
-                                          ), 
-                                        ), 
-                                        DataCell( 
-                                          _buildVisibilityBadge(item.isDraft), 
-                                        ), 
-                                        DataCell( 
-                                          Icon( 
-                                            item.isActive 
-                                                ? Icons.check_circle 
-                                                : Icons.cancel, 
-                                            color: item.isActive 
-                                                ? Colors.green 
-                                                : Colors.red, 
-                                            size: 20, 
-                                          ), 
-                                        ), 
-                                        DataCell( 
-                                          Row( 
-                                            children: [
-                                                IconButton( 
-                                                icon: const Icon( 
-                                                  Icons.edit, 
-                                                  color: Colors.blue, 
-                                                ), 
-                                                onPressed: () => Navigator.push( 
-                                                  context, 
-                                                  MaterialPageRoute( 
-                                                    builder: (_) => 
-                                                        ProductFormPage( 
-                                                          product: item, 
-                                                        ), 
+                    ? const Center(child: Text("Không tìm thấy sản phẩm")) 
+                    : LayoutBuilder(
+                        builder: (context, constraints) {
+                          return Scrollbar( 
+                            thumbVisibility: true, 
+                            thickness: 8, 
+                            child: SingleChildScrollView( 
+                              scrollDirection: Axis.horizontal, 
+                              child: SingleChildScrollView( 
+                                scrollDirection: Axis.vertical, 
+                                child: ConstrainedBox( 
+                                  constraints: BoxConstraints( 
+                                    minWidth: constraints.maxWidth > 1300 ? constraints.maxWidth : 1300, 
+                                  ), 
+                                  child: DataTable( 
+                                    headingRowColor: WidgetStateProperty.all( 
+                                      const Color(0xFFF8FAFC), 
+                                    ),
+                                    columnSpacing: 20, 
+                                    columns: const [ 
+                                      DataColumn(label: Text("STT")), 
+                                      DataColumn(label: Text("PIZZA")), 
+                                      DataColumn(label: Text("GIÁ")), 
+                                      DataColumn(label: Text("LOẠI")), 
+                                      DataColumn(label: Text("THUỘC TÍNH")), 
+                                      DataColumn(label: Text("KHO")), 
+                                      DataColumn(label: Text("TRẠNG THÁI")), 
+                                      DataColumn(label: Text("HIỂN THỊ")), 
+                                      DataColumn(label: Text("KÍCH HOẠT")), 
+                                      DataColumn(label: Text("HÀNH ĐỘNG")), 
+                                    ], 
+                                    rows: List.generate( 
+                                      controller.paginatedData.length, 
+                                      (index) { 
+                                        final item = 
+                                            controller.paginatedData[index]; 
+                                        return DataRow( 
+                                          cells: [ 
+                                            DataCell(Text("${index + 1}")), 
+                                            DataCell( 
+                                              Row( 
+                                                children: [ 
+                                                  ClipRRect( 
+                                                    borderRadius: 
+                                                        BorderRadius.circular(8), 
+                                                    child: Image.network( 
+                                                      item.thumbnail, 
+                                                      width: 40, 
+                                                      height: 40, 
+                                                      fit: BoxFit.cover, 
+                                                      errorBuilder: (_, __, ___) => 
+                                                          const Icon( 
+                                                            Icons.image, 
+                                                            size: 40, 
+                                                          ), 
+                                                    ), 
                                                   ), 
+                                                  const SizedBox(width: 10), 
+                                                  SizedBox( 
+                                                    width: 150, 
+                                                    child: Text( 
+                                                      item.title, 
+                                                      overflow: 
+                                                          TextOverflow.ellipsis, 
+                                                    ), 
+                                                    ), 
+                                                ], 
+                                              ), 
+                                            ), 
+                                            DataCell( 
+                                              Text( 
+                                                "\$${item.price}", 
+                                                style: const TextStyle( 
+                                                  fontWeight: FontWeight.bold, 
+                                                  color: Colors.green, 
                                                 ), 
                                               ), 
-                                              IconButton( 
-                                                icon: const Icon( 
-                                                  Icons.delete, 
-                                                  color: Colors.red, 
-                                                ), 
-                                                onPressed: () => 
-                                                    _showDeleteDialog( 
+                                            ), 
+                                            DataCell(Text(item.productType.name)), 
+                                            DataCell(
+                                              SizedBox(
+                                                width: 250,
+                                                child: item.attributes == null || item.attributes!.isEmpty
+                                                    ? const Text("Chưa có", style: TextStyle(color: Colors.grey, fontSize: 12))
+                                                    : SingleChildScrollView(
+                                                        scrollDirection: Axis.horizontal,
+                                                        child: Row(
+                                                          children: item.attributes!.map((attr) {
+                                                            final name = attr['name'] ?? 'N/A';
+                                                            final vals = (attr['values'] as List?)?.join(', ') ?? '';
+                                                            return Container(
+                                                              margin: const EdgeInsets.only(right: 6),
+                                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                              decoration: BoxDecoration(
+                                                                color: Colors.blue.withOpacity(0.05),
+                                                                borderRadius: BorderRadius.circular(6),
+                                                                border: Border.all(color: Colors.blue.withOpacity(0.2)),
+                                                              ),
+                                                              child: Text(
+                                                                "$name: $vals",
+                                                                style: const TextStyle(fontSize: 11, color: Colors.blue),
+                                                              ),
+                                                            );
+                                                          }).toList(),
+                                                        ),
+                                                      ),
+                                              ),
+                                            ),
+                                            DataCell(_buildStockBadge(item.stock)), 
+                                            DataCell( 
+                                              Icon( 
+                                                (item.stock - item.soldQuantity) > 0 
+                                                    ? Icons.check_circle 
+                                                    : Icons.cancel, 
+                                                color: 
+                                                    (item.stock - 
+                                                            item.soldQuantity) > 
+                                                        0 
+                                                    ? Colors.green 
+                                                    : Colors.red, 
+                                                size: 20, 
+                                              ), 
+                                            ), 
+                                            DataCell( 
+                                              _buildVisibilityBadge(item.isDraft), 
+                                            ), 
+                                            DataCell( 
+                                              Icon( 
+                                                item.isActive 
+                                                    ? Icons.check_circle 
+                                                    : Icons.cancel, 
+                                                color: item.isActive 
+                                                    ? Colors.green 
+                                                    : Colors.red, 
+                                                size: 20, 
+                                              ), 
+                                            ), 
+                                            DataCell( 
+                                              Row( 
+                                                children: [ 
+                                                  IconButton( 
+                                                    icon: const Icon( 
+                                                      Icons.edit, 
+                                                      color: Colors.blue, 
+                                                    ), 
+                                                    onPressed: () => Navigator.push( 
                                                       context, 
-                                                      () => service.delete( 
-                                                        item.id, 
+                                                      MaterialPageRoute( 
+                                                        builder: (_) => 
+                                                            ProductFormPage( 
+                                                              product: item, 
+                                                            ), 
                                                       ), 
                                                     ), 
+                                                  ), 
+                                                  IconButton( 
+                                                    icon: const Icon( 
+                                                      Icons.delete, 
+                                                      color: Colors.red, 
+                                                    ), 
+                                                    onPressed: () => 
+                                                        _showDeleteDialog( 
+                                                          context, 
+                                                          () => service.delete( 
+                                                            item.id, 
+                                                          ), 
+                                                        ), 
+                                                  ), 
+                                                ], 
                                               ), 
-                                            ], 
-                                          ), 
-                                        ), 
-                                      ], 
-                                    ); 
-                                  }, 
+                                            ), 
+                                          ], 
+                                        ); 
+                                      }, 
+                                    ), 
+                                  ), 
                                 ), 
                               ), 
                             ), 
-                          ), 
-                        ), 
+                          );
+                        },
                       ), 
               ), 
             ), 

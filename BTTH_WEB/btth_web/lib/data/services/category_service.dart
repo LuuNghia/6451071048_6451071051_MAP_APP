@@ -4,6 +4,14 @@ import '../models/category_model.dart';
 class CategoryService {
   final _firestore = FirebaseFirestore.instance;
   final _collection = "categories";
+  Stream<List<CategoryModel>> getCategoriesStream() {
+    return _firestore.collection(_collection).snapshots().map((snapshot) {
+      return snapshot.docs
+          .map((doc) => CategoryModel.fromFirestore(doc))
+          .toList();
+    });
+  }
+
   Future<List<CategoryModel>> getCategories() async {
     final snapshot = await _firestore.collection(_collection).get();
     return snapshot.docs

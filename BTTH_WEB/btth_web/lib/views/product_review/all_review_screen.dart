@@ -176,29 +176,42 @@ class AllReviewScreen extends StatelessWidget {
                               ? _buildEmptyState() 
                               : ClipRRect( 
                                   borderRadius: BorderRadius.circular(15), 
-                                  child: SingleChildScrollView( 
-                                    scrollDirection: Axis.vertical, 
-                                    child: SingleChildScrollView( 
-                                      scrollDirection: Axis.horizontal, 
-                                      child: DataTable( 
-                                        headingRowHeight: 60, 
-                                        dataRowHeight: 75, 
-                                        columnSpacing: 25, 
-                                        headingRowColor: 
-                                            MaterialStateProperty.all( 
-                                              Colors.blue.withOpacity(0.05), 
+                                  child: LayoutBuilder(
+                                    builder: (context, constraints) {
+                                      return Scrollbar( 
+                                        thumbVisibility: true,
+                                        thickness: 8,
+                                        child: SingleChildScrollView( 
+                                          scrollDirection: Axis.horizontal, 
+                                          child: SingleChildScrollView( 
+                                            scrollDirection: Axis.vertical, 
+                                            child: ConstrainedBox(
+                                              constraints: BoxConstraints(
+                                                minWidth: constraints.maxWidth > 1100 ? constraints.maxWidth : 1100,
+                                              ),
+                                              child: DataTable( 
+                                                headingRowHeight: 60, 
+                                                dataRowHeight: 75, 
+                                                columnSpacing: 25, 
+                                                headingRowColor: 
+                                                    WidgetStateProperty.all( 
+                                                      Colors.blue.withOpacity(0.05), 
+                                                    ), 
+                                                columns: _buildTableColumns(), 
+                                                rows: List.generate( 
+                                                  controller.filteredReviews.length, 
+                                                  (index) => _buildDataRow( 
+                                                    context, 
+                                                    controller, 
+                                                    index, 
+                                                  ), 
+                                                ), 
+                                              ),
                                             ), 
-                                        columns: _buildTableColumns(), 
-                                        rows: List.generate( 
-                                          controller.filteredReviews.length, 
-                                          (index) => _buildDataRow( 
-                                            context, 
-                                            controller, 
-                                            index, 
                                           ), 
                                         ), 
-                                      ), 
-                                    ), 
+                                      );
+                                    },
                                   ), 
                                 ), 
                         ), 
@@ -453,7 +466,7 @@ class AllReviewScreen extends StatelessWidget {
       context: context, 
       builder: (BuildContext context) => AlertDialog( 
         shape: RoundedRectangleBorder(borderRadius: 
-BorderRadius.circular(15)), 
+        BorderRadius.circular(15)), 
         title: const Row( 
           children: [ 
             Icon(Icons.warning_amber_rounded, color: Colors.red), 

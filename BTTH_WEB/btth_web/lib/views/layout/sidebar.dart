@@ -41,10 +41,10 @@ class _SidebarState extends State<Sidebar> {
                 Container( 
                   padding: const EdgeInsets.all(8), 
                   decoration: BoxDecoration( 
-                    color: Colors.blueAccent, 
+                    color: Colors.orangeAccent, 
                     borderRadius: BorderRadius.circular(10), 
                   ), 
-                  child: const Icon(Icons.bolt, color: Colors.white, size: 24), 
+                  child: const Icon(Icons.local_pizza, color: Colors.white, size: 24), 
                 ), 
                 const SizedBox(width: 12), 
                 const Flexible( 
@@ -82,7 +82,7 @@ class _SidebarState extends State<Sidebar> {
                 _item(Icons.category, "Danh mục bánh", "/categories"), 
                 _item( 
                   Icons.info_outline, 
-                  "Thuộc tính (Size/Crust)", 
+                  "Thuộc tính", 
                   "/attributes", 
                 ), 
                 _item(Icons.card_giftcard, "Mã giảm giá", "/coupons"), 
@@ -142,12 +142,12 @@ class _SidebarState extends State<Sidebar> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), 
           decoration: BoxDecoration( 
             color: isActive 
-                ? Colors.blueAccent.withOpacity(0.15) 
+                ? Colors.orangeAccent.withOpacity(0.15) 
                 : Colors.transparent, 
             borderRadius: BorderRadius.circular(10), 
             border: isActive 
                 ? const Border( 
-                    left: BorderSide(color: Colors.blueAccent, width: 4), 
+                    left: BorderSide(color: Colors.orangeAccent, width: 4), 
                   ) 
                 : null, 
           ), 
@@ -155,7 +155,7 @@ class _SidebarState extends State<Sidebar> {
             children: [ 
               Icon( 
                 icon, 
-                color: isActive ? Colors.blueAccent : Colors.white60, 
+                color: isActive ? Colors.orangeAccent : Colors.white60, 
                 size: 22, 
               ), 
               const SizedBox(width: 15), 
@@ -178,7 +178,7 @@ class _SidebarState extends State<Sidebar> {
                   width: 6, 
                   height: 6, 
                   decoration: const BoxDecoration( 
-                    color: Colors.blueAccent, 
+                    color: Colors.orangeAccent, 
                     shape: BoxShape.circle, 
                   ), 
                 ), 
