@@ -15,7 +15,7 @@ class AppRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
   final GlobalKey<NavigatorState> navigatorKey;
   final AuthController authController;
-  String _currentPath = "/login";
+  String _currentPath = "/dashboard";
   AppRouterDelegate(this.authController)
     : navigatorKey = GlobalKey<NavigatorState>() {
     authController.addListener(notifyListeners);
@@ -58,7 +58,7 @@ class AppRouterDelegate extends RouterDelegate<String>
         page = const MyDashboard();
         break;
       default:
-        page = const Center(child: Text("Dashboard Page"));
+        page = const MyDashboard();
     }
     return Navigator(
       key: navigatorKey,
@@ -89,7 +89,7 @@ class AppRouteParser extends RouteInformationParser<String> {
   Future<String> parseRouteInformation(
     RouteInformation routeInformation,
   ) async {
-    return routeInformation.location ?? "/login";
+    return routeInformation.location ?? "/dashboard";
   }
 
   @override

@@ -17,7 +17,9 @@ class ProductController extends ChangeNotifier {
   List<AttributeModel> attributes = []; 
  
   Future<void> loadInitialData() async { 
-    categories = await categoryService.getCategories(); 
+    final allCats = await categoryService.getCategories(); 
+    // Loại bỏ danh mục "all" khỏi danh sách lựa chọn cho sản phẩm 
+    categories = allCats.where((c) => c.id != "all").toList(); 
     attributes = await attributeService.getAll().first; 
     notifyListeners(); 
   } 

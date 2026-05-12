@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart'; 
 import 'package:provider/provider.dart'; 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../controllers/attribute_controller.dart'; 
 import '../../data/services/attribute_service.dart'; 
 import 'attribute_add_edit_page.dart'; 
@@ -17,291 +18,325 @@ class AttributesPage extends StatelessWidget {
         backgroundColor: const Color(0xFFF3F4F9), // Nền xám xanh nhẹ hiện đại 
         body: Consumer<AttributeController>( 
           builder: (context, controller, _) { 
-            return StreamBuilder( 
+            return StreamBuilder<List<dynamic>>( 
               stream: service.getAll(), 
               builder: (context, snapshot) { 
                 if (snapshot.hasData) { 
-                  controller.setData(snapshot.data!); 
+                  controller.setData(List<dynamic>.from(snapshot.data!).cast()); 
                 } 
  
-                return Padding( 
-                  padding: const EdgeInsets.all(24.0), 
-                  child: Column( 
-                    crossAxisAlignment: CrossAxisAlignment.start, 
-                    children: [ 
-                      // --- HEADER --- 
-                      const Text( 
-                        "Thuộc tính (Size/Crust)", 
-                        style: TextStyle( 
-                          fontSize: 26, 
-                          fontWeight: FontWeight.bold, 
-                          color: Color(0xFF1A1C24), 
-                        ), 
-                      ), 
-                      const SizedBox(height: 20), 
- 
-                      Row( 
+                // Tính toán liên kết sản phẩm (Lồng StreamBuilder để đếm số Pizza)
+                return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                  stream: FirebaseFirestore.instance.collection("products").snapshots(),
+                  builder: (context, prodSnapshot) {
+                    if (prodSnapshot.hasData) {
+                      controller.updateProductCounts(
+                        prodSnapshot.data!.docs.map((e) => e.data()).toList(),
+                      );
+                    }
+
+                    return Padding( 
+                      padding: const EdgeInsets.all(24.0), 
+                      child: Column( 
+                        crossAxisAlignment: CrossAxisAlignment.start, 
                         children: [ 
-                          Expanded( 
-                            child: Container( 
-                              decoration: BoxDecoration( 
-                                color: Colors.white, 
-                                borderRadius: BorderRadius.circular(15), 
-                                boxShadow: [ 
-                                  BoxShadow( 
-                                    color: Colors.black.withOpacity(0.03), 
-                                    blurRadius: 10,  offset: const Offset(0, 4), 
+                          // --- HEADER --- 
+                          const Text( 
+                            "Thuộc tính", 
+                            style: TextStyle( 
+                              fontSize: 26, 
+                              fontWeight: FontWeight.bold, 
+                              color: Color(0xFF1A1C24), 
+                            ), 
+                          ), 
+                          const SizedBox(height: 20), 
+     
+                          Row( 
+                            children: [ 
+                              Expanded( 
+                                child: Container( 
+                                  decoration: BoxDecoration( 
+                                    color: Colors.white, 
+                                    borderRadius: BorderRadius.circular(15), 
+                                    boxShadow: [ 
+                                      BoxShadow( 
+                                        color: Colors.black.withOpacity(0.03), 
+                                        blurRadius: 10,  offset: const Offset(0, 4), 
+                                      ), 
+                                    ], 
                                   ), 
-                                ], 
-                              ), 
-                              child: TextField( 
-                                onChanged: controller.search, 
-                                decoration: InputDecoration( 
-                                  hintText: "Tìm kiếm theo tên hoặc giá trị...", 
-                                  prefixIcon: const Icon( 
-                                    Icons.search_rounded, 
-                                    color: Colors.indigo, 
-                                  ), 
-                                  border: InputBorder.none, 
-                                  contentPadding: const EdgeInsets.symmetric( 
-                                    vertical: 15, 
+                                  child: TextField( 
+                                    onChanged: controller.search, 
+                                    decoration: InputDecoration( 
+                                      hintText: "Tìm kiếm theo tên hoặc giá trị...", 
+                                      prefixIcon: const Icon( 
+                                        Icons.search_rounded, 
+                                        color: Colors.indigo, 
+                                      ), 
+                                      border: InputBorder.none, 
+                                      contentPadding: const EdgeInsets.symmetric( 
+                                        vertical: 15, 
+                                      ), 
+                                    ), 
                                   ), 
                                 ), 
                               ), 
-                            ), 
-                          ), 
-                          const SizedBox(width: 16), 
-                          ElevatedButton.icon( 
-                            onPressed: () => Navigator.push( 
-                              context, 
-                              MaterialPageRoute( 
-                                builder: (_) => const AttributeFormPage(), 
-                              ), 
-                            ), 
-                            icon: const Icon( 
-                              Icons.add_rounded, 
-                              color: Colors.white, 
-                            ), 
-                            label: const Text("THÊM THUỘC TÍNH"), 
-                            style: ElevatedButton.styleFrom( 
-                              backgroundColor: Colors.indigoAccent, 
-                              foregroundColor: Colors.white, 
-                              padding: const EdgeInsets.symmetric( 
-                                horizontal: 24, 
-                                vertical: 20, 
-                              ), 
-                              shape: RoundedRectangleBorder( 
-                                borderRadius: BorderRadius.circular(12), 
-                              ), 
-                              elevation: 2, 
-                            ), 
-                          ), 
-                        ], 
-                      ), 
- 
-                      const SizedBox(height: 24),
-                       // --- TABLE CONTAINER --- 
-                      Expanded( 
-                        child: Container( 
-                          width: double.infinity, 
-                          decoration: BoxDecoration( 
-                            color: Colors.white, 
-                            borderRadius: BorderRadius.circular(20), 
-                            boxShadow: [ 
-                              BoxShadow( 
-                                color: Colors.black.withOpacity(0.04), 
-                                blurRadius: 20, 
-                                offset: const Offset(0, 8), 
-                              ), 
+                              const SizedBox(width: 16), 
+                              Row(
+                                children: [
+                                  if (controller.isSyncing)
+                                    const Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 16),
+                                      child: CircularProgressIndicator(),
+                                    )
+                                  else
+                                    ElevatedButton.icon(
+                                      onPressed: () => controller.syncFromProducts(),
+                                      icon: const Icon(Icons.sync_rounded),
+                                      label: const Text("ĐỒNG BỘ TỪ SẢN PHẨM"),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.orangeAccent,
+                                        foregroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 20,
+                                          vertical: 20,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                      ),
+                                    ),
+                                  const SizedBox(width: 12),
+                                  ElevatedButton.icon(
+                                    onPressed: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => const AttributeFormPage(),
+                                      ),
+                                    ),
+                                    icon: const Icon(
+                                      Icons.add_rounded,
+                                      color: Colors.white,
+                                    ),
+                                    label: const Text("THÊM THUỘC TÍNH"),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.indigoAccent,
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                        vertical: 20,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      elevation: 2,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ], 
                           ), 
-                          child: ClipRRect( 
-                            borderRadius: BorderRadius.circular(20), 
-                            child: SingleChildScrollView( 
-                              child: DataTable( 
-                                headingRowColor: MaterialStateProperty.all( 
-                                  Colors.indigo.withOpacity(0.05), 
-                                ), 
-                                dataRowHeight: 75, 
-                                horizontalMargin: 24, 
-                                columns: const [ 
-                                  DataColumn( 
-                                    label: Text( 
-                                      "STT", 
-                                      style: TextStyle( 
-                                        fontWeight: FontWeight.bold, 
-                                        color: Colors.indigo, 
-                                      ), 
-                                    ), 
-                                  ), 
-                                  DataColumn( 
-                                    label: Text( 
-                                      "THUỘC TÍNH", 
-                                      style: TextStyle( 
-                                        fontWeight: FontWeight.bold, 
-                                        color: Colors.indigo, 
-                                      ), 
-                                    ), 
-                                  ), 
-                                  DataColumn( 
-                                    label: Text( 
-                                      "GIÁ TRỊ", 
-                                      style: TextStyle( 
-                                        fontWeight: FontWeight.bold, 
-                                        color: Colors.indigo, 
-                                          ), 
-                                    ), 
-                                  ), 
-                                  DataColumn( 
-                                    label: Text( 
-                                      "TRẠNG THÁI", 
-                                      style: TextStyle( 
-                                        fontWeight: FontWeight.bold, 
-                                        color: Colors.indigo, 
-                                      ), 
-                                    ), 
-                                  ), 
-                                  DataColumn( 
-                                    label: Text( 
-                                      "CẬP NHẬT", 
-                                      style: TextStyle( 
-                                        fontWeight: FontWeight.bold, 
-                                        color: Colors.indigo, 
-                                      ), 
-                                    ), 
-                                  ), 
-                                  DataColumn( 
-                                    label: Text( 
-                                      "HÀNH ĐỘNG", 
-                                      style: TextStyle( 
-                                        fontWeight: FontWeight.bold, 
-                                        color: Colors.indigo, 
-                                      ), 
-                                    ), 
+     
+                          const SizedBox(height: 24), 
+                           // --- TABLE CONTAINER --- 
+                          Expanded( 
+                            child: Container( 
+                              width: double.infinity, 
+                              decoration: BoxDecoration( 
+                                color: Colors.white, 
+                                borderRadius: BorderRadius.circular(20), 
+                                boxShadow: [ 
+                                  BoxShadow( 
+                                    color: Colors.black.withOpacity(0.04), 
+                                    blurRadius: 20, 
+                                    offset: const Offset(0, 8), 
                                   ), 
                                 ], 
-                                rows: List.generate(controller.paginatedData.length, ( 
-                                  index, 
-                                ) { 
-                                  final item = controller.paginatedData[index]; 
-                                  return DataRow( 
-                                    onSelectChanged: 
-                                        (_) {}, // Tạo hiệu ứng hover nhẹ 
-                                    cells: [ 
-                                      DataCell( 
-                                        Text( 
-                                          "#${index + 1 + (controller.currentPage * controller.rowsPerPage)}", 
-                                        ), 
-                                      ), 
-                                      DataCell( 
-                                        Text( 
-                                          item.name, style: const TextStyle( 
-                                            fontWeight: FontWeight.w600, 
+                              ), 
+                              child: ClipRRect( 
+                                borderRadius: BorderRadius.circular(20), 
+                                child: controller.paginatedData.isEmpty
+                                    ? Center(
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.inventory_2_outlined,
+                                              size: 80,
+                                              color: Colors.grey[300],
+                                            ),
+                                            const SizedBox(height: 16),
+                                            Text(
+                                              "Chưa có thuộc tính nào",
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                color: Colors.grey[600],
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            const Text(
+                                              "Hãy nhấn 'Đồng bộ từ sản phẩm' hoặc thêm mới",
+                                              style: TextStyle(color: Colors.grey),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    : SingleChildScrollView( 
+                                        child: DataTable( 
+                                          headingRowColor: WidgetStateProperty.all( 
+                                            Colors.indigo.withOpacity(0.05), 
                                           ), 
-                                        ), 
-                                      ), 
-                                      DataCell( 
-                                        SingleChildScrollView( 
-                                          scrollDirection: Axis.horizontal, 
-                                          child: Row( 
-                                            children: item.attributeValues 
-                                                .map( 
-                                                  (v) => Container( 
-                                                    margin: 
-                                                        const EdgeInsets.only( 
-                                                          right: 6, 
-                                                        ), 
-                                                    padding: 
-                                                        const EdgeInsets.symmetric( 
-                                                          horizontal: 10, 
-                                                          vertical: 4, 
-                                                        ), 
-                                                    decoration: BoxDecoration( 
-                                                      color: Colors.blueGrey 
-                                                          .withOpacity(0.1), 
-                                                      borderRadius: 
-                                                          BorderRadius.circular( 
-                                                            8, 
-                                                          ), 
-                                                      border: Border.all( 
-                                                        color: Colors.blueGrey 
-                                                            .withOpacity(0.2), 
-                                                      ), 
-                                                    ), 
-                                                    child: Text( 
-                                                      v, 
-                                                      style: const TextStyle( 
-                                                        fontSize: 12, 
-                                                        color: Colors.blueGrey, 
-                                                      ), 
-                                                    ), 
-                                                  ), 
-                                                ) 
-                                                .toList(), 
+                                          dataRowHeight: 75, 
+                                          horizontalMargin: 24, 
+                                          columns: const [ 
+                                            DataColumn( 
+                                              label: Text( 
+                                                "STT", 
+                                                style: TextStyle( 
+                                                  fontWeight: FontWeight.bold, 
+                                                  color: Colors.indigo, 
                                                 ), 
-                                        ), 
-                                      ), 
-                                      DataCell( 
-                                        _buildStatusBadge(item.isActive), 
-                                      ), 
-                                      DataCell( 
-                                        Text( 
-                                          item.updatedAt?.toString().substring( 
-                                                0, 
-                                                10, 
-                                              ) ?? 
-                                              "-", 
-                                        ), 
-                                      ), 
-                                      DataCell( 
-                                        Row( 
-                                          children: [ 
-                                            _buildActionIcon( 
-                                              Icons.edit_note_rounded, 
-                                              Colors.blue, 
-                                              () { 
-                                                Navigator.push( 
-                                                  context, 
-                                                  MaterialPageRoute( 
-                                                    builder: (_) => 
-                                                        AttributeFormPage( 
-                                                          attribute: item, 
-                                                        ), 
-                                                  ), 
-                                                ); 
-                                              }, 
+                                              ), 
                                             ), 
-                                            const SizedBox(width: 8), 
-                                            _buildActionIcon( 
-                                              Icons.delete_sweep_rounded, 
-                                              Colors.redAccent, 
-                                              () { 
-                                                _showDeleteDialog( 
-                                                  context, 
-                                                  service, 
-                                                  item.id, 
-                                                ); 
-                                              }, 
+                                            DataColumn( 
+                                              label: Text( 
+                                                "THUỘC TÍNH", 
+                                                style: TextStyle( 
+                                                  fontWeight: FontWeight.bold, 
+                                                  color: Colors.indigo, 
+                                                ), 
+                                              ), 
+                                            ), 
+                                            DataColumn( 
+                                              label: Text( 
+                                                "GIÁ TRỊ", 
+                                                style: TextStyle( 
+                                                  fontWeight: FontWeight.bold, 
+                                                  color: Colors.indigo, 
+                                                ), 
+                                              ), 
+                                            ), 
+                                            DataColumn( 
+                                              label: Text( 
+                                                "SỐ SẢN PHẨM", 
+                                                style: TextStyle( 
+                                                  fontWeight: FontWeight.bold, 
+                                                  color: Colors.indigo, 
+                                                ), 
+                                              ), 
+                                            ), 
+                                            DataColumn( 
+                                              label: Text( 
+                                                "TRẠNG THÁI", 
+                                                style: TextStyle( 
+                                                  fontWeight: FontWeight.bold, 
+                                                  color: Colors.indigo, 
+                                                ), 
+                                              ), 
+                                            ), 
+                                            DataColumn( 
+                                              label: Text( 
+                                                "CẬP NHẬT", 
+                                                style: TextStyle( 
+                                                  fontWeight: FontWeight.bold, 
+                                                  color: Colors.indigo, 
+                                                ), 
+                                              ), 
+                                            ), 
+                                            DataColumn( 
+                                              label: Text( 
+                                                "HÀNH ĐỘNG", 
+                                                style: TextStyle( 
+                                                  fontWeight: FontWeight.bold, 
+                                                  color: Colors.indigo, 
+                                                ), 
+                                              ), 
                                             ), 
                                           ], 
+                                          rows: List.generate(controller.paginatedData.length, ( 
+                                            index, 
+                                          ) { 
+                                            final item = controller.paginatedData[index]; 
+                                            return DataRow( 
+                                              cells: [ 
+                                                DataCell( 
+                                                  Text( 
+                                                    "#${index + 1 + (controller.currentPage * controller.rowsPerPage)}", 
+                                                  ), 
+                                                ), 
+                                                DataCell( 
+                                                  Text( 
+                                                    item.name, style: const TextStyle( 
+                                                      fontWeight: FontWeight.bold, 
+                                                    ), 
+                                                  ), 
+                                                ), 
+                                                DataCell( 
+                                                  SingleChildScrollView( 
+                                                    scrollDirection: Axis.horizontal, 
+                                                    child: Row( 
+                                                      children: item.attributeValues 
+                                                          .map( 
+                                                            (v) => Container( 
+                                                              margin: const EdgeInsets.only(right: 6), 
+                                                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), 
+                                                              decoration: BoxDecoration( 
+                                                                color: Colors.blueGrey.withOpacity(0.1), 
+                                                                borderRadius: BorderRadius.circular(8), 
+                                                                border: Border.all(color: Colors.blueGrey.withOpacity(0.2)), 
+                                                              ), 
+                                                              child: Text(v, style: const TextStyle(fontSize: 12, color: Colors.blueGrey)), 
+                                                            ), 
+                                                          ).toList(), 
+                                                    ), 
+                                                  ), 
+                                                ), 
+                                                DataCell( 
+                                                  Container(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.indigo.withOpacity(0.1),
+                                                      borderRadius: BorderRadius.circular(20),
+                                                    ),
+                                                    child: Text(
+                                                      "${controller.productCounts[item.name] ?? 0} Pizza",
+                                                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.indigo),
+                                                    ),
+                                                  ),
+                                                ),
+                                                DataCell(_buildStatusBadge(item.isActive)), 
+                                                DataCell(Text(item.updatedAt?.toString().substring(0, 10) ?? "-")), 
+                                                DataCell( 
+                                                  Row( 
+                                                    children: [ 
+                                                      _buildActionIcon(Icons.edit_note_rounded, Colors.blue, () { 
+                                                        Navigator.push(context, MaterialPageRoute(builder: (_) => AttributeFormPage(attribute: item))); 
+                                                      }), 
+                                                      const SizedBox(width: 8), 
+                                                      _buildActionIcon(Icons.delete_sweep_rounded, Colors.redAccent, () { 
+                                                        _showDeleteDialog(context, service, item.id); 
+                                                      }), 
+                                                    ], 
+                                                  ), 
+                                                ), 
+                                              ], 
+                                            ); 
+                                          }), 
                                         ), 
                                       ), 
-                                    ],
-                                        ); 
-                                }), 
                               ), 
                             ), 
                           ), 
-                        ), 
+     
+                          const SizedBox(height: 24), 
+                          // --- PAGINATION --- 
+                          _buildPagination(controller), 
+                        ], 
                       ), 
- 
-                      const SizedBox(height: 24), 
- 
-                      // --- PAGINATION --- 
-                      _buildPagination(controller), 
-                    ], 
-                  ), 
-                ); 
+                    );
+                  },
+                );
               }, 
             ); 
           }, 
@@ -337,15 +372,14 @@ class AttributesPage extends StatelessWidget {
               fontWeight: FontWeight.bold, 
               fontSize: 12, 
             ), 
-  ), 
+          ), 
         ], 
       ), 
     ); 
   } 
  
   // Nút hành động (Edit/Delete) với hiệu ứng Hover 
-  Widget _buildActionIcon(IconData icon, Color color, VoidCallback onPressed) 
-{ 
+  Widget _buildActionIcon(IconData icon, Color color, VoidCallback onPressed) { 
     return Material( 
       color: Colors.transparent, 
       child: InkWell( 
@@ -386,8 +420,8 @@ class AttributesPage extends StatelessWidget {
                     ? [ 
                         BoxShadow( 
                           color: Colors.indigoAccent.withOpacity(0.4), 
-                          blurRadius: 8,
-                               offset: const Offset(0, 4), 
+                          blurRadius: 8, 
+                          offset: const Offset(0, 4), 
                         ), 
                       ] 
                     : [], 
@@ -436,7 +470,7 @@ class AttributesPage extends StatelessWidget {
               shape: RoundedRectangleBorder( 
                 borderRadius: BorderRadius.circular(8), 
               ), 
- ), 
+            ), 
             onPressed: () async { 
               await service.delete(id); 
               Navigator.pop(context); 

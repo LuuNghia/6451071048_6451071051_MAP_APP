@@ -27,5 +27,48 @@ class AttributeService {
               .map((doc) => AttributeModel.fromMap(doc.data(), doc.id)) 
               .toList(), 
         ); 
-  } 
+  }
+
+  Future<void> syncFromProducts() async {
+    final productSnapshot = await _db.collection("products").get();
+    final Map<String, Set<String>> extractedAttributes = {};
+
+    for (var doc in productSnapshot.docs) {
+      final data = doc.data();
+      if (data['attributes'] != null) {
+        final List attributesList = data['attributes'];
+        for (var attr in attributesList) {
+          final String name = attr['name'] ?? '';
+          final List values = attr['values'] ?? [];
+          if (name.isNotEmpty) {
+            extractedAttributes.putIfAbsent(name, () => {});
+            for (var v in values) {
+              extractedAttributes[name]!.add(v.toString());
+            }
+          }
+        }
+      }
+    }
+
+    // Lấy danh sách thuộc tính hiện có để tránh trùng lặp
+    final existingSnapshot = await _db.collection(collection).get();
+    final existingNames = existingSnapshot.docs.map((doc) => doc.data()['name'] as String).toSet();
+
+    for (var entry in extractedAttributes.entries) {
+      if (!existingNames.contains(entry.key)) {
+        final newAttr = AttributeModel(
+          id: "",
+          name: entry.key,
+          attributeValues: entry.value.toList(),
+          isActive: true,
+          isSearchable: true,
+          isFilterable: true,
+          isColorAttribute: false,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        );
+        await create(newAttr);
+      }
+    }
+  }
 }
