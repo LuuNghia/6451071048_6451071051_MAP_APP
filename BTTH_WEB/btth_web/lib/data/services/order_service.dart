@@ -72,4 +72,35 @@ class OrderService {
     }
     await batch.commit();
   }
+
+  Future<void> handleOrderApplyStock(OrderModel order) async {
+    final batch = _db.batch();
+    for (var item in order.products) {
+      final String productId = item['productId'];
+      final int quantity = item['quantity'];
+      final productRef = _db.collection('products').doc(productId);
+      final productSnap = await productRef.get();
+      if (!productSnap.exists) continue;
+      final data = productSnap.data()!;
+      final int currentSold = data['soldQuantity'] ?? 0;
+      final int stock = data['stock'] ?? 0;
+
+      /// ====== APPLY SOLD ======
+      int newSold = currentSold + quantity;
+
+      /// ====== FIX LOGIC OUT OF STOCK ======
+      bool newOutOfStock;
+      if (newSold < stock) {
+        newOutOfStock = false;
+      } else {
+        newOutOfStock = true;
+      }
+      batch.update(productRef, {
+        'soldQuantity': newSold,
+        'isOutOfStock': newOutOfStock,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    }
+    await batch.commit();
+  }
 }

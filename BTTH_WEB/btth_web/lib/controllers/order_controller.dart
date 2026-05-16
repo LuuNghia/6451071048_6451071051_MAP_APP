@@ -41,10 +41,13 @@ class OrderController {
   Future<void> updateOrderStatus(OrderModel order, String newStatus) async {
     final oldStatus = order.orderStatus.toLowerCase();
     final lowerNewStatus = newStatus.toLowerCase();
-    const revertStatuses = ["canceled", "returned", "refunded"];
+    const revertStatuses = ["canceled", "cancelled", "returned", "refunded"];
     if (revertStatuses.contains(lowerNewStatus) &&
         !revertStatuses.contains(oldStatus)) {
       await _service.handleOrderRevertStock(order);
+    } else if (!revertStatuses.contains(lowerNewStatus) &&
+        revertStatuses.contains(oldStatus)) {
+      await _service.handleOrderApplyStock(order);
     }
 
     /// UPDATE ORDER

@@ -82,4 +82,10 @@ class CartService {
     } 
     return true; 
   } 
+
+  /// Clear Cart
+  void clearCart() {
+    _cart.items.clear();
+    saveCart();
+  }
 }

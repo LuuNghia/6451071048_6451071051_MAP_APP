@@ -222,7 +222,7 @@ class OrderController extends GetxController {
       await increaseCouponUsage(); 
  
       /// CLEAR CART 
-      cart.cartItems.clear(); 
+      cart.clearCart(); 
  
       Get.offAll(() => const OrderSuccessScreen()); 
     } catch (e) { 
