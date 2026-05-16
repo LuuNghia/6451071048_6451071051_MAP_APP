@@ -149,41 +149,49 @@ class _OrderPageState extends State<OrderPage> {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16),
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.vertical,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: DataTable(
-                              headingRowColor: WidgetStateProperty.all(
-                                Colors.grey.withOpacity(0.05),
-                              ),
-                              dataRowHeight: 75,
-                              headingRowHeight: 60,
-                              columnSpacing: 35,
-                              columns: const [
-                                DataColumn(label: _HeaderLabel("STT")),
-                                DataColumn(label: _HeaderLabel("Mã đơn")),
-                                DataColumn(label: _HeaderLabel("Khách hàng")),
-                                DataColumn(label: _HeaderLabel("Số lượng")),
-                                DataColumn(label: _HeaderLabel("Trạng thái")),
-                                DataColumn(label: _HeaderLabel("Thanh toán")),
-                                DataColumn(label: _HeaderLabel("Tổng tiền")),
-                                DataColumn(label: _HeaderLabel("Ngày đặt")),
-                                DataColumn(label: _HeaderLabel("Thao tác")),
-                              ],
-                              rows: controller.filteredOrders
-                                  .asMap()
-                                  .entries
-                                  .map((entry) {
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          return SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minWidth: constraints.maxWidth,
+                                ),
+                                child: DataTable(
+                                  headingRowColor: WidgetStateProperty.all(
+                                    Colors.grey.withOpacity(0.05),
+                                  ),
+                                  dataRowHeight: 75,
+                                  headingRowHeight: 60,
+                                  columnSpacing: 20, // Giảm spacing để co giãn tốt hơn
+                                  columns: const [
+                                    DataColumn(label: _HeaderLabel("STT")),
+                                    DataColumn(label: _HeaderLabel("Mã đơn")),
+                                    DataColumn(label: _HeaderLabel("Khách hàng")),
+                                    DataColumn(label: _HeaderLabel("Số lượng")),
+                                    DataColumn(label: _HeaderLabel("Trạng thái")),
+                                    DataColumn(label: _HeaderLabel("Thanh toán")),
+                                    DataColumn(label: _HeaderLabel("Tổng tiền")),
+                                    DataColumn(label: _HeaderLabel("Ngày đặt")),
+                                    DataColumn(label: _HeaderLabel("Thao tác")),
+                                  ],
+                                  rows: controller.filteredOrders
+                                      .asMap()
+                                      .entries
+                                      .map((entry) {
                                     return _buildDataRow(
                                       entry.value,
                                       entry.key,
                                     );
-                                  })
-                                  .toList(),
+                                  }).toList(),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+                        },
+                      ),
                       ),
                     ),
                   ),

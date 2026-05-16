@@ -115,4 +115,10 @@ class CartController extends GetxController {
     _service.saveCart();
     cartItems.refresh();
   }
+
+  /// CLEAR ALL
+  void clearCart() {
+    _service.clearCart();
+    cartItems.clear();
+  }
 }

@@ -291,9 +291,38 @@ class _OrderReviewScreenState extends State<OrderReviewScreen> {
                                     ),
                                   ),
                                   child: Image.network(
-                                    "https://api.qrserver.com/v1/create-qrcode/?size=150x150&data=payment",
+                                    "https://quickchart.io/qr?text=Thanh-toan-don-hang-${controller.total}&size=150",
                                     height: 150,
                                     width: 150,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        height: 150,
+                                        width: 150,
+                                        color: Colors.grey.shade100,
+                                        child: const Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(Icons.error_outline,
+                                                color: Colors.red),
+                                            SizedBox(height: 8),
+                                            Text("Không thể tải mã QR",
+                                                style: TextStyle(fontSize: 12)),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                    loadingBuilder:
+                                        (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return const SizedBox(
+                                        height: 150,
+                                        width: 150,
+                                        child: Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                      );
+                                    },
                                   ),
                                 ),
                               ],

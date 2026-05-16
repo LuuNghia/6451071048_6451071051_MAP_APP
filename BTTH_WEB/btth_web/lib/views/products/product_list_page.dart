@@ -113,10 +113,10 @@ class _ProductListView extends StatelessWidget {
                               scrollDirection: Axis.horizontal, 
                               child: SingleChildScrollView( 
                                 scrollDirection: Axis.vertical, 
-                                child: ConstrainedBox( 
-                                  constraints: BoxConstraints( 
-                                    minWidth: constraints.maxWidth > 1300 ? constraints.maxWidth : 1300, 
-                                  ), 
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    minWidth: constraints.maxWidth,
+                                  ),
                                   child: DataTable( 
                                     headingRowColor: WidgetStateProperty.all( 
                                       const Color(0xFFF8FAFC), 
@@ -211,7 +211,7 @@ class _ProductListView extends StatelessWidget {
                                                       ),
                                               ),
                                             ),
-                                            DataCell(_buildStockBadge(item.stock)), 
+                                            DataCell(_buildStockBadge(item.stock, item.soldQuantity)), 
                                             DataCell( 
                                               Icon( 
                                                 (item.stock - item.soldQuantity) > 0 
@@ -315,19 +315,20 @@ class _ProductListView extends StatelessWidget {
     ); 
   } 
  
-  Widget _buildStockBadge(int stock) { 
+  Widget _buildStockBadge(int stock, int sold) { 
+    final remaining = stock - sold;
     return Container( 
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), 
       decoration: BoxDecoration( 
-        color: stock > 0 
+        color: remaining > 0 
             ? Colors.green.withOpacity(0.1) 
             : Colors.red.withOpacity(0.1), 
         borderRadius: BorderRadius.circular(6), 
       ), 
       child: Text( 
-        stock > 0 ? "$stock Còn lại" : "Hết hàng", 
+        remaining > 0 ? "$remaining Còn lại" : "Hết hàng", 
         style: TextStyle( 
-          color: stock > 0 ? Colors.green : Colors.red, 
+          color: remaining > 0 ? Colors.green : Colors.red, 
           fontSize: 12, 
         ), 
       ), 

@@ -97,177 +97,211 @@ class _CustomersView extends StatelessWidget {
                       child: Column( 
                         children: [ 
                           Expanded( 
-                            child: SingleChildScrollView( 
-                              scrollDirection: Axis.vertical, 
-                              child: SingleChildScrollView( 
-                                scrollDirection: Axis.horizontal, 
-                                child: DataTable( 
-                                  headingRowHeight: 56, 
-                                  dataRowMaxHeight: 70, 
-                                  columnSpacing: 32, 
-                                  headingRowColor: WidgetStateProperty.all( 
-                                    const Color(0xFFF4F7FE), 
-                                  ), 
-                                  columns: const [ 
-                                    DataColumn(label: _TableLabel("STT")), 
-                                    DataColumn(label: _TableLabel("KHÁCH HÀNG")), 
-                                    DataColumn(label: _TableLabel("EMAIL")), 
-                                    DataColumn(label: _TableLabel("SỐ ĐIỆN THOẠI")), 
-                                    DataColumn(label: _TableLabel("ĐƠN HÀNG")), 
-                                    DataColumn( 
-                                      label: _TableLabel("NGÀY ĐĂNG KÝ"),    ), 
-                                    DataColumn(label: _TableLabel("HÀNH ĐỘNG")), 
-                                  ], 
-                                  rows: controller.paginatedData.asMap().entries.map(( 
-                                    entry, 
-                                  ) { 
-                                    final index = entry.key; 
-                                    final c = entry.value; 
-                                    final seq = 
-                                        (controller.currentPage - 1) * 
-                                            controller.rowsPerPage + 
-                                        index + 
-                                        1; 
- 
-                                    return DataRow( 
-                                      cells: [ 
-                                        // SEQ 
-                                        DataCell( 
-                                          Text( 
-                                            "$seq", 
-                                            style: const TextStyle( 
-                                              color: Color(0xFFA3AED0), 
-                                            ), 
-                                          ), 
-                                        ), 
- 
-                                        // CUSTOMER (Name with Avatar) 
-                                        DataCell( 
-                                          Row( 
-                                            mainAxisSize: MainAxisSize.min, 
-                                            children: [ 
-                                              CircleAvatar( 
-                                                radius: 16, 
-                                                backgroundColor: const Color( 
-                                                  0xFF4318FF, 
-                                                ).withOpacity(0.1), 
-                                                child: Text( 
-                                                  c.firstName[0].toUpperCase(), 
-                                                  style: const TextStyle( 
-                                                    color: Color(0xFF4318FF), 
-                                                    fontSize: 12, 
-                                                    fontWeight: FontWeight.bold, 
-                                                  ), 
-                                                ), 
-                                              ), 
-                                              const SizedBox(width: 12), 
-                                              Text(           "${c.firstName} ${c.lastName}", 
-                                                style: const TextStyle( 
-                                                  fontWeight: FontWeight.bold, 
-                                                  color: Color(0xFF2B3674), 
-                                                ), 
-                                              ), 
-                                            ], 
-                                          ), 
-                                        ), 
- 
-                                        // EMAIL 
-                                        DataCell( 
-                                          Text( 
-                                            c.email, 
-                                            style: const TextStyle( 
-                                              color: Color(0xFF1B2559), 
-                                            ), 
-                                          ), 
-                                        ), 
- 
-                                        // PHONE 
-                                        DataCell( 
-                                          Text( 
-                                            c.phone, 
-                                            style: const TextStyle( 
-                                              color: Color(0xFF1B2559), 
-                                            ), 
-                                          ), 
-                                        ), 
- 
-                                        // ORDERS 
-                                        DataCell( 
-                                          Container( 
-                                            padding: const EdgeInsets.symmetric( 
-                                              horizontal: 12, 
-                                              vertical: 4, 
-                                            ), 
-                                            decoration: BoxDecoration( 
-                                              color: Colors.orange.withOpacity( 
-                                                0.1, 
-                                              ), 
-                                              borderRadius: 
-                                                  BorderRadius.circular(12), 
-                                            ), 
-                                            child: Text(    "${controller.orderCountMap[c.id] ?? 0}", 
-                                              style: const TextStyle( 
-                                                color: Colors.orange, 
-                                                fontWeight: FontWeight.bold, 
-                                              ), 
-                                            ), 
-                                          ), 
-                                        ), 
- 
-                                        // REGISTER DATE 
-                                        DataCell( 
-                                          Text( 
-                                            c.createdAt != null 
-                                                ? "${c.createdAt!.day}/${c.createdAt!.month}/${c.createdAt!.year}" 
-                                                : "-", 
-                                            style: const TextStyle( 
-                                              color: Color(0xFFA3AED0), 
-                                            ), 
-                                          ), 
-                                        ), 
- 
-                                        // ACTION 
-                                        DataCell( 
-                                          Row( 
-                                            mainAxisSize: MainAxisSize.min, 
-                                            children: [ 
-                                              _CircularActionButton( 
-                                                icon: Icons.visibility_rounded, 
-                                                color: const Color(0xFF4318FF), 
-                                                onPressed: () { 
-                                                  Navigator.push( 
-                                                    context, 
-                                                    MaterialPageRoute( 
-                                                      builder: (_) => 
-                                                          CustomerDetailPage( 
-                                                            customer: c, 
-                                                          ), 
-                                                    ), 
-                                                  ); 
-                                                }, 
-                                              ), 
-                                              const SizedBox(width: 8), 
-                                              _CircularActionButton( 
-                                                icon: Icons 
-                                                    .delete_outline_rounded, 
-                                                color: Colors.red,  onPressed: () => _confirmDelete( 
-                                                  context, 
-                                                  c.id, 
-                                                ), 
-                                              ), 
-                                            ], 
-                                          ), 
-                                        ), 
-                                      ], 
-                                    ); 
-                                  }).toList(), 
-                                ), 
-                              ), 
-                            ), 
-                          ), 
-                        ], 
-                      ), 
-                    ), 
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                return SingleChildScrollView(
+                                  scrollDirection: Axis.vertical,
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: ConstrainedBox(
+                                      constraints: BoxConstraints(
+                                        minWidth: constraints.maxWidth,
+                                      ),
+                                      child: DataTable(
+                                        headingRowHeight: 56,
+                                        dataRowMaxHeight: 70,
+                                        columnSpacing: 20, // Giảm bớt spacing để tự động co giãn
+                                        headingRowColor:
+                                            WidgetStateProperty.all(
+                                          const Color(0xFFF4F7FE),
+                                        ),
+                                        columns: const [
+                                          DataColumn(label: _TableLabel("STT")),
+                                          DataColumn(
+                                              label: _TableLabel("KHÁCH HÀNG")),
+                                          DataColumn(
+                                              label: _TableLabel("EMAIL")),
+                                          DataColumn(
+                                              label:
+                                                  _TableLabel("SỐ ĐIỆN THOẠI")),
+                                          DataColumn(
+                                              label: _TableLabel("ĐƠN HÀNG")),
+                                          DataColumn(
+                                            label: _TableLabel("NGÀY ĐĂNG KÝ"),
+                                          ),
+                                          DataColumn(
+                                              label: _TableLabel("HÀNH ĐỘNG")),
+                                        ],
+                                        rows: controller.paginatedData
+                                            .asMap()
+                                            .entries
+                                            .map((entry) {
+                                          final index = entry.key;
+                                          final c = entry.value;
+                                          final seq =
+                                              (controller.currentPage - 1) *
+                                                      controller.rowsPerPage +
+                                                  index +
+                                                  1;
+
+                                          return DataRow(
+                                            cells: [
+                                              // SEQ
+                                              DataCell(
+                                                Text(
+                                                  "$seq",
+                                                  style: const TextStyle(
+                                                    color: Color(0xFFA3AED0),
+                                                  ),
+                                                ),
+                                              ),
+
+                                              // CUSTOMER (Name with Avatar)
+                                              DataCell(
+                                                Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    CircleAvatar(
+                                                      radius: 16,
+                                                      backgroundColor:
+                                                          const Color(
+                                                        0xFF4318FF,
+                                                      ).withOpacity(0.1),
+                                                      child: Text(
+                                                        c.firstName[0]
+                                                            .toUpperCase(),
+                                                        style: const TextStyle(
+                                                          color:
+                                                              Color(0xFF4318FF),
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 12),
+                                                    Text(
+                                                      "${c.firstName} ${c.lastName}",
+                                                      style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color:
+                                                            Color(0xFF2B3674),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+
+                                              // EMAIL
+                                              DataCell(
+                                                Text(
+                                                  c.email,
+                                                  style: const TextStyle(
+                                                    color: Color(0xFF1B2559),
+                                                  ),
+                                                ),
+                                              ),
+
+                                              // PHONE
+                                              DataCell(
+                                                Text(
+                                                  c.phone,
+                                                  style: const TextStyle(
+                                                    color: Color(0xFF1B2559),
+                                                  ),
+                                                ),
+                                              ),
+
+                                              // ORDERS
+                                              DataCell(
+                                                Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    horizontal: 12,
+                                                    vertical: 4,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.orange
+                                                        .withOpacity(
+                                                      0.1,
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12),
+                                                  ),
+                                                  child: Text(
+                                                    "${controller.orderCountMap[c.id] ?? 0}",
+                                                    style: const TextStyle(
+                                                      color: Colors.orange,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+
+                                              // REGISTER DATE
+                                              DataCell(
+                                                Text(
+                                                  c.createdAt != null
+                                                      ? "${c.createdAt!.day}/${c.createdAt!.month}/${c.createdAt!.year}"
+                                                      : "-",
+                                                  style: const TextStyle(
+                                                    color: Color(0xFFA3AED0),
+                                                  ),
+                                                ),
+                                              ),
+
+                                              // ACTION
+                                              DataCell(
+                                                Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    _CircularActionButton(
+                                                      icon: Icons
+                                                          .visibility_rounded,
+                                                      color: const Color(
+                                                          0xFF4318FF),
+                                                      onPressed: () {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (_) =>
+                                                                CustomerDetailPage(
+                                                              customer: c,
+                                                            ),
+                                                          ),
+                                                        );
+                                                      },
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    _CircularActionButton(
+                                                      icon: Icons
+                                                          .delete_outline_rounded,
+                                                      color: Colors.red,
+                                                      onPressed: () =>
+                                                          _confirmDelete(
+                                                        context,
+                                                        c.id,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
             ), 
           ), 
  

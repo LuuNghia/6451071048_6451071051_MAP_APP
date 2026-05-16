@@ -253,16 +253,13 @@ class _ProductFormPageState extends State<ProductFormPage> {
                                 TextFormField( 
                                   controller: stockController, 
                                   keyboardType: TextInputType.number, 
-                                  enabled: productType == ProductType.simple, 
                                   decoration: const InputDecoration( 
                                     labelText: "Số lượng tồn kho", 
                                     border: OutlineInputBorder(), 
                                   ), 
                                   validator: (v) { 
-                                    if (productType == ProductType.simple) { 
-                                      if (v == null || v.isEmpty) 
-                                        return "Vui lòng nhập số lượng"; 
-                                    } 
+                                    if (v == null || v.isEmpty) 
+                                      return "Vui lòng nhập số lượng"; 
                                     return null; 
                                   }, 
                                 ), 
@@ -734,9 +731,8 @@ class _ProductFormPageState extends State<ProductFormPage> {
                                 thumbnail: thumbnailController.text, 
                                 productType: productType, 
  
-                                stock: productType == ProductType.simple 
-                                    ? int.tryParse(stockController.text) ?? 0 
-                                    : 0, 
+                                stock: int.tryParse(stockController.text) ?? 0,
+                                isOutOfStock: (int.tryParse(stockController.text) ?? 0) <= (widget.product?.soldQuantity ?? 0),
  
                                 soldQuantity: widget.product?.soldQuantity ?? 0, 
  

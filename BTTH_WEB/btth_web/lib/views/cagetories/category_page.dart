@@ -98,130 +98,142 @@ class _CategoriesView extends StatelessWidget {
               ),
               child: controller.isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: SingleChildScrollView(
-                        child: DataTable(
-                          headingRowColor: MaterialStateProperty.all(
-                            const Color(0xFFF1F3F5),
-                          ),
-                          dataRowHeight: 70,
-                          horizontalMargin: 20,
-                          columns: const [
-                            DataColumn(
-                              label: Text(
-                                "STT",
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                  : LayoutBuilder(
+                      builder: (context, constraints) {
+                        return SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                minWidth: constraints.maxWidth,
                               ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                "DANH MỤC",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                "NỔI BẬT",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                "TRẠNG THÁI",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                "CẬP NHẬT",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                "HÀNH ĐỘNG",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ],
-                          rows: controller.paginatedData.asMap().entries.map((
-                            entry,
-                          ) {
-                            final index = entry.key;
-                            final c = entry.value;
-                            return DataRow(
-                              // Hiệu ứng rê chuột (Hover) mặc định của Flutter DataTable
-                              onSelectChanged: (selected) {},
-                              cells: [
-                                DataCell(
-                                  Text(
-                                    "${(controller.currentPage - 1) * controller.rowsPerPage + index + 1}",
-                                  ),
+                              child: DataTable(
+                                headingRowColor: WidgetStateProperty.all(
+                                  const Color(0xFFF1F3F5),
                                 ),
-                                DataCell(
-                                  Row(
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 20,
-                                        backgroundColor: Colors.grey[200],
-                                        backgroundImage: c.imageURL.isNotEmpty
-                                            ? NetworkImage(c.imageURL)
-                                            : null,
-                                        child: c.imageURL.isEmpty
-                                            ? const Icon(Icons.image, size: 20)
-                                            : null,
+                                dataRowHeight: 70,
+                                horizontalMargin: 20,
+                                columns: const [
+                                  DataColumn(
+                                    label: Text(
+                                      "STT",
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  DataColumn(
+                                    label: Text(
+                                      "DANH MỤC",
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  DataColumn(
+                                    label: Text(
+                                      "NỔI BẬT",
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  DataColumn(
+                                    label: Text(
+                                      "TRẠNG THÁI",
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  DataColumn(
+                                    label: Text(
+                                      "CẬP NHẬT",
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  DataColumn(
+                                    label: Text(
+                                      "HÀNH ĐỘNG",
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ],
+                                rows: controller.paginatedData
+                                    .asMap()
+                                    .entries
+                                    .map((
+                                  entry,
+                                ) {
+                                  final index = entry.key;
+                                  final c = entry.value;
+                                  return DataRow(
+                                    cells: [
+                                      DataCell(
+                                        Text(
+                                          "${(controller.currentPage - 1) * controller.rowsPerPage + index + 1}",
+                                        ),
                                       ),
-                                      const SizedBox(width: 12),
-                                      Text(
-                                        c.name,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w600,
+                                      DataCell(
+                                        Row(
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 20,
+                                              backgroundColor: Colors.grey[200],
+                                              backgroundImage: c.imageURL.isNotEmpty
+                                                  ? NetworkImage(c.imageURL)
+                                                  : null,
+                                              child: c.imageURL.isEmpty
+                                                  ? const Icon(Icons.image, size: 20)
+                                                  : null,
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Text(
+                                              c.name,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Icon(
+                                          c.isFeatured
+                                              ? Icons.star_rounded
+                                              : Icons.star_outline_rounded,
+                                          color: c.isFeatured
+                                              ? Colors.amber
+                                              : Colors.grey,
+                                        ),
+                                      ),
+                                      DataCell(_buildStatusBadge(c.isActive)),
+                                      DataCell(
+                                        Text(
+                                          c.updatedAt != null
+                                              ? "${c.updatedAt!.day.toString().padLeft(2, '0')}/${c.updatedAt!.month.toString().padLeft(2, '0')}/${c.updatedAt!.year}"
+                                              : "-",
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Row(
+                                          children: [
+                                            _buildActionButton(
+                                              Icons.edit_outlined,
+                                              Colors.blue,
+                                              () => _showDialog(context,
+                                                  category: c),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            _buildActionButton(
+                                              Icons.delete_outline,
+                                              Colors.redAccent,
+                                              () => _confirmDelete(context, c.id),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
-                                  ),
-                                ),
-                                DataCell(
-                                  Icon(
-                                    c.isFeatured
-                                        ? Icons.star_rounded
-                                        : Icons.star_outline_rounded,
-                                    color: c.isFeatured
-                                        ? Colors.amber
-                                        : Colors.grey,
-                                  ),
-                                ),
-                                DataCell(_buildStatusBadge(c.isActive)),
-                                DataCell(
-                                  Text(
-                                    c.updatedAt != null
-                                        ? "${c.updatedAt!.day.toString().padLeft(2, '0')}/${c.updatedAt!.month.toString().padLeft(2, '0')}/${c.updatedAt!.year}"
-                                        : "-",
-                                  ),
-                                ),
-                                DataCell(
-                                  Row(
-                                    children: [
-                                      _buildActionButton(
-                                        Icons.edit_outlined,
-                                        Colors.blue,
-                                        () => _showDialog(context, category: c),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      _buildActionButton(
-                                        Icons.delete_outline,
-                                        Colors.redAccent,
-                                        () => _confirmDelete(context, c.id),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            );
-                          }).toList(),
-                        ),
-                      ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
             ),
           ),
